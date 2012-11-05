@@ -1,6 +1,5 @@
 ({
     baseUrl: "lib",
-    dir: "build",
     paths: {
     	xui: 'ui/xui',
     	jquery: "vendor/jquery",
@@ -8,9 +7,7 @@
     	carousel: "ui/carousel",
     	dropdown: "ui/dropdown"
     },
-    modules: [
-        {
-            name: 'carousel'
-        }
-    ]
+    name: "carousel",
+    insertRequire: ['carousel'],
+    out: "build/carousel.js",
 })
