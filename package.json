@@ -1,0 +1,17 @@
+{
+  "name": "TODO",
+  "description": "TODO",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": "0.8.10",
+    "npm": "1.1.x"
+  },
+  "devDependencies": {
+    "grunt": ">=0.3.16",
+    "jasmine-node": "*"
+  },
+  "scripts": {
+    "test": "TODO"
+  }
+}
