@@ -1,2 +1,6 @@
+<<<<<<< HEAD
 build/*
 .DS_Store
+=======
+/node_modules
+>>>>>>> 9d73d4392a3895565a8d4f97da1854a5a0cf64ab
