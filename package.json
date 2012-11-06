@@ -9,7 +9,9 @@
   },
   "devDependencies": {
     "grunt": ">=0.3.16",
-    "jasmine-node": "*"
+    "jasmine-node": "*",
+    "grunt-jasmine-node": "0.0.2",
+    "grunt-requirejs": "*"
   },
   "scripts": {
     "test": "TODO"
