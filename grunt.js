@@ -10,31 +10,17 @@ module.exports = function(grunt) {
         '* Copyright (c) <%= grunt.template.today("yyyy") %> */'
     },
     requirejs: {
-      std: {
-        name: 'xui',
-        dir: "build",
-        baseUrl: "lib",
-        paths: {
-          xui: 'ui/xui'
-        },
-        appDir: "lib",
-        out: 'buid/xui.min.js'
-      }
-    },
-    min: {
-      xui: {
-        src: ['<banner:meta.banner>', 'lib/ui/base.js', 'lib/ui/init.js', 'lib/ui/carousel.js', 'lib/ui/dropdown.js','lib/ui/tab.js'],
-        dest: 'build/xui.min.js'
+      baseUrl: "lib",
+      paths: {
+        xui: 'ui/xui',
+        jquery: "vendor/jquery",
+        base: "ui/base",
+        carousel: "ui/carousel",
+        dropdown: "ui/dropdown"
       },
-      // some custom build examples
-      carousel: {
-        src: ['<banner:meta.banner>', 'lib/ui/carousel.js'],
-        dest: 'build/carousel.min.js'
-      },
-      carouselWithPagination: {
-        src: ['<banner:meta.banner>', 'lib/carousel.js', 'lib/addons/carousel_pagination.js'],
-        dest: 'build/carouselWithPagination.min.js'
-      }
+      name: "carousel",
+      insertRequire: ['carousel'],
+      out: "build/carousel.js"
     },
     lint: {
       files: ['*.js', 'test/*.js']
