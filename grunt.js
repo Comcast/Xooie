@@ -52,5 +52,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-jasmine-node');
 
   // Default task.
-  grunt.registerTask('default', 'lint requirejs jasmine_node');
+  grunt.registerTask('default', 'lint jasmine_node requirejs');
 };
