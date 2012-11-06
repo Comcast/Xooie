@@ -11,10 +11,14 @@ module.exports = function(grunt) {
     },
     requirejs: {
       std: {
+        name: 'xui',
         dir: "build",
+        baseUrl: "lib",
+        paths: {
+          xui: 'ui/xui'
+        },
         appDir: "lib",
-        baseUrl: "js",
-        include: "*"
+        out: 'buid/xui.min.js'
       }
     },
     min: {
