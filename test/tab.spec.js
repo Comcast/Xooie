@@ -1,4 +1,4 @@
-require(['jquery', 'cimspire/ui/tab'], function($, Tab) {
+require(['jquery', 'tab'], function($, Tab) {
 
     describe('Tab', function() {
 

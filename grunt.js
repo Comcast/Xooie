@@ -10,17 +10,23 @@ module.exports = function(grunt) {
         '* Copyright (c) <%= grunt.template.today("yyyy") %> */'
     },
     requirejs: {
-      baseUrl: "lib",
+      baseUrl: "xui",
       paths: {
-        xui: 'ui/xui',
-        jquery: "vendor/jquery",
-        base: "ui/base",
-        carousel: "ui/carousel",
-        dropdown: "ui/dropdown"
+        jquery: "empty:",
+        xui: "xui",
+        base: "base",
+        carousel: "carousel",
+        dropdown: "dropdown",
+        tab: "tab",
+        addons_base: "addons/base",
+        carousel_lentils: "addons/carousel_lentils",
+        carousel_pagination: "addons/carousel_pagination",
+        tab_animation: "addons/tab_animation",
+        tab_automation: "addons/tab_automation"
       },
-      name: "carousel",
-      insertRequire: ['carousel'],
-      out: "build/carousel.js"
+      name: "xui",
+      include: ["carousel", "dropdown", "tab", "carousel_lentils", "carousel_pagination", "tab_automation", "tab_animation"],
+      out: "build/xui.js"
     },
     lint: {
       files: ['*.js', 'test/*.js']
@@ -36,7 +42,7 @@ module.exports = function(grunt) {
     },
     jasmine_node: {
       specFolderName: "./test",
-      projectRoot: "./lib",
+      projectRoot: "./xui",
       requirejs: true,
       forceExit: true,
       jUnit: {

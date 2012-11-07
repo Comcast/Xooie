@@ -1,4 +1,4 @@
-define('cimspire/ui/addons/base', ['jquery'], function($) {
+define('addons_base', ['jquery'], function($) {
     var Base = function(name, constructor){
         var defaultOptions = {},
             initEvent = name.toLowerCase() + 'AddonInit',

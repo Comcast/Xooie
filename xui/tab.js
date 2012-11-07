@@ -1,4 +1,4 @@
-define('cimspire/ui/tab', ['jquery', 'cimspire/ui/base'], function($, Base) {
+define('tab', ['jquery', 'base'], function($, Base) {
 
     var Tab = Base('tab', function() {
         var self = this;

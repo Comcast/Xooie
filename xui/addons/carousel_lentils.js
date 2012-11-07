@@ -1,4 +1,4 @@
-define('carousel_lentils', ['jquery', 'cimspire/ui/addons/base'], function($, Base) {
+define('carousel_lentils', ['jquery', 'addons_base'], function($, Base) {
 
     var Lentils = Base('lentils', function(){
         var self = this;

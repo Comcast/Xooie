@@ -1,3 +1,5 @@
+
+
 define('base', ['jquery'], function($) {
     var Base = function(name, constructor) {
         var defaultOptions, instances, instanceCounter, initEvent, instanceName, className, XUI;

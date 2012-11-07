@@ -1,4 +1,11 @@
-define('tab_automation', ['jquery', 'cimspire/ui/addons/base', 'cimspire/cim.utils'], function($, Base, Utils) {
+define('tab_automation', ['jquery', 'addons_base'], function($, Base) {
+    var outOfRange = function(lower, upper, point, normalize) {
+        var n = ( Math.min(lower, point) - lower ) || ( Math.max(upper, point) - upper );
+        var denominator = (normalize) ? Math.max(Math.abs(n),1) : 1;
+        return n/denominator;
+    }
+
+
     var Automation = Base('automation', function(){
         var self = this,
             focusTable = {},
@@ -119,7 +126,7 @@ define('tab_automation', ['jquery', 'cimspire/ui/addons/base', 'cimspire/cim.uti
             top = this.module.root.offset().top;
             bottom = top + this.module.root.outerHeight(true);
 
-            return !!(Utils.outOfRange(lower, upper, top, true) && Utils.outOfRange(lower, upper, bottom, true));
+            return !!(outOfRange(lower, upper, top, true) && outOfRange(lower, upper, bottom, true));
         }
     });
 
