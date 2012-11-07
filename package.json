@@ -1,5 +1,5 @@
 {
-  "name": "TODO",
+  "name": "XUI",
   "description": "TODO",
   "version": "0.0.1",
   "private": true,
@@ -9,7 +9,8 @@
   },
   "devDependencies": {
     "grunt": ">=0.3.16",
-    "jasmine-node": "*"
+    "jasmine-node": "*",
+    "requirejs": "*"
   },
   "scripts": {
     "test": "TODO"
