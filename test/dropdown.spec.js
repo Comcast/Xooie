@@ -171,7 +171,7 @@ require(['jquery', 'cimspire/ui/dropdown'], function($, Dropdown) {
 
                 handle.trigger('mouseleave');
 
-                expect(d.collapse).toHaveBeenCalledWith(0, d.options.triggers.off.mouseleave.delay)
+                expect(d.collapse).toHaveBeenCalledWith(0, d.options.triggers.off.mouseleave.delay);
             });
         }); 
 

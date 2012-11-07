@@ -163,7 +163,7 @@ require(['jquery', 'cimspire/ui/carousel'], function($, Carousel) {
 
                 expect(carouselInstance.getRightLimit()).toBeUndefined();
             });
-        })
+        });
 
         describe('When determining if the carousel is at a left or right limit...', function(){
             beforeEach(function(){
@@ -483,7 +483,7 @@ require(['jquery', 'cimspire/ui/carousel'], function($, Carousel) {
 
                     expect($.fn.animate.callCount).toBe(3);
 
-                })
+                });
             });
 
             it('sets the isScroling property to false when complete', function(){
