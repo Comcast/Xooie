@@ -41,16 +41,10 @@ module.exports = function(grunt) {
       }
     },
     jasmine_node: {
-      specFolderName: "./test",
-      projectRoot: "./xui",
+      specFolderName: "",
+      projectRoot: "./spec",
       requirejs: true,
-      forceExit: true,
-      jUnit: {
-        report: false,
-        savePath : "./build/reports/jasmine/",
-        useDotNotation: true,
-        consolidate: true
-      }
+      forceExit: true
     }
   });
 
