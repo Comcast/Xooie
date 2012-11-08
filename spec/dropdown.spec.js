@@ -1,6 +1,4 @@
-EnvJasmine.load(EnvJasmine.jsCimspireDirectory + "/cim.js");
-
-require(['jquery', 'cimspire/ui/dropdown'], function($, Dropdown) {
+require(['../lib/jquery', 'dropdown'], function($, Dropdown) {
     describe('Dropdown', function(){
         var el, d;
 

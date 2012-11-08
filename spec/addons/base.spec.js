@@ -1,4 +1,4 @@
-require(['jquery', 'cimspire/ui/base', 'cimspire/ui/addons/base'], function($, Base, AddonBase) {
+require(['../lib/jquery', 'base', 'addons_base'], function($, Base, AddonBase) {
 
     var constructor, baseConstructor, Widget, Addon, w, a;
 

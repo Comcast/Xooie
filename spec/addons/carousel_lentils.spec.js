@@ -1,6 +1,4 @@
-EnvJasmine.load(EnvJasmine.jsCimspireDirectory + "/cim.js");
-
-require(['jquery', 'cimspire/ui/carousel', 'carousel_lentils'], function($, Carousel, Lentils) {
+require(['../lib/jquery', 'carousel', 'carousel_lentils'], function($, Carousel, Lentils) {
 
     describe('Carousel Lentil Addon', function(){
         var element, c, l, positionLeft, template;

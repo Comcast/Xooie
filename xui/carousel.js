@@ -1,4 +1,4 @@
-define('carousel', ['jquery', 'base'], function($, Base) {
+define(['jquery', 'base'], function($, Base) {
 
     var resizeTimer = null,
         carouselElements = $(),
@@ -6,7 +6,7 @@ define('carousel', ['jquery', 'base'], function($, Base) {
 
     $(window).on('resize', function() {
         if (resizeTimer) {
-            clearTimeout(resizeTimer);
+            clearTimeout(resizeTimer);ui
             resizeTimer = null;
         }
         if (carouselElements) {

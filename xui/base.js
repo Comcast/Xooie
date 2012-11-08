@@ -1,6 +1,5 @@
 
-
-define('base', ['jquery'], function($) {
+define(['jquery'], function($) {
     var Base = function(name, constructor) {
         var defaultOptions, instances, instanceCounter, initEvent, instanceName, className, XUI;
 
@@ -23,7 +22,7 @@ define('base', ['jquery'], function($) {
             instances[instanceCounter] = this;
             this.root.data(instanceName, instanceCounter);
 
-            this.options = $.extend({}, wrapper.getDefaultOptions(), this.root.data());
+            this.options = $.extend({}, XUI.getDefaultOptions(), this.root.data());
 
             var addons, i, self = this;
 

@@ -1,7 +1,4 @@
-EnvJasmine.load(EnvJasmine.jsCimspireDirectory + "/cim.js");
-EnvJasmine.load(EnvJasmine.jsCimspireDirectory + "/cim.utils.js");
-
-require(['jquery', 'cimspire/ui/tab', 'tab_automation'], function($, Tab, Automation) {
+require(['../lib/jquery', 'tab', 'tab_automation'], function($, Tab, Automation) {
     describe('Tab Automation Addon', function(){
         var tabInst, autoInst, el, offset;
 

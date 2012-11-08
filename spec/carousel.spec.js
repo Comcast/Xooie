@@ -1,6 +1,6 @@
-EnvJasmine.load(EnvJasmine.jsCimspireDirectory + "/cim.js");
-
-require(['jquery', 'cimspire/ui/carousel'], function($, Carousel) {
+define(function(require) {
+    var Carousel = require('carousel'),
+        $ = require('jquery');
 
     describe('Carousel', function(){
         var element, carouselInstance, positionLeft;
@@ -31,7 +31,7 @@ require(['jquery', 'cimspire/ui/carousel'], function($, Carousel) {
             it('wraps the carousel-content in an element with class "cim-carousel-wrapper"', function() {
                 var p = element.find('[data-role="carousel-content"]').parent();
 
-                expect(p).toHaveClass('cim-carousel-wrapper');
+                expect(p.hasClass('cim-carousel-wrapper')).toBe(true);
                 expect(p.css('overflow-x')).toBe('scroll');
                 expect(p.css('overflow-y')).toBe('hidden');
             });
@@ -557,8 +557,8 @@ require(['jquery', 'cimspire/ui/carousel'], function($, Carousel) {
                 });
             });
         });
-
     });
-
 });
+
+
 

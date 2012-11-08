@@ -29,28 +29,40 @@ module.exports = function(grunt) {
       out: "build/xui.js"
     },
     lint: {
-      files: ['*.js', 'test/*.js']
+      files: ['*.js', 'spec/*.js']
     },
     watch: {
       files: '<config:lint.files>',
-      tasks: 'default'
+      tasks: 'test'
     },
     jshint: {
       globals: {
-        exports: true
+        exports: true,
+        // Requirejs
+        require: true,
+        requirejs: true,
+        define: true,
+        // Jasmine
+        it: true,
+        describe: true,
+        beforeEach: true,
+        expect: true
       }
     },
-    jasmine_node: {
-      specFolderName: "",
-      projectRoot: "./spec",
-      requirejs: true,
-      forceExit: true
+    jasmine: {
+      amd: true,
+      helpers: ["lib/require.js", "lib/config.js"],
+      specs: "spec/*.spec.js",
+      timeout: 10000,
+      phantomjs: {
+        'ignore-ssl-errors': true
+      }
     }
   });
 
-  grunt.loadNpmTasks('grunt-requirejs');
-  grunt.loadNpmTasks('grunt-jasmine-node');
+  grunt.loadNpmTasks('grunt-jasmine-runner');
 
+  grunt.registerTask('test', 'lint jasmine');
   // Default task.
-  grunt.registerTask('default', 'lint jasmine_node requirejs');
+  grunt.registerTask('default', 'test requirejs');
 };

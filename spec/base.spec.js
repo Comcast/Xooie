@@ -1,4 +1,4 @@
-require(['jquery', 'cimspire/ui/base'], function($, Base) {
+require(['../lib/jquery', 'base'], function($, Base) {
 
     describe('Base', function() {
 

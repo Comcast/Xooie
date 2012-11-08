@@ -1,4 +1,4 @@
-require(['jquery', 'tab'], function($, Tab) {
+require(['../lib/jquery', 'tab'], function($, Tab) {
 
     describe('Tab', function() {
 

@@ -1,6 +1,4 @@
-EnvJasmine.load(EnvJasmine.jsCimspireDirectory + "/cim.js");
-
-require(['jquery', 'cimspire/ui/tab', 'tab_animation'], function($, Tab, Animation) {
+require(['../lib/jquery', 'tab', 'tab_animation'], function($, Tab, Animation) {
     describe('Tab Animation Addon', function(){
         var tabInst, aniInst, el;
 

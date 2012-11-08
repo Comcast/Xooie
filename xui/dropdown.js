@@ -2,6 +2,7 @@ define('dropdown', ['jquery', 'base'], function($, Base) {
 
     var Dropdown = Base('dropdown', function() {
         var self = this,
+            trigger,
             handles = self.getHandle(),
             expanders = self.getExpander(),
 
@@ -27,7 +28,8 @@ define('dropdown', ['jquery', 'base'], function($, Base) {
             getTriggerHandle(onTriggers[trigger]).on(trigger, {delay: onTriggers[trigger].delay}, function(event){
                 var index = parseInt($(this).attr('data-dropdown-index'), 10),
                     delay = event.data.delay,
-                    handle = $(this);
+                    handle = $(this),
+                    trigger;
 
                 event.preventDefault();
 
@@ -75,7 +77,7 @@ define('dropdown', ['jquery', 'base'], function($, Base) {
                 $(this).on('mouseleave', {index: index}, function(event){
                     self.collapse(event.data.index, 0);
                     $(this).unbind(event);
-                })
+                });
             }
         });
 

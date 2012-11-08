@@ -1,6 +1,4 @@
-EnvJasmine.load(EnvJasmine.jsCimspireDirectory + "/cim.js");
-
-require(['jquery', 'cimspire/ui/carousel', 'carousel_pagination'], function($, Carousel, Pagination) {
+require(['../lib/jquery', 'carousel', 'carousel_pagination'], function($, Carousel, Pagination) {
     describe('Carousel Pagination Addon', function(){
         var element, carouselInstance, paginationInstance, positionLeft;
 
