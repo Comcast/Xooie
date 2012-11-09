@@ -51,8 +51,8 @@ module.exports = function(grunt) {
     },
     jasmine: {
       amd: true,
-      helpers: ["lib/require.js", "lib/config.js"],
-      specs: "spec/*.spec.js",
+      helpers: ["lib/jquery.js", "lib/require.js", "lib/config.js", "lib/micro_tmpl.js"],
+      specs: "spec/tab.spec.js",
       timeout: 10000,
       phantomjs: {
         'ignore-ssl-errors': true

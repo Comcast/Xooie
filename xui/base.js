@@ -10,9 +10,10 @@ define(['jquery'], function($) {
         name = name.toLowerCase();
         initEvent = name + 'Init';
         instanceName = name + '-instance';
+        instanceCounter = 0;
         className = 'is-' + name + '-instantiated';
 
-        XUI = function(root) {
+        Xooie = function(root) {
             this.root = $(root);
 
             if (this.root.data(instanceName)) {
@@ -22,7 +23,7 @@ define(['jquery'], function($) {
             instances[instanceCounter] = this;
             this.root.data(instanceName, instanceCounter);
 
-            this.options = $.extend({}, XUI.getDefaultOptions(), this.root.data());
+            this.options = $.extend({}, Xooie.getDefaultOptions(), this.root.data());
 
             var addons, i, self = this;
 
@@ -41,7 +42,7 @@ define(['jquery'], function($) {
             this.root.trigger(initEvent);
         };
 
-        XUI.prototype = {
+        Xooie.prototype = {
             loadAddon: function(addon){
                 var self = this,
                     path;
@@ -57,6 +58,10 @@ define(['jquery'], function($) {
                 } catch (e) {
                     //need to determine how to handle missing addons
                 }
+            },
+
+            render: function(template, view){
+                return $(template.micro_render(view));
             }
         };
 
@@ -72,17 +77,17 @@ define(['jquery'], function($) {
             }
         };
 
-        XUI.getDefaultOptions = function(){
+        Xooie.getDefaultOptions = function(){
             return defaultOptions || {};
         };
 
-        XUI.setDefaultOptions = function(options) {
+        Xooie.setDefaultOptions = function(options) {
             if (typeof options !== 'undefined') {
                 $.extend(defaultOptions, options);
             }
         };
 
-        return XUI;
+        return Xooie;
     };
 
     return Base;

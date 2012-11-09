@@ -6,7 +6,7 @@ define(['jquery', 'base'], function($, Base) {
 
     $(window).on('resize', function() {
         if (resizeTimer) {
-            clearTimeout(resizeTimer);ui
+            clearTimeout(resizeTimer);
             resizeTimer = null;
         }
         if (carouselElements) {
@@ -119,13 +119,12 @@ define(['jquery', 'base'], function($, Base) {
                     }
                 }
 
-
                 //TODO: replace the use of micro_render
-                element = $(template.micro_render({
+                element = self.render(template, {
                     current_item: currentItem + 1,
                     last_visible_item: lastVisible,
                     total_items: items.length
-                }));
+                });
 
                 container.append(element);
             }
@@ -136,7 +135,7 @@ define(['jquery', 'base'], function($, Base) {
         this.content.wrap('<div/>');
 
         this.wrapper = this.content.parent();
-        this.wrapper.addClass('cim-carousel-wrapper')
+        this.wrapper.addClass('js-carousel-wrapper')
                     .css(this.options.wrapperStyles); //TODO: use dynamic style sheets for base styles
 
         //setting the wrapper's parent to overflow-y=hidden allows us to hide the horizontal scrollbar
@@ -229,7 +228,7 @@ define(['jquery', 'base'], function($, Base) {
             }
             return items.length - 1;
         } else {
-            position = this.content.outerWidth(true) + this.content.position().left
+            position = this.content.outerWidth(true) + this.content.position().left;
 
             for (i = items.length - 1; i > 0; i -= 1) {
                 itemWidth = items.eq(i).outerWidth(true);
@@ -278,7 +277,7 @@ define(['jquery', 'base'], function($, Base) {
 
     Carousel.prototype.updateLimits = function() {
         this.root.toggleClass('is-carousel-leftmost', this.wrapper.scrollLeft() === 0);
-        this.root.toggleClass('is-carousel-rightmost', this.getRightLimit() <= this.wrapper.innerWidth());        
+        this.root.toggleClass('is-carousel-rightmost', this.getRightLimit() <= this.wrapper.innerWidth());
     };
 
     Carousel.prototype.updatePosition = function(amount) {

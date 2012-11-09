@@ -1,4 +1,4 @@
-require(['../lib/jquery', 'base'], function($, Base) {
+define(['jquery', 'base'], function($, Base) {
 
     describe('Base', function() {
 
@@ -42,11 +42,11 @@ require(['../lib/jquery', 'base'], function($, Base) {
             expect(w1).toBe(w2);
         });
 
-        it('adds the "cim-test-widget" class to the root element', function() {
+        it('adds the "is-test-instantiated" class to the root element', function() {
             var element = $('<div/>'),
                 w = new Widget(element);
 
-            expect(element).toHaveClass('is-test-instantiated');
+            expect(element.hasClass('is-test-instantiated')).toBe(true);
         });
 
         it('pulls options from the DOM element data- attributes', function() {

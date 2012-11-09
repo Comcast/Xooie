@@ -1,4 +1,4 @@
-require(['../lib/jquery', 'tab'], function($, Tab) {
+require(['jquery', 'tab'], function($, Tab) {
 
     describe('Tab', function() {
 
@@ -27,12 +27,11 @@ require(['../lib/jquery', 'tab'], function($, Tab) {
                 '</div>'
             ].join(''));
 
-            //TODO: figure out why micro_render is not working in test env.
-            spyOn($.fn, 'micro_render').andCallFake(function(data){
+            t = new Tab(element);
+
+            spyOn(t, 'render').andCallFake(function(data){
                 return $('<li data-role="tab-selector" data-tab-control="true">' + data.panel_label + '</li>');
             });
-
-            t = new Tab(element);
         });
 
         it('calls "switchToTab" on tab control click', function() {
@@ -166,17 +165,17 @@ require(['../lib/jquery', 'tab'], function($, Tab) {
             });
 
             it('provides the panel jQuery element to the template', function() {
-                expect($.fn.micro_render.mostRecentCall.args[0].panel).toBeDefined();
+                expect(t.render.mostRecentCall.args[0].panel).toBeDefined();
             });
 
             it('provides a panel_index value to the template', function() {
-                expect($.fn.micro_render.calls[0].args[0].panel_index).toEqual(0);
-                expect($.fn.micro_render.calls[1].args[0].panel_index).toEqual(1);
+                expect(t.render.calls[0].args[0].panel_index).toEqual(0);
+                expect(t.render.calls[1].args[0].panel_index).toEqual(1);
             });
 
             it('provides a panel_has_next value to the template', function() {
-                expect($.fn.micro_render.calls[0].args[0].panel_has_next).toEqual(true);
-                expect($.fn.micro_render.calls[2].args[0].panel_has_next).toEqual(false);
+                expect(t.render.calls[0].args[0].panel_has_next).toEqual(true);
+                expect(t.render.calls[2].args[0].panel_has_next).toEqual(false);
             });
 
             it('removes existing tab elements when createTabs is called', function() {

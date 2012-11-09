@@ -1,4 +1,4 @@
-define('tab', ['jquery', 'base'], function($, Base) {
+define(['jquery', 'base'], function($, Base) {
 
     var Tab = Base('tab', function() {
         var self = this;
@@ -71,12 +71,12 @@ define('tab', ['jquery', 'base'], function($, Base) {
 
             for (i = 0; i < panels.length; i++) {
                 if(tabStrip.length > 0 && template.length > 0) {
-                    element = $(template.micro_render({
+                    element = this.render(template, {
                         panel: panels.eq(i),
                         panel_label: panels.eq(i).attr('data-tab-label'),
                         panel_index: i,
                         panel_has_next: (i < panels.length - 1)
-                    }));
+                    });
 
                     if (element.is(this.options.controlButtonSelector)) {
                         control = element;

@@ -1,6 +1,4 @@
-define(function(require) {
-    var Carousel = require('carousel'),
-        $ = require('jquery');
+define(['jquery', 'carousel'], function($, Carousel) {
 
     describe('Carousel', function(){
         var element, carouselInstance, positionLeft;
@@ -31,7 +29,7 @@ define(function(require) {
             it('wraps the carousel-content in an element with class "cim-carousel-wrapper"', function() {
                 var p = element.find('[data-role="carousel-content"]').parent();
 
-                expect(p.hasClass('cim-carousel-wrapper')).toBe(true);
+                expect(p.hasClass('js-carousel-wrapper')).toBe(true);
                 expect(p.css('overflow-x')).toBe('scroll');
                 expect(p.css('overflow-y')).toBe('hidden');
             });
@@ -192,7 +190,7 @@ define(function(require) {
 
                 spyOn(carouselInstance.wrapper, 'scrollLeft').andReturn(100);
                 spyOn(carouselInstance.wrapper, 'innerWidth').andReturn(100);
-                spyOn(carouselInstance.content, 'outerWidth').andReturn(1000);
+                spyOn(carouselInstance, 'getRightLimit').andReturn(200);
 
                 carouselInstance.updateLimits();
 
@@ -234,7 +232,7 @@ define(function(require) {
             });
 
             it('treats a position starting with + or - as a relative position', function() {
-                element.find('.cim-carousel-wrapper').scrollLeft(110);
+                spyOn(carouselInstance.wrapper, 'scrollLeft').andReturn(110);
 
                 carouselInstance.updatePosition("-100");
 
@@ -549,11 +547,11 @@ define(function(require) {
                     var container = $('<div></div>'),
                         template = carouselInstance.root.find(carouselInstance.options.displayTemplateSelector);
 
-                    spyOn(template, 'micro_render');
+                    spyOn(carouselInstance, 'render');
 
                     carouselInstance.displayMethods.item(container, template);
 
-                    expect(template.micro_render).toHaveBeenCalledWith({current_item: 2, last_visible_item: 4, total_items: 6});
+                    expect(carouselInstance.render).toHaveBeenCalledWith(template, {current_item: 2, last_visible_item: 4, total_items: 6});
                 });
             });
         });
