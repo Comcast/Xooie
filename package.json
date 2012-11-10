@@ -1,5 +1,5 @@
 {
-  "name": "XUI",
+  "name": "Xooie",
   "description": "TODO",
   "version": "0.0.1",
   "private": true,
@@ -14,6 +14,6 @@
     "grunt-jasmine-runner": "latest"
   },
   "scripts": {
-    "test": "TODO"
+    "test": "grunt test"
   }
 }
