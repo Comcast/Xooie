@@ -1,3 +1,5 @@
+https://travis-ci.org/[YOUR_GITHUB_USERNAME]/[YOUR_PROJECT_NAME].png
+
 Xooie
 ===
 
@@ -23,7 +25,7 @@ Setting up Xooie is as easy as dropping the xui directory into your project.
 Xooie requires the following libraries to work:
 * RequireJS (www.requirejs.com)
 * jQuery (www.jquery.com)
-* async (github.com/caolan/async) ** Only for the tab_animation addon **
+* async (http://github.com/caolan/async) ** Only for the tab_animation addon **
 * micro_tmpl.js (found in the lib directory of this project)
 
 Xooie will work by just loading xui.js on your page; all the other files will be loaded asynchronously as needed.  However, if you would rather not load the scripts asynchronously the modules can be loaded at page load.
