@@ -13,7 +13,7 @@ module.exports = function(grunt) {
       baseUrl: "xui",
       paths: {
         jquery: "empty:",
-        async: "lib/async",
+        async: "../lib/async",
         xui: "xui",
         base: "base",
         carousel: "carousel",
@@ -47,7 +47,7 @@ module.exports = function(grunt) {
         it: true,
         describe: true,
         beforeEach: true,
-        expect: true,
+        expect: true
       }
     },
     jasmine: {
@@ -62,6 +62,7 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-jasmine-runner');
+  grunt.loadNpmTasks('grunt-requirejs');
 
   grunt.registerTask('test', 'lint jasmine');
   // Default task.

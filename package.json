@@ -10,6 +10,7 @@
   "dependencies": {
     "grunt": ">=0.3.16",
     "requirejs": "*",
+    "grunt-requirejs": "*",
     "grunt-jasmine-runner": "latest"
   },
   "scripts": {

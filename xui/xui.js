@@ -14,7 +14,6 @@
 *   limitations under the License.
 */
 
-
 requirejs.config({
     jquery: 'lib/jquery',
     template: 'lib/micro_tmpl'
