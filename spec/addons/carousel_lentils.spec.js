@@ -1,4 +1,4 @@
-require(['../lib/jquery', 'carousel', 'carousel_lentils'], function($, Carousel, Lentils) {
+define(['jquery', 'carousel', 'carousel_lentils'], function($, Carousel, Lentils) {
 
     describe('Carousel Lentil Addon', function(){
         var element, c, l, positionLeft, template;

@@ -13,6 +13,7 @@ module.exports = function(grunt) {
       baseUrl: "xui",
       paths: {
         jquery: "empty:",
+        async: "lib/async",
         xui: "xui",
         base: "base",
         carousel: "carousel",
@@ -46,13 +47,13 @@ module.exports = function(grunt) {
         it: true,
         describe: true,
         beforeEach: true,
-        expect: true
+        expect: true,
       }
     },
     jasmine: {
       amd: true,
-      helpers: ["lib/jquery.js", "lib/require.js", "lib/config.js", "lib/micro_tmpl.js"],
-      specs: "spec/tab.spec.js",
+      helpers: ["lib/require.js", "lib/config.js", "lib/jquery.js", "lib/micro_tmpl.js", "lib/jasmine-jquery.js"],
+      specs: ["spec/*.spec.js", "spec/**/*.spec.js"],
       timeout: 10000,
       phantomjs: {
         'ignore-ssl-errors': true

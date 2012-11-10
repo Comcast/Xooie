@@ -1,4 +1,4 @@
-define('addons_base', ['jquery'], function($) {
+define(['jquery'], function($) {
     var Base = function(name, constructor){
         var defaultOptions = {},
             initEvent = name.toLowerCase() + 'AddonInit',

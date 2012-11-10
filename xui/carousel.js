@@ -119,7 +119,6 @@ define(['jquery', 'base'], function($, Base) {
                     }
                 }
 
-                //TODO: replace the use of micro_render
                 element = self.render(template, {
                     current_item: currentItem + 1,
                     last_visible_item: lastVisible,

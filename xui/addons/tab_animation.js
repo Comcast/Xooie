@@ -1,4 +1,4 @@
-define('tab_animation', ['jquery', 'addons_base'], function($, Base) {
+define('tab_animation', ['jquery', 'addons_base', 'async'], function($, Base, async) {
 
     var Animation = Base('animation', function(){
         var self = this,

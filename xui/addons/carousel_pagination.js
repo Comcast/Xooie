@@ -1,4 +1,4 @@
-define('carousel_pagination', ['jquery', 'addons_base'], function($, Base){
+define(['jquery', 'addons_base'], function($, Base){
 
     var Pagination = Base('pagination', function() {
         var self = this;

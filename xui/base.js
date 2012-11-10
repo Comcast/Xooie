@@ -1,11 +1,11 @@
 
 define(['jquery'], function($) {
     var Base = function(name, constructor) {
-        var defaultOptions, instances, instanceCounter, initEvent, instanceName, className, XUI;
-
-        defaultOptions = {};
+        var instances, defaultOptions, instanceCounter, initEvent, instanceName, className, Xooie;
 
         instances = [];
+
+        defaultOptions = {};
 
         name = name.toLowerCase();
         initEvent = name + 'Init';

@@ -19,7 +19,7 @@ require(['jquery', 'tab'], function($, Tab) {
                 '<div>',
                     '<ul data-role="tab-strip"></ul>',
                     '<script type="text/x-jquery-tmpl" data-role="tab-template">',
-                        '<li data-role="tab-selector" data-tab-control="true"></li>',
+                        '<li data-role="tab-selector" data-tab-control="true" data-panel-index="<#= panel_index #>" data-panel-has-next="<#= panel_has_next #>"><#= panel_label #></li>',
                     '</script>',
                     '<div id="panel1" data-tab-label="Tab One" data-role="tab-panel"><h2>Tab One</h2></div>',
                     '<div id="panel2" data-tab-label="Tab Two" data-role="tab-panel"><h2>Tab Two</h2></div>',
@@ -28,10 +28,6 @@ require(['jquery', 'tab'], function($, Tab) {
             ].join(''));
 
             t = new Tab(element);
-
-            spyOn(t, 'render').andCallFake(function(data){
-                return $('<li data-role="tab-selector" data-tab-control="true">' + data.panel_label + '</li>');
-            });
         });
 
         it('calls "switchToTab" on tab control click', function() {
@@ -47,10 +43,10 @@ require(['jquery', 'tab'], function($, Tab) {
             it('updates class names on tabs and panels', function() {
                 t.switchToTab(1);
 
-                expect(t.getPanel(0)).not.toHaveClass(t.options.activeTabClass);
-                expect(t.getPanel(1)).toHaveClass(t.options.activeTabClass);
-                expect(t.getTab(0)).not.toHaveClass(t.options.activeTabClass);
-                expect(t.getTab(1)).toHaveClass(t.options.activeTabClass);
+                expect(t.getPanel(0).hasClass(t.options.activeTabClass)).toBe(false);
+                expect(t.getPanel(1).hasClass(t.options.activeTabClass)).toBe(true);
+                expect(t.getTab(0).hasClass(t.options.activeTabClass)).toBe(false);
+                expect(t.getTab(1).hasClass(t.options.activeTabClass)).toBe(true);
             });
 
         });
@@ -134,8 +130,8 @@ require(['jquery', 'tab'], function($, Tab) {
             });
 
             it('returns panel by index', function() {
-                expect(t.getPanel(0)).toHaveId('panel1');
-                expect(t.getPanel(1)).toHaveId('panel2');
+                expect(t.getPanel(0).attr('id')).toEqual('panel1');
+                expect(t.getPanel(1).attr('id')).toEqual('panel2');
             });
 
         });
@@ -164,18 +160,14 @@ require(['jquery', 'tab'], function($, Tab) {
                 expect(tabStrip.find('li').eq(2).text()).toEqual('Tab Three');
             });
 
-            it('provides the panel jQuery element to the template', function() {
-                expect(t.render.mostRecentCall.args[0].panel).toBeDefined();
-            });
-
             it('provides a panel_index value to the template', function() {
-                expect(t.render.calls[0].args[0].panel_index).toEqual(0);
-                expect(t.render.calls[1].args[0].panel_index).toEqual(1);
+                expect(t.getTab(0).attr('data-panel-index')).toEqual('0');
+                expect(t.getTab(1).attr('data-panel-index')).toEqual('1');
             });
 
             it('provides a panel_has_next value to the template', function() {
-                expect(t.render.calls[0].args[0].panel_has_next).toEqual(true);
-                expect(t.render.calls[2].args[0].panel_has_next).toEqual(false);
+                expect(t.getTab(0).attr('data-panel-has-next')).toEqual('true');
+                expect(t.getTab(2).attr('data-panel-has-next')).toEqual('false');
             });
 
             it('removes existing tab elements when createTabs is called', function() {

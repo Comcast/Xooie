@@ -1,4 +1,4 @@
-require(['../lib/jquery', 'dropdown'], function($, Dropdown) {
+define(['jquery', 'dropdown'], function($, Dropdown) {
     describe('Dropdown', function(){
         var el, d;
 

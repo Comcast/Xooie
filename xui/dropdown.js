@@ -1,4 +1,4 @@
-define('dropdown', ['jquery', 'base'], function($, Base) {
+define(['jquery', 'base'], function($, Base) {
 
     var Dropdown = Base('dropdown', function() {
         var self = this,

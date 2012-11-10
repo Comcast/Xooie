@@ -1,4 +1,4 @@
-require(['../lib/jquery', 'tab', 'tab_animation'], function($, Tab, Animation) {
+define(['jquery', 'tab', 'tab_animation', 'async'], function($, Tab, Animation, async) {
     describe('Tab Animation Addon', function(){
         var tabInst, aniInst, el;
 

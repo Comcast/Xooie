@@ -1,4 +1,4 @@
-require(['../lib/jquery', 'tab', 'tab_automation'], function($, Tab, Automation) {
+define(['jquery', 'tab', 'tab_automation'], function($, Tab, Automation) {
     describe('Tab Automation Addon', function(){
         var tabInst, autoInst, el, offset;
 

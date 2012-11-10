@@ -1,4 +1,4 @@
-require(['../lib/jquery', 'base', 'addons_base'], function($, Base, AddonBase) {
+define(['jquery', 'base', 'addons_base'], function($, Base, AddonBase) {
 
     var constructor, baseConstructor, Widget, Addon, w, a;
 
