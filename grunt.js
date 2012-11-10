@@ -5,16 +5,16 @@ module.exports = function(grunt) {
     pkg: '<json:package.json>',
     meta: {
       version: '0.0.1',
-      banner: '/*! XUI - v<%= meta.version %> - ' +
+      banner: '/*! Xooie - v<%= meta.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
         '* Copyright (c) <%= grunt.template.today("yyyy") %> */'
     },
     requirejs: {
-      baseUrl: "xui",
+      baseUrl: "xooie",
       paths: {
         jquery: "empty:",
         async: "../lib/async",
-        xui: "xui",
+        xooie: "xooie",
         base: "base",
         carousel: "carousel",
         dropdown: "dropdown",
@@ -25,9 +25,9 @@ module.exports = function(grunt) {
         tab_animation: "addons/tab_animation",
         tab_automation: "addons/tab_automation"
       },
-      name: "xui",
+      name: "xooie",
       include: ["carousel", "dropdown", "tab", "carousel_lentils", "carousel_pagination", "tab_automation", "tab_animation"],
-      out: "build/xui.js"
+      out: "build/xooie.js"
     },
     lint: {
       files: ['*.js', 'spec/*.js']

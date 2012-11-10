@@ -1,4 +1,4 @@
-XUI - Modular, Modifiable, Responsive, Accessible
+xooie - Modular, Modifiable, Responsive, Accessible
 
 Copyright 2012 (c) Comcast
 
