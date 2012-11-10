@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/andrewlarkin/Xooie.png?branch=master)](http://travis-ci.org/andrewlarkin/Xooie)
+[![Build Status](https://travis-ci.org/Comcast/Xooie.png?branch=master)](http://travis-ci.org/Comcast/Xooie)
 
 Xooie
 ===
