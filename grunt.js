@@ -1,10 +1,12 @@
 module.exports = function(grunt) {
 
+  var version = '0.0.1';
+
   // Project configuration.
   grunt.initConfig({
     pkg: '<json:package.json>',
     meta: {
-      version: '0.0.1',
+      version: version,
       banner: '/*! Xooie - v<%= meta.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
         '* Copyright (c) <%= grunt.template.today("yyyy") %> */'
@@ -13,7 +15,7 @@ module.exports = function(grunt) {
       baseUrl: "xooie",
       paths: {
         jquery: "empty:",
-        async: "../lib/async",
+        async: "empty:",
         xooie: "xooie",
         base: "base",
         carousel: "carousel",
@@ -27,7 +29,7 @@ module.exports = function(grunt) {
       },
       name: "xooie",
       include: ["carousel", "dropdown", "tab", "carousel_lentils", "carousel_pagination", "tab_automation", "tab_animation"],
-      out: "build/xooie.js"
+      out: "build/xooie-" + version + ".js"
     },
     lint: {
       files: ['*.js', 'spec/*.js']
