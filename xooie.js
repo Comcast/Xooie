@@ -2,7 +2,8 @@ var modules = ['carousel', 'dropdown'];
 
 requirejs.config({
 	paths: {
-		'jquery': 'lib/jquery'
+		'jquery': 'lib/jquery',
+        'async': 'lib/async'
 	}
 });
 
