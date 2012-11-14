@@ -15,8 +15,10 @@
 */
 
 requirejs.config({
-    jquery: 'lib/jquery',
-    template: 'lib/micro_tmpl'
+    paths: {
+        jquery: 'lib/jquery',
+        async: 'lib/async'
+    }
 });
 
 require(['jquery'], function($){
