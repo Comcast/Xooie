@@ -108,13 +108,13 @@ define(['jquery', 'base'], function($, Base) {
         throttleDelay: 300,
         triggers: {
             on: {
-                mouseover: {
-                    delay: 500
+                focus: {
+                    delay: 0
                 }
             },
             off: {
-                mouseleave: {
-                    delay: 500
+                blur: {
+                    delay: 0
                 }
             },
             toggle: {
