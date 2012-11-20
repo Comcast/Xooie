@@ -9,12 +9,12 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
                 d = new Dropdown(el);
             });
 
-            it('adds a mouseover event to the handle by default that expands the dropdown', function(){
+            it('adds a focus event to the handle by default that expands the dropdown', function(){
                 spyOn(d, 'expand');
 
-                d.getHandle().trigger('mouseover');
+                d.getHandle().trigger('focus');
 
-                expect(d.expand).toHaveBeenCalledWith(0, d.options.triggers.on.mouseover.delay);
+                expect(d.expand).toHaveBeenCalledWith(0, d.options.triggers.on.focus.delay);
             });
 
             it('adds a click event to the handle by default that toggles the dropdown', function(){
@@ -160,18 +160,18 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
                 d = new Dropdown(el);
             });
 
-            it('adds a mouseleave event that collapses the expander by default when expanding the dropdown', function(){
+            it('adds a blur event that collapses the expander by default when expanding the dropdown', function(){
                 var handle = d.getHandle(0);
 
                 spyOn(d, 'collapse');
 
-                handle.trigger('mouseover');
+                handle.trigger('focus');
 
-                handle.trigger('mouseleave');
+                handle.trigger('blur');
 
-                expect(d.collapse).toHaveBeenCalledWith(0, d.options.triggers.off.mouseleave.delay);
+                expect(d.collapse).toHaveBeenCalledWith(0, d.options.triggers.off.blur.delay);
             });
-        }); 
+        });
 
         describe('When getting the handle elements...', function(){
             beforeEach(function(){
