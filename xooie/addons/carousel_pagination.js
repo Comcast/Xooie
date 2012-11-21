@@ -87,10 +87,10 @@ define(['jquery', 'addons_base'], function($, Base){
         this.module.displayMethods = $.extend({}, this.module.displayMethods, {
             "page": function(container, template){
 
-                var element = $(template.micro_render({
+                var element = self.module.render(template, {
                     current_page: self.currentPage() + 1,
                     total_pages: self._breaks.length
-                }));
+                });
 
                 container.append(element);
             }
