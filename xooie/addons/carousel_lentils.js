@@ -26,11 +26,11 @@ define(['jquery', 'addons_base'], function($, Base) {
 
                 for (i = 0; i < items.length; i += 1) {
 
-                    element = $(template.micro_render({
+                    element = self.module.render(template, {
                         number: i + 1,
                         scroll_mode: "item",
                         lentil_is_last: (i === items.length - 1)
-                    }));
+                    });
                     container.append(element);
                 }
             },
@@ -43,11 +43,11 @@ define(['jquery', 'addons_base'], function($, Base) {
                 var element, i;
 
                 for (i = 0; i < self.module.addons.pagination._breaks.length; i += 1) {
-                    element = $(template.micro_render({
+                    element = self.module.render(template, {
                         number: i + 1,
                         scroll_mode: "page",
                         lentil_is_last: (i === self.module.addons.pagination._breaks.length - 1)
-                    }));
+                    });
 
                     container.append(element);
                 }
