@@ -92,6 +92,42 @@ define(['jquery', 'base'], function($, Base) {
             });
         });
 
+        describe('Rendering templates', function() {
+            var default_language;
+
+            beforeEach(function() {
+                default_language = Base.default_template_language;
+                Base.default_template_language = 'null';
+
+                Base.render['null'] = function(template, view) {
+                    return $('<span>Null template</span>');
+                };
+            });
+
+            afterEach(function() {
+                Base.default_template_language = default_language;
+                delete Base.render['null'];
+            });
+
+            it('calls the default render method if no template backend is specified', function() {
+                var w = new Widget($('<div/>'));
+
+                spyOn(Base.render, 'null');
+                w.render($('<script>Test template</script>'), {});
+
+                expect(Base.render['null']).toHaveBeenCalled();
+            });
+
+            it('calls the rendered specified in the data-template-language attribute', function() {
+                var w = new Widget($('<div/>'));
+
+                spyOn(Base.render, 'micro_template');
+                w.render($('<script data-template-language="micro_template">Test template</script>'), {});
+
+                expect(Base.render.micro_template).toHaveBeenCalled();
+            });
+        });
+
         describe('Init event', function() {
 
             it('triggers an Init event on creation', function() {
