@@ -111,6 +111,10 @@ define(['jquery'], function($) {
     Base.render = {
         'micro_template': function(template, view) {
             return $(template.micro_render(view));
+        },
+
+        'mustache': function(template, view) {
+            return $(Mustache.render(template.html(), view));
         }
     };
 
