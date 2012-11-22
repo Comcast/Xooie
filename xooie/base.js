@@ -75,8 +75,9 @@ define(['jquery'], function($) {
                 }
             },
 
-            render: function(template, view){
-                return $(template.micro_render(view));
+            render: function(template, view) {
+                var language = template.data('templateLanguage') || Base.default_template_language;
+                return Base.render[language](template, view);
             }
         };
 
@@ -103,6 +104,14 @@ define(['jquery'], function($) {
         };
 
         return Xooie;
+    };
+
+    Base.default_template_language = 'micro_template';
+
+    Base.render = {
+        'micro_template': function(template, view) {
+            return $(template.micro_render(view));
+        }
     };
 
     return Base;
