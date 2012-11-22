@@ -115,6 +115,10 @@ define(['jquery'], function($) {
 
         'mustache': function(template, view) {
             return $(Mustache.render(template.html(), view));
+        },
+
+        'jsrender': function(template, view) {
+            return $(template.render(view));
         }
     };
 
