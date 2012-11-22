@@ -76,8 +76,14 @@ define(['jquery'], function($) {
             },
 
             render: function(template, view) {
-                var language = template.data('templateLanguage') || Base.default_template_language;
-                return Base.render[language](template, view);
+                var language = template.data('templateLanguage') || Base.default_template_language,
+                    result = Base.render[language](template, view);
+
+                if (result === false) {
+                    return $('<span>Error rendering template</span>');
+                } else {
+                    return result;
+                }
             }
         };
 
@@ -110,15 +116,27 @@ define(['jquery'], function($) {
 
     Base.render = {
         'micro_template': function(template, view) {
-            return $(template.micro_render(view));
+            if (typeof template.micro_render !== 'undefined') {
+                return $(template.micro_render(view));
+            } else {
+                return false;
+            }
         },
 
         'mustache': function(template, view) {
-            return $(Mustache.render(template.html(), view));
+            if (typeof Mustache !== 'undefined' && typeof Mustache.render !== 'undefined') {
+                return $(Mustache.render(template.html(), view));
+            } else {
+                return false;
+            }
         },
 
         'jsrender': function(template, view) {
-            return $(template.render(view));
+            if (typeof template.render !== 'undefined') {
+                return $(template.render(view));
+            } else {
+                return false;
+            }
         }
     };
 
