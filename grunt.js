@@ -32,7 +32,7 @@ module.exports = function(grunt) {
       out: "build/xooie-" + version + ".js"
     },
     lint: {
-      files: ['*.js', 'spec/*.js']
+      files: ['*.js', 'spec/**/*.js']
     },
     watch: {
       files: '<config:lint.files>',
