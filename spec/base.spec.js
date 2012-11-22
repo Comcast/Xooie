@@ -122,6 +122,17 @@ define(['jquery', 'base'], function($, Base) {
             });
 
             describe('Template languages', function() {
+                var original_render;
+
+                beforeEach(function() {
+                    original_render = $.fn.render;
+                    $.fn.render = function() {};
+                });
+
+                afterEach(function() {
+                    $.fn.render = original_render;
+                });
+
                 it('renders micro_template templates', function() {
                     var w = new Widget($('<div/>')),
                         template = $('<script data-template-language="micro_template">Test template</script>'),
@@ -142,6 +153,17 @@ define(['jquery', 'base'], function($, Base) {
                     w.render(template, view);
 
                     expect(Mustache.render).toHaveBeenCalledWith(template.html(), view);
+                });
+
+                it('renders JsRender templates', function() {
+                    var w = new Widget($('<div/>')),
+                        template = $('<script data-template-language="jsrender">Test template</script>'),
+                        view = { test: 'value' };
+
+                    spyOn(template, 'render');
+                    w.render(template, view);
+
+                    expect(template.render).toHaveBeenCalledWith(view);
                 });
             });
         });
