@@ -104,9 +104,9 @@ define(['jquery', 'carousel', 'carousel_pagination'], function($, Carousel, Pagi
                     };
                 });
 
-                spyOn(carouselInstance.content, 'outerWidth').andReturn(600)
+                spyOn(carouselInstance.content, 'outerWidth').andReturn(600);
 
-                paginationInstance._breaks = [0,2,6]
+                paginationInstance._breaks = [0,2,6];
             });
 
             it('sets the position to the second page if no direction is provided', function(){
