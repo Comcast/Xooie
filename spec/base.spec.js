@@ -122,15 +122,19 @@ define(['jquery', 'base'], function($, Base) {
             });
 
             describe('Template languages', function() {
-                var original_render;
+                var original_render, original_micro_render;
 
                 beforeEach(function() {
                     original_render = $.fn.render;
+                    original_micro_render = $.fn.micro_render;
+
                     $.fn.render = function() {};
+                    $.fn.micro_render = function() {};
                 });
 
                 afterEach(function() {
                     $.fn.render = original_render;
+                    $.fn.micro_render = original_micro_render;
                 });
 
                 it('renders micro_template templates', function() {
