@@ -118,13 +118,15 @@ define(['jquery', 'base'], function($, Base) {
                 expect(Base.render['null']).toHaveBeenCalled();
             });
 
-            it('calls the rendered specified in the data-template-language attribute', function() {
-                var w = new Widget($('<div/>'));
+            describe('Template languages', function() {
+                it('renders micro_template templates', function() {
+                    var w = new Widget($('<div/>'));
 
-                spyOn(Base.render, 'micro_template');
-                w.render($('<script data-template-language="micro_template">Test template</script>'), {});
+                    spyOn(Base.render, 'micro_template');
+                    w.render($('<script data-template-language="micro_template">Test template</script>'), {});
 
-                expect(Base.render.micro_template).toHaveBeenCalled();
+                    expect(Base.render.micro_template).toHaveBeenCalled();
+                });
             });
         });
 
