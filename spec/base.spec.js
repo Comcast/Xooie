@@ -120,12 +120,15 @@ define(['jquery', 'base'], function($, Base) {
 
             describe('Template languages', function() {
                 it('renders micro_template templates', function() {
-                    var w = new Widget($('<div/>'));
+                    var w = new Widget($('<div/>')),
+                        template = $('<script data-template-language="micro_template">Test template</script>'),
+                        view = { test: 'value' };
 
-                    spyOn(Base.render, 'micro_template');
-                    w.render($('<script data-template-language="micro_template">Test template</script>'), {});
+                    spyOn(template, 'micro_render');
+                    w.render(template, view);
 
-                    expect(Base.render.micro_template).toHaveBeenCalled();
+                    expect(template.micro_render).toHaveBeenCalledWith(view);
+
                 });
             });
         });
