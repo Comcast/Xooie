@@ -1,3 +1,6 @@
+// Stub function for Mustache template testing
+Mustache = { render: function() {} };
+
 define(['jquery', 'base'], function($, Base) {
 
     describe('Base', function() {
@@ -128,7 +131,17 @@ define(['jquery', 'base'], function($, Base) {
                     w.render(template, view);
 
                     expect(template.micro_render).toHaveBeenCalledWith(view);
+                });
 
+                it('renders Mustache.js templates', function() {
+                    var w = new Widget($('<div/>')),
+                        template = $('<script data-template-language="mustache">Test template</script>'),
+                        view = { test: 'value' };
+
+                    spyOn(Mustache, 'render');
+                    w.render(template, view);
+
+                    expect(Mustache.render).toHaveBeenCalledWith(template.html(), view);
                 });
             });
         });
