@@ -28,9 +28,9 @@ define(['jquery', 'carousel', 'carousel_lentils'], function($, Carousel, Lentils
                 '</div>'
             ].join(''));
 
-            spyOn($.fn, 'micro_render').andReturn('<li></li>');
-
             c = new Carousel(element);
+
+            spyOn(c, 'render').andReturn('<li></li>');
 
             l = c.addons.lentils;
         });
@@ -136,7 +136,7 @@ define(['jquery', 'carousel', 'carousel_lentils'], function($, Carousel, Lentils
                 it('creates lentils equal to the number of carousel items', function(){
                     l.lentilBuilders.item(container, template);
 
-                    expect($.fn.micro_render).toHaveBeenCalledWith({number: 6, scroll_mode: "item", lentil_is_last: true});
+                    expect(c.render).toHaveBeenCalledWith(template, {number: 6, scroll_mode: "item", lentil_is_last: true});
                 });
             });
 
@@ -153,14 +153,12 @@ define(['jquery', 'carousel', 'carousel_lentils'], function($, Carousel, Lentils
 
                     l.lentilBuilders.page(container, template);
 
-                    expect($.fn.micro_render).toHaveBeenCalledWith({number: 3, scroll_mode: "page", lentil_is_last: true});
+                    expect(c.render).toHaveBeenCalledWith(template, {number: 3, scroll_mode: "page", lentil_is_last: true});
                 });
 
                 it('does not render lentils if the pagination addon is not present', function(){
-                    $.fn.micro_render.reset();
-
                     expect(l.lentilBuilders.page(container, template)).toBeUndefined();
-                    expect($.fn.micro_render).not.toHaveBeenCalled();
+                    expect(c.render).not.toHaveBeenCalled();
                 });
             });
 
