@@ -1,3 +1,6 @@
+// Stub function for Mustache template testing
+Mustache = { render: function() {} };
+
 define(['jquery', 'base'], function($, Base) {
 
     describe('Base', function() {
@@ -89,6 +92,83 @@ define(['jquery', 'base'], function($, Base) {
                 w.loadAddon('test');
 
                 expect(w.addons).toEqual({});
+            });
+        });
+
+        describe('Rendering templates', function() {
+            var default_language;
+
+            beforeEach(function() {
+                default_language = Base.default_template_language;
+                Base.default_template_language = 'null';
+
+                Base.render['null'] = function(template, view) {
+                    return $('<span>Null template</span>');
+                };
+            });
+
+            afterEach(function() {
+                Base.default_template_language = default_language;
+                delete Base.render['null'];
+            });
+
+            it('calls the default render method if no template backend is specified', function() {
+                var w = new Widget($('<div/>'));
+
+                spyOn(Base.render, 'null');
+                w.render($('<script>Test template</script>'), {});
+
+                expect(Base.render['null']).toHaveBeenCalled();
+            });
+
+            describe('Template languages', function() {
+                var original_render, original_micro_render;
+
+                beforeEach(function() {
+                    original_render = $.fn.render;
+                    original_micro_render = $.fn.micro_render;
+
+                    $.fn.render = function() {};
+                    $.fn.micro_render = function() {};
+                });
+
+                afterEach(function() {
+                    $.fn.render = original_render;
+                    $.fn.micro_render = original_micro_render;
+                });
+
+                it('renders micro_template templates', function() {
+                    var w = new Widget($('<div/>')),
+                        template = $('<script data-template-language="micro_template">Test template</script>'),
+                        view = { test: 'value' };
+
+                    spyOn(template, 'micro_render');
+                    w.render(template, view);
+
+                    expect(template.micro_render).toHaveBeenCalledWith(view);
+                });
+
+                it('renders Mustache.js templates', function() {
+                    var w = new Widget($('<div/>')),
+                        template = $('<script data-template-language="mustache">Test template</script>'),
+                        view = { test: 'value' };
+
+                    spyOn(Mustache, 'render');
+                    w.render(template, view);
+
+                    expect(Mustache.render).toHaveBeenCalledWith(template.html(), view);
+                });
+
+                it('renders JsRender templates', function() {
+                    var w = new Widget($('<div/>')),
+                        template = $('<script data-template-language="jsrender">Test template</script>'),
+                        view = { test: 'value' };
+
+                    spyOn(template, 'render');
+                    w.render(template, view);
+
+                    expect(template.render).toHaveBeenCalledWith(view);
+                });
             });
         });
 

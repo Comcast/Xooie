@@ -75,8 +75,15 @@ define(['jquery'], function($) {
                 }
             },
 
-            render: function(template, view){
-                return $(template.micro_render(view));
+            render: function(template, view) {
+                var language = template.data('templateLanguage') || Base.default_template_language,
+                    result = Base.render[language](template, view);
+
+                if (result === false) {
+                    return $('<span>Error rendering template</span>');
+                } else {
+                    return result;
+                }
             }
         };
 
@@ -103,6 +110,34 @@ define(['jquery'], function($) {
         };
 
         return Xooie;
+    };
+
+    Base.default_template_language = 'micro_template';
+
+    Base.render = {
+        'micro_template': function(template, view) {
+            if (typeof template.micro_render !== 'undefined') {
+                return $(template.micro_render(view));
+            } else {
+                return false;
+            }
+        },
+
+        'mustache': function(template, view) {
+            if (typeof Mustache !== 'undefined' && typeof Mustache.render !== 'undefined') {
+                return $(Mustache.render(template.html(), view));
+            } else {
+                return false;
+            }
+        },
+
+        'jsrender': function(template, view) {
+            if (typeof template.render !== 'undefined') {
+                return $(template.render(view));
+            } else {
+                return false;
+            }
+        }
     };
 
     return Base;
