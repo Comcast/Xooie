@@ -104,9 +104,9 @@ define(['jquery', 'carousel', 'carousel_pagination'], function($, Carousel, Pagi
                     };
                 });
 
-                spyOn(carouselInstance.content, 'outerWidth').andReturn(600)
+                spyOn(carouselInstance.content, 'outerWidth').andReturn(600);
 
-                paginationInstance._breaks = [0,2,6]
+                paginationInstance._breaks = [0,2,6];
             });
 
             it('sets the position to the second page if no direction is provided', function(){
@@ -242,11 +242,11 @@ define(['jquery', 'carousel', 'carousel_pagination'], function($, Carousel, Pagi
                     var container = $('<div></div>'),
                         template = carouselInstance.root.find(carouselInstance.options.displayTemplateSelector);
 
-                    spyOn(template, 'micro_render');
+                    spyOn(carouselInstance, 'render');
 
                     carouselInstance.displayMethods.page(container, template);
 
-                    expect(template.micro_render).toHaveBeenCalledWith({current_page: 3, total_pages: 4});
+                    expect(carouselInstance.render).toHaveBeenCalledWith(template, {current_page: 3, total_pages: 4});
                 });
             });
     });

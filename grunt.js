@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 
-  var version = '0.0.1';
+  var version = '0.0.2';
 
   // Project configuration.
   grunt.initConfig({
@@ -32,7 +32,7 @@ module.exports = function(grunt) {
       out: "build/xooie-" + version + ".js"
     },
     lint: {
-      files: ['*.js', 'spec/*.js']
+      files: ['*.js', 'spec/**/*.js']
     },
     watch: {
       files: '<config:lint.files>',
