@@ -25,9 +25,9 @@ define(['jquery'], function($) {
         this.element = $('style[title=' + title + ']');
 
         //if it does, use it, else create a new one
-        this.element = this.element.length > 0 ? this.element : $(['<style title="stylesheet-' + name + '" type="text/css">',
+        this.element = this.element.length > 0 ? this.element : $(['<style title="' + title + '">',
                             '/* This is a dynamically generated stylesheet: ' + name + ' */',
-                        '</style>'].join('')).appendTo($('head'));
+                        '</style>'].join('')).appendTo($('body'));
 
         if (document.styleSheets) {
             for (i = 0; i < document.styleSheets.length; i += 1){
