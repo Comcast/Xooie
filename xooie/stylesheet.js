@@ -17,65 +17,89 @@
 define(['jquery'], function($) {
 
     var Stylesheet = function(name){
-        var element = $('<style title="styleheet-' + name + '" type="text/css">/* This is a dynamically generated stylesheet: ' + name + ' */</style>');
+        var i, title;
 
-        element.appendTo($('head'));
+        title = 'stylesheet-' + name;
 
+        //check to see if a stylesheet already exists with this name
+        this.element = $('style[title=' + title + ']');
 
+        //if it does, use it, else create a new one
+        this.element = this.element.length > 0 ? this.element : $(['<style title="stylesheet-' + name + '" type="text/css">',
+                            '/* This is a dynamically generated stylesheet: ' + name + ' */',
+                        '</style>'].join('')).appendTo($('head'));
+
+        if (document.styleSheets) {
+            for (i = 0; i < document.styleSheets.length; i += 1){
+                if (document.styleSheets[i].title === title) {
+                    this.styleSheet = document.styleSheets[i];
+                }
+            }
+        }
+    };
+
+    Stylesheet.prototype.getRule = function(ruleName){
+        ruleName = ruleName.toLowerCase();
+
+        var i, rules;
+
+        //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
+        rules = this.styleSheet.cssRules || this.styleSheet.rules;
+
+        for (i = 0; i < rules.length; i += 1){
+            if (rules[i].selectorText.toLowerCase() === ruleName) {
+                return rules[i];
+            }
+        }
+
+        return false;
+    };
+
+    Stylesheet.prototype.addRule = function(ruleName){
+        var rule = this.getRule(ruleName), index;
+
+        if (!rule){
+            if (this.styleSheet.insertRule) {
+                //This is the W3C-preferred method
+                index = this.styleSheet.cssRules.length;
+                this.styleSheet.insertRule(ruleName + ' { }', index);
+                rule = this.styleSheet.cssRules[index];
+            } else {
+                //support for IE < 9
+                index = this.styleSheet.rules.length;
+                this.styleSheet.addRule(ruleName, null, index);
+                rule = this.styleSheet.rules[index];
+            }
+        }
+
+        return rule;
+    };
+
+    Stylesheet.prototype.deleteRule = function(ruleName){
+        ruleName = ruleName.toLowerCase();
+
+        var i, rules;
+
+        //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
+        rules = this.styleSheet.cssRules || this.styleSheet.rules;
+
+        for (i = 0; i < rules.length; i += 1){
+            if (rules[i].selectorText.toLowerCase() === ruleName) {
+                if (this.styleSheet.deleteRule) {
+                    //this is the W3C-preferred method
+                    this.styleSheet.deleteRule(i);
+                } else {
+                    //support for IE < 9
+                    this.styleSheet.removeRule(i);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     };
 
     return Stylesheet;
 
 });
-
-
-function getCSSRule(ruleName, deleteFlag) {               // Return requested style obejct
-   ruleName=ruleName.toLowerCase();                       // Convert test string to lower case.
-   if (document.styleSheets) {                            // If browser can play with stylesheets
-      for (var i=0; i<document.styleSheets.length; i++) { // For each stylesheet
-         var styleSheet=document.styleSheets[i];          // Get the current Stylesheet
-         var ii=0;                                        // Initialize subCounter.
-         var cssRule=false;                               // Initialize cssRule. 
-         do {                                             // For each rule in stylesheet
-            if (styleSheet.cssRules) {                    // Browser uses cssRules?
-               cssRule = styleSheet.cssRules[ii];         // Yes --Mozilla Style
-            } else {                                      // Browser usses rules?
-               cssRule = styleSheet.rules[ii];            // Yes IE style. 
-            }                                             // End IE check.
-            if (cssRule)  {                               // If we found a rule...
-               if (cssRule.selectorText.toLowerCase()==ruleName) { //  match ruleName?
-                  if (deleteFlag=='delete') {             // Yes.  Are we deleteing?
-                     if (styleSheet.cssRules) {           // Yes, deleting...
-                        styleSheet.deleteRule(ii);        // Delete rule, Moz Style
-                     } else {                             // Still deleting.
-                        styleSheet.removeRule(ii);        // Delete rule IE style.
-                     }                                    // End IE check.
-                     return true;                         // return true, class deleted.
-                  } else {                                // found and not deleting.
-                     return cssRule;                      // return the style object.
-                  }                                       // End delete Check
-               }                                          // End found rule name
-            }                                             // end found cssRule
-            ii++;                                         // Increment sub-counter
-         } while (cssRule)                                // end While loop
-      }                                                   // end For loop
-   }                                                      // end styleSheet ability check
-   return false;                                          // we found NOTHING!
-}                                                         // end getCSSRule 
-
-function killCSSRule(ruleName) {                          // Delete a CSS rule   
-   return getCSSRule(ruleName,'delete');                  // just call getCSSRule w/delete flag.
-}                                                         // end killCSSRule
-
-function addCSSRule(ruleName) {                           // Create a new css rule
-   if (document.styleSheets) {                            // Can browser do styleSheets?
-      if (!getCSSRule(ruleName)) {                        // if rule doesn't exist...
-         if (document.styleSheets[0].addRule) {           // Browser is IE?
-            document.styleSheets[0].addRule(ruleName, null,0);      // Yes, add IE style
-         } else {                                         // Browser is IE?
-            document.styleSheets[0].insertRule(ruleName+' { }', 0); // Yes, add Moz style.
-         }                                                // End browser check
-      }                                                   // End already exist check.
-   }                                                      // End browser ability check.
-   return getCSSRule(ruleName);                           // return rule we just created.
-} 
