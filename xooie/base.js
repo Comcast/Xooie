@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery'], function($) {
+define(['jquery', 'stylesheet'], function($, Stylesheet) {
     var Base = function(name, constructor) {
         var instances, defaultOptions, instanceCounter, initEvent, instanceName, className, Xooie;
 
@@ -30,6 +30,8 @@ define(['jquery'], function($) {
 
         Xooie = function(root) {
             this.root = $(root);
+
+            this.stylesheet = new Stylesheet('Xooie');
 
             if (this.root.data(instanceName)) {
                 return instances[this.root.data(instanceName)];
@@ -111,6 +113,8 @@ define(['jquery'], function($) {
 
         return Xooie;
     };
+
+    //Base.stylesheet = new Stylesheet('Xooie');
 
     Base.default_template_language = 'micro_template';
 
