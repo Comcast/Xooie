@@ -15,27 +15,32 @@
 */
 
 define(['jquery'], function($) {
-
     var Stylesheet = function(name){
         var i, title;
 
-        title = 'stylesheet-' + name;
-
         //check to see if a stylesheet already exists with this name
-        this.element = $('style[title=' + title + ']');
+        this.element = $('style[id=' + name + ']');
 
-        //if it does, use it, else create a new one
-        this.element = this.element.length > 0 ? this.element : $(['<style title="' + title + '">',
-                            '/* This is a dynamically generated stylesheet: ' + name + ' */',
-                        '</style>'].join('')).appendTo($('body'));
+        if (this.element.length <= 0) {
+            //if it does, use it, else create a new one
+            this.element = $(['<style id="' + name + '">',
+                                '/* This is a dynamically generated stylesheet: ' + name + ' */',
+                            '</style>'].join(''));
+
+            this.element.appendTo($('head'));
+        }
 
         if (document.styleSheets) {
             for (i = 0; i < document.styleSheets.length; i += 1){
-                if (document.styleSheets[i].title === title) {
-                    this.styleSheet = document.styleSheets[i];
+                if (document.styleSheets[i].ownerNode.getAttribute('id') === name) {
+                    this._index = i;
                 }
             }
         }
+    };
+
+    Stylesheet.prototype.get = function(){
+        return document.styleSheets[this._index];
     };
 
     Stylesheet.prototype.getRule = function(ruleName){
@@ -44,7 +49,7 @@ define(['jquery'], function($) {
         var i, rules;
 
         //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
-        rules = this.styleSheet.cssRules || this.styleSheet.rules;
+        rules = this.get().cssRules || this.get().rules;
 
         for (i = 0; i < rules.length; i += 1){
             if (rules[i].selectorText.toLowerCase() === ruleName) {
@@ -55,20 +60,24 @@ define(['jquery'], function($) {
         return false;
     };
 
-    Stylesheet.prototype.addRule = function(ruleName){
-        var rule = this.getRule(ruleName), index;
+    Stylesheet.prototype.addRule = function(ruleName, properties){
+        var rule = this.getRule(ruleName), index, prop, propString = '';
 
         if (!rule){
-            if (this.styleSheet.insertRule) {
+            for (prop in properties) {
+                propString += prop + ': ' + properties[prop] + ';';
+            }
+
+            if (this.get().insertRule) {
                 //This is the W3C-preferred method
-                index = this.styleSheet.cssRules.length;
-                this.styleSheet.insertRule(ruleName + ' { }', index);
-                rule = this.styleSheet.cssRules[index];
+                index = this.get().cssRules.length;
+                this.get().insertRule(ruleName + ' {' + propString + '}', index);
+                rule = this.get().cssRules[index];
             } else {
                 //support for IE < 9
-                index = this.styleSheet.rules.length;
-                this.styleSheet.addRule(ruleName, null, index);
-                rule = this.styleSheet.rules[index];
+                index = this.get().rules.length;
+                this.get().addRule(ruleName, propString, index);
+                rule = this.get().rules[index];
             }
         }
 
@@ -81,16 +90,16 @@ define(['jquery'], function($) {
         var i, rules;
 
         //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
-        rules = this.styleSheet.cssRules || this.styleSheet.rules;
+        rules = this.get().cssRules || this.get().rules;
 
         for (i = 0; i < rules.length; i += 1){
             if (rules[i].selectorText.toLowerCase() === ruleName) {
-                if (this.styleSheet.deleteRule) {
+                if (this.get().deleteRule) {
                     //this is the W3C-preferred method
-                    this.styleSheet.deleteRule(i);
+                    this.get().deleteRule(i);
                 } else {
                     //support for IE < 9
-                    this.styleSheet.removeRule(i);
+                    this.get().removeRule(i);
                 }
 
                 return true;
