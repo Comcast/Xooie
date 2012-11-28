@@ -145,17 +145,45 @@ define(['jquery', 'base'], function($, Base) {
             }
         };
 
+        this.cssRules = {};
+
         //select the content area and wrap it in a container
         this.content = this.root.find(this.options.contentSelector);
         this.content.wrap('<div/>');
 
+        //Add css rules necessary for the carousel to work
+        //This rule will allow us to natively scroll content inside the container
+        this.cssRules.wrapper = this.stylesheet.addRule('.xooie-carousel-wrapper');
+
+        this.cssRules.wrapper.style.overflowX = 'scroll';
+        this.cssRules.wrapper.style.overflowY = 'hidden';
+
         this.wrapper = this.content.parent();
-        this.wrapper.addClass('js-carousel-wrapper')
-                    .css(this.options.wrapperStyles); //TODO: use dynamic style sheets for base styles
+        this.wrapper.addClass('xooie-carousel-wrapper');
+
+        this.cssRules.crop = this.stylesheet.addRule('.xooie-carousel-crop');
+
+        this.cssRules.crop.style.overflowY = 'hidden';
 
         //setting the wrapper's parent to overflow-y=hidden allows us to hide the horizontal scrollbar
-        //TODO: remove this logic, or at least add it to the dynamic stylesheets
-        this.wrapper.parent().css('overflow-y', 'hidden');
+        this.wrapper.parent().addClass('xooie-carousel-crop');
+
+        //This style will ensure that the content inside the container does not wrap
+        this.cssRules.container = this.stylesheet.addRule(this.options.contentSelector);
+
+        this.cssRules.container.style.display = 'table-cell';
+        this.cssRules.container.style.whiteSpace = 'nowrap';
+        this.cssRules.container.style.fontSize = '0px'; //this will remove spacing between inline-block children
+
+        //This style rule will ensure that the internal items line up properly
+        this.cssRules.item = this.stylesheet.addRule('.xooie-carousel-item', {
+            display: 'inline-block',
+            zoom: '1',
+            '*display': 'inline',
+            'font-size': '1em'
+        });
+
+        this.content.children().addClass('xooie-carousel-item');
 
         this.root.find(this.options.controlSelector)
                  .on('click', function(event){
@@ -190,8 +218,6 @@ define(['jquery', 'base'], function($, Base) {
             carouselResize: this.updateDimensions.bind(this)
         });
 
-        //setTimeout(self.updateDimensions.bind(self),0);
-
         //It is possible that images may load after the carousel has instantiated/
         //Also, this can be used for lazy-loading images
         //TODO: This can be problematic, since it is triggering update dimensions for each image load
@@ -209,10 +235,6 @@ define(['jquery', 'base'], function($, Base) {
         displayTemplateSelector: '[data-role="carousel-display-template"]',
 
         snapMode: 'none',
-        wrapperStyles: {
-            'overflow-x': 'scroll',
-            'overflow-y': 'hidden'
-        },
         visibleThreshold: 0.50
     });
 
@@ -279,9 +301,8 @@ define(['jquery', 'base'], function($, Base) {
             height = Math.max(height, node.outerHeight(true));
         });
 
-        //set the height of the wrapper's parent to ensure we hide the scrollbar
-        //TODO: remove this logic, or at least add it to the dynamic stylesheets
-        this.wrapper.parent().css('height', height);
+        //set the height of the wrapper's parent (or cropping element) to ensure we hide the scrollbar
+        this.cssRules.crop.style.height = height + 'px';
 
         this.updateLimits();
         this.updateDisplay();
