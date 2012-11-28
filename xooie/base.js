@@ -16,7 +16,7 @@
 
 define(['jquery', 'stylesheet'], function($, Stylesheet) {
     var Base = function(name, constructor) {
-        var instances, defaultOptions, instanceCounter, initEvent, instanceName, className, Xooie;
+        var instances, defaultOptions, instanceCounter, initEvent, instanceName, cssRules, stylesInstance, className, Xooie;
 
         instances = [];
 
@@ -28,10 +28,11 @@ define(['jquery', 'stylesheet'], function($, Stylesheet) {
         instanceCounter = 0;
         className = 'is-' + name + '-instantiated';
 
+        cssRules = {};
+        stylesInstance = new Stylesheet('Xooie');
+
         Xooie = function(root) {
             this.root = $(root);
-
-            this.stylesheet = new Stylesheet('Xooie');
 
             if (this.root.data(instanceName)) {
                 return instances[this.root.data(instanceName)];
@@ -40,7 +41,15 @@ define(['jquery', 'stylesheet'], function($, Stylesheet) {
             instances[instanceCounter] = this;
             this.root.data(instanceName, instanceCounter);
 
+            this.root.attr('id', name + '-' + instanceCounter);
+
             this.options = $.extend({}, Xooie.getDefaultOptions(), this.root.data());
+
+            //expose the stylesheet for this widget to each instance
+            this.stylesheet = stylesInstance;
+
+            //expose the common css rules
+            this.cssRules = $.extend({}, cssRules);
 
             var addons, i, self = this;
 
@@ -87,6 +96,7 @@ define(['jquery', 'stylesheet'], function($, Stylesheet) {
                     return result;
                 }
             }
+
         };
 
         $.event.special[initEvent] = {
@@ -98,6 +108,14 @@ define(['jquery', 'stylesheet'], function($, Stylesheet) {
 
                     handleObj.handler.call(this, event);
                 }
+            }
+        };
+
+        Xooie.setCSSRules = function(rules){
+            var rule;
+
+            for (rule in rules){
+                cssRules[rule] = stylesInstance.addRule(rule, rules[rule]);
             }
         };
 
@@ -113,8 +131,6 @@ define(['jquery', 'stylesheet'], function($, Stylesheet) {
 
         return Xooie;
     };
-
-    //Base.stylesheet = new Stylesheet('Xooie');
 
     Base.default_template_language = 'micro_template';
 

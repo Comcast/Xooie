@@ -18,7 +18,9 @@ define(['jquery', 'base'], function($, Base) {
 
     var resizeTimer = null,
         carouselElements = $(),
-        clickQueue = [];
+        clickQueue = [],
+        cssRules = {},
+        cache;
 
     $(window).on('resize', function() {
         if (resizeTimer) {
@@ -145,43 +147,19 @@ define(['jquery', 'base'], function($, Base) {
             }
         };
 
-        this.cssRules = {};
-
         //select the content area and wrap it in a container
         this.content = this.root.find(this.options.contentSelector);
         this.content.wrap('<div/>');
 
-        //Add css rules necessary for the carousel to work
-        //This rule will allow us to natively scroll content inside the container
-        this.cssRules.wrapper = this.stylesheet.addRule('.xooie-carousel-wrapper');
-
-        this.cssRules.wrapper.style.overflowX = 'scroll';
-        this.cssRules.wrapper.style.overflowY = 'hidden';
-
         this.wrapper = this.content.parent();
         this.wrapper.addClass('xooie-carousel-wrapper');
-
-        this.cssRules.crop = this.stylesheet.addRule('.xooie-carousel-crop');
-
-        this.cssRules.crop.style.overflowY = 'hidden';
 
         //setting the wrapper's parent to overflow-y=hidden allows us to hide the horizontal scrollbar
         this.wrapper.parent().addClass('xooie-carousel-crop');
 
-        //This style will ensure that the content inside the container does not wrap
-        this.cssRules.container = this.stylesheet.addRule(this.options.contentSelector);
+        this.cssRules.heightAdjust = this.stylesheet.addRule('#carousel-' + this.root.attr('id') + ' .xooie-carousel-crop');
 
-        this.cssRules.container.style.display = 'table-cell';
-        this.cssRules.container.style.whiteSpace = 'nowrap';
-        this.cssRules.container.style.fontSize = '0px'; //this will remove spacing between inline-block children
-
-        //This style rule will ensure that the internal items line up properly
-        this.cssRules.item = this.stylesheet.addRule('.xooie-carousel-item', {
-            display: 'inline-block',
-            zoom: '1',
-            '*display': 'inline',
-            'font-size': '1em'
-        });
+        this.content.addClass('.xooie-carousel-content');
 
         this.content.children().addClass('xooie-carousel-item');
 
@@ -238,7 +216,29 @@ define(['jquery', 'base'], function($, Base) {
         visibleThreshold: 0.50
     });
 
-    var cache = {
+    //Set css rules for all carousels
+    Carousel.setCSSRules({
+        '.xooie-carousel-wrapper': {
+            'overflow-x': 'scroll',
+            'overflow-y': 'hidden'
+        },
+        '.xooie-carousel-crop': {
+            'overflow-y': 'hidden'
+        },
+        '.xooie-carousel-content': {
+            display: 'table-cell',
+            'white-space': 'nowrap',
+            'font-size': '0px'
+        },
+        '.xooie-carousel-item': {
+            display: 'inline-block',
+            zoom: '1',
+            '*display': 'inline',
+            'font-size': '1em'
+        }
+    });
+
+    cache = {
         currentItem: 0,
         lastItem: 0
     };
@@ -302,7 +302,7 @@ define(['jquery', 'base'], function($, Base) {
         });
 
         //set the height of the wrapper's parent (or cropping element) to ensure we hide the scrollbar
-        this.cssRules.crop.style.height = height + 'px';
+        this.cssRules.heightAdjust.style.height = height + 'px';
 
         this.updateLimits();
         this.updateDisplay();
