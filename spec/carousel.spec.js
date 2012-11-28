@@ -146,7 +146,6 @@ define(['jquery', 'carousel'], function($, Carousel) {
 
         });
 
-
         describe('When updating the dimensions of the carousel...', function(){
             var items;
 
