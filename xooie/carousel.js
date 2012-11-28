@@ -157,7 +157,7 @@ define(['jquery', 'base'], function($, Base) {
         //setting the wrapper's parent to overflow-y=hidden allows us to hide the horizontal scrollbar
         this.wrapper.parent().addClass('xooie-carousel-crop');
 
-        this.cssRules.heightAdjust = this.stylesheet.addRule('#carousel-' + this.root.attr('id') + ' .xooie-carousel-crop');
+        this.cssRules.heightAdjust = this.stylesheet.addRule('#' + this.root.attr('id') + ' .xooie-carousel-crop');
 
         this.content.addClass('xooie-carousel-content');
 
