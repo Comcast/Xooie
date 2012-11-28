@@ -29,7 +29,7 @@ module.exports = function(grunt) {
         tab_automation: "addons/tab_automation"
       },
       name: "xooie",
-      include: ["carousel", "dropdown", "tab", "carousel_lentils", "carousel_pagination", "tab_automation", "tab_animation"],
+      include: ["carousel", "dropdown", "tab", "carousel_lentils", "carousel_pagination", "dropdown_accordion", "tab_automation", "tab_animation"],
       out: "build/xooie-" + version + ".js"
     },
     lint: {
