@@ -17,8 +17,8 @@ define(['jquery', 'stylesheet'], function($, Stylesheet){
             });
 
             it('sets the stylesheet property of the instantiated stylesheet to the matching document.styleSheets object', function(){
-                expect(document.styleSheets[1].ownerNode.getAttribute('id')).toBe('test');
-                expect(document.styleSheets[1]).toBe(s.get());
+                expect(document.styleSheets[2].ownerNode.getAttribute('id')).toBe('test');
+                expect(document.styleSheets[2]).toBe(s.get());
             });
 
             it('adds a title to the created stylesheet', function(){
