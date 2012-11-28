@@ -52,7 +52,7 @@ define(['jquery', 'carousel'], function($, Carousel) {
             });
 
             it('creates a css rule that matches the container selector to add the appropriate styles to the scrolling container', function(){
-                var rule = carouselInstance.stylesheet.getRule(carouselInstance.options.contentSelector);
+                var rule = carouselInstance.stylesheet.getRule('.xooie-carousel-content');
 
                 expect(rule).not.toBe(false);
                 expect(rule.style.display).toBe('table-cell');
@@ -159,7 +159,7 @@ define(['jquery', 'carousel'], function($, Carousel) {
 
                 carouselInstance.updateDimensions();
 
-                var rule = carouselInstance.stylesheet.getRule('.xooie-carousel-crop');
+                var rule = carouselInstance.stylesheet.getRule('#carousel-' + carouselInstance.root.attr('id') + ' .xooie-carousel-crop');
 
                 expect(rule.style.height).toEqual('130px');
             });
