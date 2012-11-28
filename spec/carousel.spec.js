@@ -26,16 +26,47 @@ define(['jquery', 'carousel'], function($, Carousel) {
         });
 
         describe('When instantiating a new Carousel class...', function(){
-            it('wraps the carousel-content in an element with class "cim-carousel-wrapper"', function() {
+            it('wraps the carousel-content in an element with class "xooie-carousel-wrapper"', function() {
                 var p = element.find('[data-role="carousel-content"]').parent();
 
-                expect(p.hasClass('js-carousel-wrapper')).toBe(true);
-                expect(p.css('overflow-x')).toBe('scroll');
-                expect(p.css('overflow-y')).toBe('hidden');
+                expect(p.hasClass('xooie-carousel-wrapper')).toBe(true);
             });
 
-            it('sets the css property overflow-y of the wrapper parent element to hidden', function(){
-                expect(carouselInstance.wrapper.parent().css('overflow-y')).toEqual('hidden');
+            it('creates a css rule .xooie-carousel-wrapper', function(){
+                var rule = carouselInstance.stylesheet.getRule('.xooie-carousel-wrapper');
+
+                expect(rule).not.toBe(false);
+                expect(rule.style.overflowX).toBe('scroll');
+                expect(rule.style.overflowY).toBe('hidden');
+            });
+
+            it('creates a css rule .xooie-carousel-crop to hide the scrollbar', function(){
+                var rule = carouselInstance.stylesheet.getRule('.xooie-carousel-crop');
+
+                expect(rule).not.toBe(false);
+                expect(rule.style.overflowY).toBe('hidden');
+            });
+
+            it('adds the xooie-carousel-crop class to the parent of the wrapper', function(){
+                expect(carouselInstance.wrapper.parent().hasClass('xooie-carousel-crop')).toBe(true);
+            });
+
+            it('creates a css rule that matches the container selector to add the appropriate styles to the scrolling container', function(){
+                var rule = carouselInstance.stylesheet.getRule(carouselInstance.options.contentSelector);
+
+                expect(rule).not.toBe(false);
+                expect(rule.style.display).toBe('table-cell');
+                expect(rule.style.whiteSpace).toBe('nowrap');
+                expect(rule.style.fontSize).toBe('0px');
+            });
+
+            it('creates a css rule .xooie-carousel-item that adds the appropriate styles to each item', function(){
+                var rule = carouselInstance.stylesheet.getRule('.xooie-carousel-item');
+
+                expect(rule).not.toBe(false);
+                expect(rule.style.display).toBe('inline-block');
+                expect(rule.style.zoom).toBe('1');
+                expect(rule.style.fontSize).toBe('1em');
             });
 
             it('binds a click event to the control buttons which will update the position of the carousel', function(){
@@ -123,12 +154,14 @@ define(['jquery', 'carousel'], function($, Carousel) {
                 items = carouselInstance.content.children();
             });
 
-            it('sets the height of the wrapper parent to the height of the tallest item', function(){
+            it('sets the height of the xooie-carousel-crop class to the height of the tallest item', function(){
                 spyOn($.fn, 'outerHeight').andReturn(130);
 
                 carouselInstance.updateDimensions();
 
-                expect(carouselInstance.wrapper.parent().css('height')).toEqual('130px');
+                var rule = carouselInstance.stylesheet.getRule('.xooie-carousel-crop');
+
+                expect(rule.style.height).toEqual('130px');
             });
 
             it('updates the limits of the carousel', function(){
