@@ -24,6 +24,7 @@ module.exports = function(grunt) {
         addons_base: "addons/base",
         carousel_lentils: "addons/carousel_lentils",
         carousel_pagination: "addons/carousel_pagination",
+        dropdown_accordion: "addons/dropdown_accordion",
         tab_animation: "addons/tab_animation",
         tab_automation: "addons/tab_automation"
       },
