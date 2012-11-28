@@ -159,7 +159,7 @@ define(['jquery', 'base'], function($, Base) {
 
         this.cssRules.heightAdjust = this.stylesheet.addRule('#carousel-' + this.root.attr('id') + ' .xooie-carousel-crop');
 
-        this.content.addClass('.xooie-carousel-content');
+        this.content.addClass('xooie-carousel-content');
 
         this.content.children().addClass('xooie-carousel-item');
 
