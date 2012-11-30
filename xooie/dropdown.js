@@ -26,11 +26,32 @@ define(['jquery', 'base'], function($, Base) {
             offTriggers = self.options.triggers.off,
             toggleTriggers = this.options.triggers.toggle;
 
-        var getTriggerHandle = function(triggerData, index){
+        //Private helper methods
+        var getTriggerHandle, setOffTrigger;
+
+        getTriggerHandle = function(triggerData, index){
             if (triggerData.selector) {
                 return triggerData.selector === 'document' ? $(document) : $(triggerData.selector);
             } else {
                 return typeof index === 'undefined' ? handles : handles.eq(index);
+            }
+        };
+
+        setOffTrigger = function(handle, index){
+            var trigger;
+
+            for (trigger in offTriggers) {
+                handle.on(trigger, {delay: offTriggers[trigger].delay, el: handle}, function(event){
+                    if (($(event.target).is(self.getExpander(index)) || $(event.target).parents(self.options.dropdownExpanderSelector).length > 0) && !$(event.target).is(event.data.el)) {
+                        return true;
+                    }
+
+                    event.preventDefault();
+
+                    self.collapse(index, event.data.delay);
+
+                    $(this).unbind(event);
+                });
             }
         };
 
@@ -44,24 +65,11 @@ define(['jquery', 'base'], function($, Base) {
             getTriggerHandle(onTriggers[trigger]).on(trigger, {delay: onTriggers[trigger].delay}, function(event){
                 var index = parseInt($(this).attr('data-dropdown-index'), 10),
                     delay = event.data.delay,
-                    handle = $(this),
-                    trigger;
+                    handle = $(this);
 
                 event.preventDefault();
 
-                for (trigger in offTriggers) {
-                    handle.on(trigger, {delay: offTriggers[trigger].delay, el: handle}, function(event){
-                        if (($(event.target).is(self.getExpander(index)) || $(event.target).parents(self.options.dropdownExpanderSelector).length > 0) && !$(event.target).is(event.data.el)) {
-                            return true;
-                        }
-
-                        event.preventDefault();
-
-                        self.collapse(index, event.data.delay);
-
-                        $(this).unbind(event);
-                    });
-                }
+                setOffTrigger(handle, index);
 
                 self.expand(index, delay);
             });
@@ -70,9 +78,16 @@ define(['jquery', 'base'], function($, Base) {
         for (trigger in toggleTriggers) {
             getTriggerHandle(toggleTriggers[trigger]).on(trigger, {delay: toggleTriggers[trigger].delay}, function(event){
                 var index = parseInt($(this).attr('data-dropdown-index'), 10),
-                    delay = event.data.delay;
+                    delay = event.data.delay,
+                    handle = $(this),
+                    trigger,
+                    isInactive = !self.getExpander(index).hasClass(self.options.activeDropdownClass);
 
-                self.setState(index, delay, !self.getExpander(index).hasClass(self.options.activeDropdownClass));
+                if (isInactive) {
+                    setOffTrigger(handle, index);
+                }
+
+                self.setState(index, delay, isInactive);
             });
         }
 
@@ -84,13 +99,13 @@ define(['jquery', 'base'], function($, Base) {
             expander.attr('data-dropdown-index', index);
         });
 
-        expanders.on('mouseover', function(){
+        expanders.on('mouseover focus', function(){
             var index = parseInt($(this).attr('data-dropdown-index'), 10);
 
             if (self.timers.collapse[index]){
                 self.timers.collapse[index] = clearTimeout(self.timers.collapse[index]);
 
-                $(this).on('mouseleave', {index: index}, function(event){
+                $(this).on('mouseleave blur', {index: index}, function(event){
                     self.collapse(event.data.index, 0);
                     $(this).unbind(event);
                 });
@@ -160,7 +175,7 @@ define(['jquery', 'base'], function($, Base) {
                 this.getHandle(i).toggleClass(this.options.activeDropdownClass, _active);
 
                 if (_active){
-                    expander.focus();
+                    this.setFocus(expander);
                     handle.trigger('dropdownExpand', i);
                 } else {
                     handle.trigger('dropdownCollapse', i);
@@ -181,6 +196,12 @@ define(['jquery', 'base'], function($, Base) {
 
         collapse: function(index, delay) {
             this.setState(index, delay, false);
+        },
+
+        setFocus: function(element){
+            element.find('a,input,textarea,button,select,iframe,[tabindex][tabindex!=-1]')
+                   .first()
+                   .focus();
         }
     });
 
