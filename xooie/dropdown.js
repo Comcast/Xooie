@@ -14,7 +14,19 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'base'], function($, Base) {
+define('dropdown',['jquery', 'base'], function($, Base) {
+
+    //helper method to turn a collection of event.which values into an array
+    var parseWhich = function(which) {
+        if (typeof which === 'string') {
+            which = which.split(',');
+            return which.map(function(string){ return parseInt(string, 10); });
+        } else if (typeof which === 'number') {
+            return [which];
+        }
+
+        return which;
+    };
 
     var Dropdown = Base('dropdown', function() {
         var self = this,
@@ -23,11 +35,10 @@ define(['jquery', 'base'], function($, Base) {
             expanders = self.getExpander(),
 
             onTriggers = this.options.triggers.on,
-            offTriggers = self.options.triggers.off,
-            toggleTriggers = this.options.triggers.toggle;
+            offTriggers = self.options.triggers.off;
 
         //Private helper methods
-        var getTriggerHandle, setOffTrigger;
+        var getTriggerHandle;
 
         getTriggerHandle = function(triggerData, index){
             if (triggerData.selector) {
@@ -37,21 +48,29 @@ define(['jquery', 'base'], function($, Base) {
             }
         };
 
-        setOffTrigger = function(handle, index){
-            var trigger;
+        this.handlers = {
+            off: function(event){
+                if ((typeof event.data.which !== 'undefined' && event.data.which.indexOf(event.which) === -1) || ($(event.target).is(self.getExpander(event.data.index)) || $(event.target).parents(self.options.dropdownExpanderSelector).length > 0) && !$(event.target).is($(this))) {
+                    return true;
+                }
 
-            for (trigger in offTriggers) {
-                handle.on(trigger, {delay: offTriggers[trigger].delay, el: handle}, function(event){
-                    if (($(event.target).is(self.getExpander(index)) || $(event.target).parents(self.options.dropdownExpanderSelector).length > 0) && !$(event.target).is(event.data.el)) {
-                        return true;
-                    }
+                event.preventDefault();
 
-                    event.preventDefault();
+                self.collapse(event.data.index, event.data.delay);
+            },
 
-                    self.collapse(index, event.data.delay);
+            on: function(event){
+                var index = event.data.index || parseInt($(this).attr('data-dropdown-index'), 10),
+                    delay = event.data.delay,
+                    handle = $(this);
 
-                    $(this).unbind(event);
-                });
+                if (typeof event.data.which !== 'undefined' && event.data.which.indexOf(event.which) === -1) {
+                    return true;
+                }
+
+                event.preventDefault();
+
+                self.expand(index, delay);
             }
         };
 
@@ -62,34 +81,46 @@ define(['jquery', 'base'], function($, Base) {
         };
 
         for (trigger in onTriggers) {
-            getTriggerHandle(onTriggers[trigger]).on(trigger, {delay: onTriggers[trigger].delay}, function(event){
-                var index = parseInt($(this).attr('data-dropdown-index'), 10),
-                    delay = event.data.delay,
-                    handle = $(this);
+            if (typeof onTriggers[trigger].which !== 'undefined') {
+                onTriggers[trigger].which = parseWhich(onTriggers[trigger].which);
+            }
 
-                event.preventDefault();
-
-                setOffTrigger(handle, index);
-
-                self.expand(index, delay);
-            });
+            getTriggerHandle(onTriggers[trigger]).on(trigger, $.extend({delay: 0}, onTriggers[trigger]), self.handlers.on);
         }
 
-        for (trigger in toggleTriggers) {
-            getTriggerHandle(toggleTriggers[trigger]).on(trigger, {delay: toggleTriggers[trigger].delay}, function(event){
-                var index = parseInt($(this).attr('data-dropdown-index'), 10),
-                    delay = event.data.delay,
-                    handle = $(this),
-                    trigger,
-                    isInactive = !self.getExpander(index).hasClass(self.options.activeDropdownClass);
+        handles.on('dropdownExpand', function(event, index){
+            var trigger, handle;
 
-                if (isInactive) {
-                    setOffTrigger(handle, index);
+            for (trigger in offTriggers) {
+                if (typeof offTriggers[trigger].which !== 'undefined') {
+                    offTriggers[trigger].which = parseWhich(offTriggers[trigger].which);
                 }
 
-                self.setState(index, delay, isInactive);
-            });
-        }
+                handle = getTriggerHandle(offTriggers[trigger], index);
+
+                handle.data('eventCount-' + trigger, handle.data('eventCount-' + trigger) + 1 || 1);
+
+                handle.on(trigger, $.extend({delay: 0, index: index}, offTriggers[trigger]), self.handlers.off);
+            }
+        });
+
+        handles.on('dropdownCollapse', function(event, index){
+            var trigger, handle, eventCount;
+
+            for (trigger in offTriggers) {
+                handle = getTriggerHandle(offTriggers[trigger], index);
+
+                eventCount = handle.data('eventCount-' + trigger) - 1;
+
+                if (eventCount <= 0) {
+                    handle.unbind(trigger, self.handlers.off);
+
+                    handle.data('eventCount-' + trigger, 0);
+                } else {
+                    handle.data('eventCount-' + trigger, eventCount);
+                }
+            }
+        });
 
         handles.each(function(index){
             var handle = $(this),
@@ -123,19 +154,10 @@ define(['jquery', 'base'], function($, Base) {
         throttleDelay: 300,
         triggers: {
             on: {
-                focus: {
-                    delay: 0
-                }
+                focus: {}
             },
             off: {
-                blur: {
-                    delay: 0
-                }
-            },
-            toggle: {
-                click: {
-                    delay: 0
-                }
+                blur: {}
             }
         }
 
@@ -155,6 +177,10 @@ define(['jquery', 'base'], function($, Base) {
         },
 
         setState: function(index, delay, active){
+            if (typeof index === 'undefined' || isNaN(index)) {
+                return;
+            }
+
             var state = active ? 'expand' : 'collapse',
                 counterState = active ? 'collapse' : 'expand';
 
@@ -175,8 +201,8 @@ define(['jquery', 'base'], function($, Base) {
                 this.getHandle(i).toggleClass(this.options.activeDropdownClass, _active);
 
                 if (_active){
-                    this.setFocus(expander);
                     handle.trigger('dropdownExpand', i);
+                    this.setFocus(expander);
                 } else {
                     handle.trigger('dropdownCollapse', i);
                 }
@@ -191,11 +217,15 @@ define(['jquery', 'base'], function($, Base) {
         },
 
         expand: function(index, delay) {
-            this.setState(index, delay, true);
+            if (!this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
+                this.setState(index, delay, true);
+            }
         },
 
         collapse: function(index, delay) {
-            this.setState(index, delay, false);
+            if (this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
+                this.setState(index, delay, false);
+            }
         },
 
         setFocus: function(element){
