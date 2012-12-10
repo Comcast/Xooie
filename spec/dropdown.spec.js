@@ -14,27 +14,7 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
 
                 d.getHandle().trigger('focus');
 
-                expect(d.expand).toHaveBeenCalledWith(0, d.options.triggers.on.focus.delay);
-            });
-
-            it('adds a click event to the handle by default that toggles the dropdown', function(){
-                spyOn(d, 'setState').andCallThrough();
-
-                var handle = d.getHandle();
-
-                handle.trigger('click');
-
-                expect(d.setState).toHaveBeenCalledWith(0, d.options.triggers.toggle.click.delay, true);
-
-                d.setState.reset();
-
-                waits(d.options.triggers.toggle.click.delay);
-
-                runs(function(){
-                    handle.trigger('click');
-
-                    expect(d.setState).toHaveBeenCalledWith(0, d.options.triggers.toggle.click.delay, false);
-                });
+                expect(d.expand).toHaveBeenCalledWith(0, 0);
             });
 
             describe('...and data-triggers is set differently...', function(){
@@ -47,13 +27,13 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
 
                 it('does not set an event if no trigger is specified', function(){
 
-                    el.attr('data-triggers', '{"on":{},"off":{},"toggle":{}}');
+                    el.attr('data-triggers', '{"on":{},"off":{}}');
 
                     d = new Dropdown(el);
 
                     spyOn(d, 'expand');
 
-                    d.getHandle().trigger('mouseover');
+                    d.getHandle().trigger('focus');
 
                     expect(d.expand).not.toHaveBeenCalled();
                 });
@@ -61,7 +41,7 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
                 it('binds the event to an alternate selector if a selector is specified', function(){
                     setFixtures('<div class="alt-handle"></div>');
 
-                    el.attr('data-triggers', '{"on":{"click": {"delay": 0, "selector": ".alt-handle"}},"off":{},"toggle":{}}');
+                    el.attr('data-triggers', '{"on":{"click": {"delay": 0, "selector": ".alt-handle"}},"off":{}}');
 
                     d = new Dropdown(el);
 
@@ -71,18 +51,19 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
 
                     expect(d.expand).not.toHaveBeenCalled();
 
-                    $('.alt-handle').trigger('click');
-
                     waits(0);
 
                     runs(function(){
+                        $('.alt-handle').trigger('click');
+
                         expect(d.expand).toHaveBeenCalled();
                     });
+                    
                 });
 
                 it('binds the event to the document object if the string "document" is passed in as a selector', function(){
 
-                    el.attr('data-triggers', '{"on":{"click": {"delay": 0, "selector": "document"}},"off":{},"toggle":{}}');
+                    el.attr('data-triggers', '{"on":{"click": {"delay": 0, "selector": "document"}},"off":{}}');
 
                     d = new Dropdown(el);
 
@@ -153,23 +134,73 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
             });
         });
 
-        describe('When activating the "on" trigger...', function(){
+        describe('When the dropdownExpand event is triggered...', function(){
             beforeEach(function(){
                 el = $('<div><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div></div>');
 
                 d = new Dropdown(el);
             });
 
-            it('adds a blur event that collapses the expander by default when expanding the dropdown', function(){
+            it('adds an off event that collapses the expander by default when expanding the dropdown', function(){
                 var handle = d.getHandle(0);
 
                 spyOn(d, 'collapse');
 
-                handle.trigger('focus');
+                handle.trigger('dropdownExpand', 0);
 
                 handle.trigger('blur');
 
-                expect(d.collapse).toHaveBeenCalledWith(0, d.options.triggers.off.blur.delay);
+                expect(d.collapse).toHaveBeenCalledWith(0, 0);
+            });
+
+            it('increments the eventCount for that triggering event', function(){
+                var handle = d.getHandle(0);
+
+                handle.trigger('dropdownExpand', 0);
+
+                expect(handle.data('eventCount-blur')).toBe(1);
+            });
+        });
+
+        describe('When the dropdownCollapse event is triggered...', function(){
+            beforeEach(function(){
+                el = $('<div><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div></div>');
+
+                d = new Dropdown(el);
+            });
+
+            it('unbinds any off events that would otherwise collapse the dropdown', function(){
+                var handle = d.getHandle(0);
+
+                handle.trigger('dropdownExpand', 0);
+
+                expect(handle.data('eventCount-blur')).toBe(1);
+
+                handle.trigger('dropdownCollapse', 0);
+
+                expect(handle.data('eventCount-blur')).toBe(0);
+
+                spyOn(d, 'collapse');
+
+                handle.trigger('blur');
+
+                expect(d.collapse).not.toHaveBeenCalled();
+            });
+
+            it('does not unbind the event if there are remaining events bound to it', function(){
+                var handle = d.getHandle(0);
+
+                handle.trigger('dropdownExpand', 0);
+
+                handle.data('eventCount-blur', 2);
+
+                handle.trigger('dropdownCollapse', 0);
+
+                spyOn(d, 'collapse');
+
+                handle.trigger('blur');
+
+                expect(d.collapse).toHaveBeenCalledWith(0,0);
             });
         });
 
@@ -305,6 +336,31 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
                 runs(function(){
                     expect(d.timers.throttle[0]).toBe(undefined);
                 });
+            });
+        });
+
+        describe('When setting focus on an element', function(){
+            var testEl;
+
+            beforeEach(function(){
+                el = $(['<div>',
+                    '<div data-role="dropdown-handle"></div>',
+                    '<div data-role="dropdown-content" tabindex=0><a href=""></a></div>',
+                '</div>'].join(''));
+
+                d = new Dropdown(el);
+            });
+
+            it('sets focus on the expander if it is focusable', function(){
+
+            });
+
+            it('sets focus on the first focusable child of the expander if the expander is not focusable', function(){
+
+            });
+
+            it('does not set focus if no focusable element is available', function(){
+
             });
         });
     });
