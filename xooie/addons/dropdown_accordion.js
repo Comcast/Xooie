@@ -20,7 +20,7 @@ define(['jquery', 'addons_base'], function($, Base){
         var self = this;
 
         this.module.getHandle().on('dropdownExpand', function(event){
-            var activeHandles = self.module.getHandle().not(this).filter('.' + self.module.options.activeDropdownClass),
+            var activeHandles = self.module.getHandle().not($(this)).filter('.' + self.module.options.activeDropdownClass),
                 i = 0,
                 index;
 
