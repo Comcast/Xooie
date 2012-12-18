@@ -40,7 +40,7 @@ define('dropdown',['jquery', 'base'], function($, Base) {
 
                 event.preventDefault();
 
-                self.collapse(event.data.index, event.data.delay);
+                self.collapse(event.data.index, event.data);
             },
 
             on: function(event){
@@ -54,7 +54,7 @@ define('dropdown',['jquery', 'base'], function($, Base) {
 
                 event.preventDefault();
 
-                self.expand(index, delay);
+                self.expand(index, event.data);
             }
         };
 
@@ -187,13 +187,14 @@ define('dropdown',['jquery', 'base'], function($, Base) {
         return (typeof index !== 'undefined' && index >= 0) ? expanders.eq(index) : expanders;
     };
 
-    Dropdown.prototype.setState = function(index, delay, active){
+    Dropdown.prototype.setState = function(index, data, active){
         if (typeof index === 'undefined' || isNaN(index)) {
             return;
         }
 
         var state = active ? 'expand' : 'collapse',
-            counterState = active ? 'collapse' : 'expand';
+            counterState = active ? 'collapse' : 'expand',
+            delay = data.delay;
 
         this.timers[counterState][index] = clearTimeout(this.timers[counterState][index]);
 
@@ -201,7 +202,7 @@ define('dropdown',['jquery', 'base'], function($, Base) {
             return;
         }
 
-        this.timers[state][index] = setTimeout(function(i, _state, _active) {
+        this.timers[state][index] = setTimeout(function(i, _state, _active, _data) {
             var expander = this.getExpander(i),
                 handle = this.getHandle(i),
                 self = this;
@@ -212,10 +213,10 @@ define('dropdown',['jquery', 'base'], function($, Base) {
             this.getHandle(i).toggleClass(this.options.activeDropdownClass, _active);
 
             if (_active){
-                handle.trigger('dropdownExpand', i);
+                handle.trigger('dropdownExpand', [i, _data]);
                 this.setFocus(expander);
             } else {
-                handle.trigger('dropdownCollapse', i);
+                handle.trigger('dropdownCollapse', [i, _data]);
             }
 
             if (this.options.throttleDelay > 0){
@@ -224,18 +225,18 @@ define('dropdown',['jquery', 'base'], function($, Base) {
                 }, this.options.throttleDelay);
             }
 
-        }.bind(this, index, state, active), delay);
+        }.bind(this, index, state, active, data), delay);
     };
 
-    Dropdown.prototype.expand = function(index, delay) {
+    Dropdown.prototype.expand = function(index, data) {
         if (!this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
-            this.setState(index, delay, true);
+            this.setState(index, data, true);
         }
     };
 
-    Dropdown.prototype.collapse = function(index, delay) {
+    Dropdown.prototype.collapse = function(index, data) {
         if (this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
-            this.setState(index, delay, false);
+            this.setState(index, data, false);
         }
     };
 
