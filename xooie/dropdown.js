@@ -16,7 +16,6 @@
 
 define('dropdown',['jquery', 'base'], function($, Base) {
 
-    //helper method to turn a collection of event.which values into an array
     var parseWhich = function(which) {
         if (typeof which === 'string') {
             which = which.split(',');
@@ -26,31 +25,16 @@ define('dropdown',['jquery', 'base'], function($, Base) {
         }
 
         return which;
-    };
+     };
 
     var Dropdown = Base('dropdown', function() {
         var self = this,
-            trigger,
             handles = self.getHandle(),
-            expanders = self.getExpander(),
-
-            onTriggers = this.options.triggers.on,
-            offTriggers = self.options.triggers.off;
-
-        //Private helper methods
-        var getTriggerHandle;
-
-        getTriggerHandle = function(triggerData, index){
-            if (triggerData.selector) {
-                return triggerData.selector === 'document' ? $(document) : $(triggerData.selector);
-            } else {
-                return typeof index === 'undefined' ? handles : handles.eq(index);
-            }
-        };
+            expanders = self.getExpander();
 
         this.handlers = {
             off: function(event){
-                if ((typeof event.data.which !== 'undefined' && event.data.which.indexOf(event.which) === -1) || ($(event.target).is(self.getExpander(event.data.index)) || $(event.target).parents(self.options.dropdownExpanderSelector).length > 0) && !$(event.target).is($(this))) {
+                if ((typeof event.data.not !== 'undefined' && ($(event.data.not).is($(this)) || $(event.target).parents(event.data.not).length > 0)) || (typeof event.data.which !== 'undefined' && event.data.which.indexOf(event.which) === -1) || ($(event.target).is(self.getExpander(event.data.index)) || $(event.target).parents(self.options.dropdownExpanderSelector).length > 0) && !$(event.target).is($(this))) {
                     return true;
                 }
 
@@ -64,7 +48,7 @@ define('dropdown',['jquery', 'base'], function($, Base) {
                     delay = event.data.delay,
                     handle = $(this);
 
-                if (typeof event.data.which !== 'undefined' && event.data.which.indexOf(event.which) === -1) {
+                if ((typeof event.data.not !== 'undefined' && ($(event.data.not).is($(this)) || $(event.target).parents(event.data.not).length > 0)) || typeof event.data.which !== 'undefined' && event.data.which.indexOf(event.which) === -1) {
                     return true;
                 }
 
@@ -80,46 +64,18 @@ define('dropdown',['jquery', 'base'], function($, Base) {
             throttle: []
         };
 
-        for (trigger in onTriggers) {
-            if (typeof onTriggers[trigger].which !== 'undefined') {
-                onTriggers[trigger].which = parseWhich(onTriggers[trigger].which);
-            }
-
-            getTriggerHandle(onTriggers[trigger]).on(trigger, $.extend({delay: 0}, onTriggers[trigger]), self.handlers.on);
-        }
+        this.addHandlers('on');
 
         handles.on('dropdownExpand', function(event, index){
-            var trigger, handle;
+            self.removeHandlers('on', index);
 
-            for (trigger in offTriggers) {
-                if (typeof offTriggers[trigger].which !== 'undefined') {
-                    offTriggers[trigger].which = parseWhich(offTriggers[trigger].which);
-                }
-
-                handle = getTriggerHandle(offTriggers[trigger], index);
-
-                handle.data('eventCount-' + trigger, handle.data('eventCount-' + trigger) + 1 || 1);
-
-                handle.on(trigger, $.extend({delay: 0, index: index}, offTriggers[trigger]), self.handlers.off);
-            }
+            self.addHandlers('off', index);
         });
 
         handles.on('dropdownCollapse', function(event, index){
-            var trigger, handle, eventCount;
+            self.removeHandlers('off', index);
 
-            for (trigger in offTriggers) {
-                handle = getTriggerHandle(offTriggers[trigger], index);
-
-                eventCount = handle.data('eventCount-' + trigger) - 1;
-
-                if (eventCount <= 0) {
-                    handle.unbind(trigger, self.handlers.off);
-
-                    handle.data('eventCount-' + trigger, 0);
-                } else {
-                    handle.data('eventCount-' + trigger, eventCount);
-                }
-            }
+            self.addHandlers('on', index);
         });
 
         handles.each(function(index){
@@ -154,86 +110,140 @@ define('dropdown',['jquery', 'base'], function($, Base) {
         throttleDelay: 300,
         triggers: {
             on: {
-                focus: {}
+                focus: {
+                    delay: 0
+                }
             },
             off: {
-                blur: {}
+                blur: {
+                    delay: 0
+                }
             }
         }
 
     });
 
-    $.extend(Dropdown.prototype, {
-        getHandle: function(index){
-            var handles = this.root.find(this.options.dropdownHandleSelector);
+    Dropdown.prototype.getTriggerHandle = function(triggerData, index){
+        var handles = this.getHandle(index);
 
-            return (typeof index !== 'undefined' && index >= 0) ? handles.eq(index) : handles;
-        },
-
-        getExpander: function(index){
-            var expanders = this.root.find(this.options.dropdownExpanderSelector);
-
-            return (typeof index !== 'undefined' && index >= 0) ? expanders.eq(index) : expanders;
-        },
-
-        setState: function(index, delay, active){
-            if (typeof index === 'undefined' || isNaN(index)) {
-                return;
-            }
-
-            var state = active ? 'expand' : 'collapse',
-                counterState = active ? 'collapse' : 'expand';
-
-            this.timers[counterState][index] = clearTimeout(this.timers[counterState][index]);
-
-            if (this.timers.throttle[index] || this.timers[state][index]) {
-                return;
-            }
-
-            this.timers[state][index] = setTimeout(function(i, _state, _active) {
-                var expander = this.getExpander(i),
-                    handle = this.getHandle(i),
-                    self = this;
-
-                this.timers[_state][i] = clearTimeout(this.timers[_state][i]);
-
-                expander.toggleClass(this.options.activeDropdownClass, _active);
-                this.getHandle(i).toggleClass(this.options.activeDropdownClass, _active);
-
-                if (_active){
-                    handle.trigger('dropdownExpand', i);
-                    this.setFocus(expander);
-                } else {
-                    handle.trigger('dropdownCollapse', i);
-                }
-
-                if (this.options.throttleDelay > 0){
-                    this.timers.throttle[i] = setTimeout(function(){
-                        self.timers.throttle[i] = clearTimeout(self.timers.throttle[i]);
-                    }, this.options.throttleDelay);
-                }
-
-            }.bind(this, index, state, active), delay);
-        },
-
-        expand: function(index, delay) {
-            if (!this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
-                this.setState(index, delay, true);
-            }
-        },
-
-        collapse: function(index, delay) {
-            if (this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
-                this.setState(index, delay, false);
-            }
-        },
-
-        setFocus: function(element){
-            element.find('a,input,textarea,button,select,iframe,[tabindex][tabindex!=-1]')
-                   .first()
-                   .focus();
+        if (triggerData.selector) {
+            return triggerData.selector === 'document' ? $(document) : $(triggerData.selector);
+        } else {
+            return handles;
         }
-    });
+    };
+
+    Dropdown.prototype.addHandlers = function(state, index){
+        var trigger, handle, triggerData, countName;
+
+        triggerData = this.options.triggers[state];
+
+        for (trigger in triggerData) {
+            if (typeof triggerData[trigger].which !== 'undefined') {
+                triggerData[trigger].which = parseWhich(triggerData[trigger].which);
+            }
+
+            countName = [trigger,state,'count'].join('-');
+
+            handle = this.getTriggerHandle(triggerData[trigger], index);
+
+            handle.data(countName, handle.data(countName) + 1 || 1);
+
+            handle.on(trigger, $.extend({delay: 0, index: index}, triggerData[trigger]), this.handlers[state]);
+        }
+    };
+
+    Dropdown.prototype.removeHandlers = function(state, index){
+        var trigger, handle, triggerData, countName, eventCount;
+
+        triggerData = this.options.triggers[state];
+
+        for (trigger in triggerData) {
+            handle = this.getTriggerHandle(triggerData[trigger], index);
+
+            countName = [trigger,state,'count'].join('-');
+
+            eventCount = handle.data(countName) - 1;
+
+            if (eventCount <= 0) {
+                handle.unbind(trigger, this.handlers[state]);
+
+                handle.data(countName, 0);
+            } else {
+                handle.data(countName, eventCount);
+            }
+        }
+    };
+
+    Dropdown.prototype.getHandle = function(index){
+        var handles = this.root.find(this.options.dropdownHandleSelector);
+
+        return (typeof index !== 'undefined' && index >= 0) ? handles.eq(index) : handles;
+    };
+
+    Dropdown.prototype.getExpander = function(index){
+        var expanders = this.root.find(this.options.dropdownExpanderSelector);
+
+        return (typeof index !== 'undefined' && index >= 0) ? expanders.eq(index) : expanders;
+    };
+
+    Dropdown.prototype.setState = function(index, delay, active){
+        if (typeof index === 'undefined' || isNaN(index)) {
+            return;
+        }
+
+        var state = active ? 'expand' : 'collapse',
+            counterState = active ? 'collapse' : 'expand';
+
+        this.timers[counterState][index] = clearTimeout(this.timers[counterState][index]);
+
+        if (this.timers.throttle[index] || this.timers[state][index]) {
+            return;
+        }
+
+        this.timers[state][index] = setTimeout(function(i, _state, _active) {
+            var expander = this.getExpander(i),
+                handle = this.getHandle(i),
+                self = this;
+
+            this.timers[_state][i] = clearTimeout(this.timers[_state][i]);
+
+            expander.toggleClass(this.options.activeDropdownClass, _active);
+            this.getHandle(i).toggleClass(this.options.activeDropdownClass, _active);
+
+            if (_active){
+                handle.trigger('dropdownExpand', i);
+                this.setFocus(expander);
+            } else {
+                handle.trigger('dropdownCollapse', i);
+            }
+
+            if (this.options.throttleDelay > 0){
+                this.timers.throttle[i] = setTimeout(function(){
+                    self.timers.throttle[i] = clearTimeout(self.timers.throttle[i]);
+                }, this.options.throttleDelay);
+            }
+
+        }.bind(this, index, state, active), delay);
+    };
+
+    Dropdown.prototype.expand = function(index, delay) {
+        if (!this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
+            this.setState(index, delay, true);
+        }
+    };
+
+    Dropdown.prototype.collapse = function(index, delay) {
+        if (this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
+            this.setState(index, delay, false);
+        }
+    };
+
+    Dropdown.prototype.setFocus = function(element){
+        element.find('a,input,textarea,button,select,iframe,[tabindex][tabindex!=-1]')
+               .first()
+               .focus();
+    };
 
     return Dropdown;
 });
