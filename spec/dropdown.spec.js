@@ -14,7 +14,7 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
 
                 d.getHandle().trigger('focus');
 
-                expect(d.expand).toHaveBeenCalledWith(0, 0);
+                expect(d.expand).toHaveBeenCalledWith(0, { delay: 0, index: undefined });
             });
 
             describe('...and data-triggers is set differently...', function(){
@@ -150,7 +150,7 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
 
                 handle.trigger('blur');
 
-                expect(d.collapse).toHaveBeenCalledWith(0, 0);
+                expect(d.collapse).toHaveBeenCalledWith(0, {delay: 0, index: 0} );
             });
 
             it('increments the eventCount for that triggering event', function(){
@@ -158,7 +158,7 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
 
                 handle.trigger('dropdownExpand', 0);
 
-                expect(handle.data('eventCount-blur')).toBe(1);
+                expect(handle.data('blur-off-count')).toBe(1);
             });
         });
 
@@ -174,11 +174,11 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
 
                 handle.trigger('dropdownExpand', 0);
 
-                expect(handle.data('eventCount-blur')).toBe(1);
+                expect(handle.data('blur-off-count')).toBe(1);
 
                 handle.trigger('dropdownCollapse', 0);
 
-                expect(handle.data('eventCount-blur')).toBe(0);
+                expect(handle.data('blur-off-count')).toBe(0);
 
                 spyOn(d, 'collapse');
 
@@ -192,7 +192,7 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
 
                 handle.trigger('dropdownExpand', 0);
 
-                handle.data('eventCount-blur', 2);
+                handle.data('blur-off-count', 2);
 
                 handle.trigger('dropdownCollapse', 0);
 
@@ -200,7 +200,7 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
 
                 handle.trigger('blur');
 
-                expect(d.collapse).toHaveBeenCalledWith(0,0);
+                expect(d.collapse).toHaveBeenCalledWith(0, {delay: 0, index: 0});
             });
         });
 

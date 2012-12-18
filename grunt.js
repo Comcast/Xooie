@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 
-  var version = '0.0.4';
+  var version = '0.0.5';
 
   // Project configuration.
   grunt.initConfig({
