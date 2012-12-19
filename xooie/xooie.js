@@ -21,17 +21,15 @@ requirejs.config({
     }
 });
 
-require(['jquery'], function($){
-    $(document).ready(function() {
-        $('[data-widget-type]').each(function() {
-            var node = $(this),
-                types = node.data('widgetType').split(/\s+/);
+$X = function() {
+    return false;
+};
 
-            for (var i = 0; i < types.length; i++) {
-                require([types[i]], function(Widget) {
-                    new Widget(node);
-                });
-            }
-        });
+require(['jquery', 'xooieInit'], function($, xooieInit){
+    $X = xooieInit;
+
+    $(document).ready(function() {
+        $X($(this));
     });
 });
+
