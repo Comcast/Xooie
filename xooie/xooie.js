@@ -21,12 +21,14 @@ requirejs.config({
     }
 });
 
-$X = function() {
+var $X, Xooie;
+
+$X = Xooie = function() {
     return false;
 };
 
 require(['jquery', 'xooieInit'], function($, xooieInit){
-    $X = xooieInit;
+    $X = Xooie = xooieInit;
 
     $(document).ready(function() {
         $X($(this));
