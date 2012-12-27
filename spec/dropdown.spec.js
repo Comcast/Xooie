@@ -1,4 +1,4 @@
-define(['jquery', 'dropdown'], function($, Dropdown) {
+require(['jquery', 'dropdown'], function($, Dropdown) {
     describe('Dropdown', function(){
         var el, d;
 
@@ -365,4 +365,3 @@ define(['jquery', 'dropdown'], function($, Dropdown) {
         });
     });
 });
-
