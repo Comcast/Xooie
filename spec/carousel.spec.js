@@ -1,4 +1,4 @@
-define(['jquery', 'carousel'], function($, Carousel) {
+require(['jquery', 'carousel'], function($, Carousel) {
 
     describe('Carousel', function(){
         var element, carouselInstance, positionLeft;
@@ -357,7 +357,6 @@ define(['jquery', 'carousel'], function($, Carousel) {
 
             });
 
-
         });
 
         describe('When snapping the postiion to the nearest item...', function(){
@@ -573,7 +572,6 @@ define(['jquery', 'carousel'], function($, Carousel) {
                     spyOn(carouselInstance.wrapper, 'scrollLeft').andReturn(100);
                     spyOn(carouselInstance.content, 'position').andReturn({left: -100});
                     spyOn(carouselInstance.content, 'outerWidth').andReturn(600);
-
                     spyOn(carouselInstance.wrapper, 'innerWidth').andReturn(350);
 
                     var container = $('<div></div>'),
@@ -589,6 +587,3 @@ define(['jquery', 'carousel'], function($, Carousel) {
         });
     });
 });
-
-
-
