@@ -196,4 +196,3 @@ require(['jquery', 'tab'], function($, Tab) {
     });
 
 });
-
