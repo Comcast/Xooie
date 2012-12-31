@@ -1,7 +1,7 @@
 // Stub function for Mustache template testing
 Mustache = { render: function() {} };
 
-define(['jquery', 'base'], function($, Base) {
+require(['jquery', 'base'], function($, Base) {
 
     describe('Base', function() {
 
