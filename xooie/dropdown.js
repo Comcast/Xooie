@@ -70,19 +70,27 @@ define('dropdown',['jquery', 'base'], function($, Base) {
             self.removeHandlers('on', index);
 
             self.addHandlers('off', index);
+
+            $(this).attr('aria-selected', true);
         });
 
         handles.on('dropdownCollapse', function(event, index){
             self.removeHandlers('off', index);
 
             self.addHandlers('on', index);
+
+            $(this).attr('aria-selected', false);
         });
 
         handles.each(function(index){
             var handle = $(this),
                 expander = expanders.eq(index);
 
-            handle.attr('data-dropdown-index', index);
+
+            handle.attr({
+                'data-dropdown-index': index,
+                'aria-selected': false
+            });
             expander.attr('data-dropdown-index', index);
         });
 
