@@ -1,4 +1,4 @@
-require(['jquery', 'carousel'], function($, Carousel) {
+require(['jquery', 'xooie/carousel'], function($, Carousel) {
 
     describe('Carousel', function(){
         var element, carouselInstance, positionLeft;

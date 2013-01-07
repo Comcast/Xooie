@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'addons_base'], function($, Base){
+define(['jquery', 'xooie/addons/base'], function($, Base){
 
     var Accordion = Base('accordion', function() {
         var self = this;

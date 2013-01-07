@@ -1,4 +1,4 @@
-define(['jquery', 'tab', 'tab_animation', 'async'], function($, Tab, Animation, async) {
+define(['jquery', 'xooie/tab', 'xooie/addons/tab_animation', 'async'], function($, Tab, Animation, async) {
     describe('Tab Animation Addon', function(){
         var tabInst, aniInst, el;
 

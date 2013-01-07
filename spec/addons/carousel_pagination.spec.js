@@ -1,4 +1,4 @@
-define(['jquery', 'carousel', 'carousel_pagination'], function($, Carousel, Pagination) {
+define(['jquery', 'xooie/carousel', 'xooie/addons/carousel_pagination'], function($, Carousel, Pagination) {
     describe('Carousel Pagination Addon', function(){
         var element, carouselInstance, paginationInstance, positionLeft;
 
