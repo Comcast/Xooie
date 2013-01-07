@@ -1,4 +1,4 @@
-require(['jquery', 'stylesheet'], function($, Stylesheet){
+require(['jquery', 'xooie/stylesheet'], function($, Stylesheet){
     describe('Dynamic Stylesheets', function(){
 
         describe('When instantiating a new stylesheet...', function(){

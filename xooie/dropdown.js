@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define('dropdown',['jquery', 'base'], function($, Base) {
+define(['jquery', 'xooie/base'], function($, Base) {
 
     var parseWhich = function(which) {
         if (typeof which === 'string') {

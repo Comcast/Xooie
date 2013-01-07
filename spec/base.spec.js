@@ -1,14 +1,14 @@
 // Stub function for Mustache template testing
 Mustache = { render: function() {} };
 
-require(['jquery', 'base'], function($, Base) {
+require(['jquery', 'xooie/base'], function($, Base) {
 
     describe('Base', function() {
 
         var constructor, widget;
 
         beforeEach(function() {
-            define('test', function(){
+            define('xooie/addons/test', function(){
                 return true;
             });
 

@@ -1,4 +1,4 @@
-define(['jquery', 'base', 'addons_base'], function($, Base, AddonBase) {
+define(['jquery', 'xooie/base', 'xooie/addons/base'], function($, Base, AddonBase) {
 
     var constructor, baseConstructor, Widget, Addon, w, a;
 

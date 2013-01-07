@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'addons_base', 'async'], function($, Base, async) {
+define(['jquery', 'xooie/addons/base', 'async'], function($, Base, async) {
 
     var Animation = Base('animation', function(){
         var self = this,

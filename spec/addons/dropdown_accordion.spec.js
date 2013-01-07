@@ -1,4 +1,4 @@
-define(['jquery', 'dropdown', 'dropdown_accordion'], function($, Dropdown, Accordion) {
+define(['jquery', 'xooie/dropdown', 'xooie/addons/dropdown_accordion'], function($, Dropdown, Accordion) {
     describe('Dropdown Accordion', function(){
         var el, d;
 

@@ -1,4 +1,4 @@
-require(['jquery', 'tab'], function($, Tab) {
+require(['jquery', 'xooie/tab'], function($, Tab) {
 
     describe('Tab', function() {
 
