@@ -1,4 +1,4 @@
-require(['jquery', 'dropdown'], function($, Dropdown) {
+require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
     describe('Dropdown', function(){
         var el, d;
 
