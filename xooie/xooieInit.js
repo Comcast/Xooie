@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define('xooieInit', ['jquery'], function($){
+define(['jquery'], function($){
 
     var XooieInit = function(element){
         element = $(element);
@@ -30,7 +30,7 @@ define('xooieInit', ['jquery'], function($){
                 types = node.data('widgetType').split(/\s+/);
 
             for (var i = 0; i < types.length; i++) {
-                require([types[i]], function(Widget) {
+                require(['xooie/' + types[i]], function(Widget) {
                     new Widget(node);
                 });
             }

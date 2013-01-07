@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'addons_base'], function($, Base) {
+define(['jquery', 'xooie/addons/base'], function($, Base) {
     var outOfRange = function(lower, upper, point, normalize) {
         var n = ( Math.min(lower, point) - lower ) || ( Math.max(upper, point) - upper );
         var denominator = (normalize) ? Math.max(Math.abs(n),1) : 1;

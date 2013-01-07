@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'stylesheet'], function($, Stylesheet) {
+define(['jquery', 'xooie/stylesheet'], function($, Stylesheet) {
     var Base = function(name, constructor) {
         var instances, defaultOptions, instanceCounter, initEvent, instanceName, cssRules, stylesInstance, className, Xooie;
 
@@ -78,7 +78,7 @@ define(['jquery', 'stylesheet'], function($, Stylesheet) {
                 }
 
                 try {
-                    require([addon], function(Addon){
+                    require(['xooie/addons/' + addon], function(Addon){
                         new Addon(self);
                     });
                 } catch (e) {

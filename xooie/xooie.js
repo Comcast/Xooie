@@ -27,7 +27,7 @@ $X = Xooie = function() {
     return false;
 };
 
-require(['jquery', 'xooieInit'], function($, xooieInit){
+require(['jquery', 'xooie/xooieInit'], function($, xooieInit){
     $X = Xooie = xooieInit;
 
     $(document).ready(function() {
