@@ -14,9 +14,21 @@
 *   limitations under the License.
 */
 
-define(['jquery'], function($){
+requirejs.config({
+    paths: {
+        jquery: 'lib/jquery',
+        async: 'lib/async'
+    }
+});
 
-    var XooieInit = function(element){
+var $X, Xooie;
+
+$X = Xooie = function() {
+    return false;
+};
+
+define(['jquery'], function($){
+    $X = Xooie = function(element){
         element = $(element);
 
         var widgetElements = element.find('[data-widget-type]');
@@ -37,5 +49,10 @@ define(['jquery'], function($){
         });
     };
 
-    return XooieInit;
+    $(document).ready(function() {
+        $X($(this));
+    });
+
+    return Xooie;
 });
+
