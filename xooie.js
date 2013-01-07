@@ -14,13 +14,6 @@
 *   limitations under the License.
 */
 
-requirejs.config({
-    paths: {
-        jquery: 'lib/jquery',
-        async: 'lib/async'
-    }
-});
-
 var $X, Xooie;
 
 $X = Xooie = function() {
