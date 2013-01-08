@@ -97,10 +97,11 @@ define(['jquery'], function($){
     Xooie.config = config;
     Xooie.mapName = mapName;
 
-    $(document).ready(function() {
-        $X($(this));
-    });
-
     return Xooie;
 });
 
+require(['jquery', 'xooie'], function($, $X){
+    $(document).ready(function() {
+        $X($(this));
+    });
+});
