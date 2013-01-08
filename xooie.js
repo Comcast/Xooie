@@ -64,7 +64,7 @@ $X = Xooie = (function(static_config) {
     return obj;
 }(Xooie));
 
-define(['jquery'], function($){
+define('xooie', ['jquery'], function($){
     var config = Xooie.config,
         mapName = Xooie.mapName,
         
