@@ -14,9 +14,9 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'xooie/base'], function($, Base) {
-
-    var parseWhich = function(which) {
+define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
+    
+   var parseWhich = function(which) {
         if (typeof which === 'string') {
             which = which.split(',');
             return which.map(function(string){ return parseInt(string, 10); });
@@ -66,21 +66,25 @@ define(['jquery', 'xooie/base'], function($, Base) {
 
         this.addHandlers('on');
 
-        handles.on('dropdownExpand', function(event, index){
-            self.removeHandlers('on', index);
+        this.root.on({
+            dropdownExpand: function(event, index){
+                self.removeHandlers('on', index);
 
-            self.addHandlers('off', index);
+                self.addHandlers('off', index);
 
-            $(this).attr('aria-selected', true);
-        });
+                $(this).attr('aria-selected', true);
+                self.getExpander(index).attr('aria-hidden', false);
+            },
 
-        handles.on('dropdownCollapse', function(event, index){
-            self.removeHandlers('off', index);
+            dropdownCollapse: function(event, index){
+                self.removeHandlers('off', index);
 
-            self.addHandlers('on', index);
+                self.addHandlers('on', index);
 
-            $(this).attr('aria-selected', false);
-        });
+                $(this).attr('aria-selected', false);
+                self.getExpander(index).attr('aria-hidden', true);
+            }
+        }, this.options.dropdownHandleSelector);
 
         handles.each(function(index){
             var handle = $(this),
@@ -91,7 +95,10 @@ define(['jquery', 'xooie/base'], function($, Base) {
                 'data-dropdown-index': index,
                 'aria-selected': false
             });
-            expander.attr('data-dropdown-index', index);
+            expander.attr({
+                'data-dropdown-index': index,
+                'aria-hidden': true
+            });
         });
 
         expanders.on('mouseover focus', function(){
