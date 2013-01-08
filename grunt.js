@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 
-  var version = '0.0.5';
+  var version = '0.0.6';
 
   // Project configuration.
   grunt.initConfig({
@@ -12,35 +12,24 @@ module.exports = function(grunt) {
         '* Copyright (c) <%= grunt.template.today("yyyy") %> */'
     },
     requirejs: {
-      baseUrl: "xooie",
+      baseUrl: ".",
       paths: {
         jquery: "empty:",
-        async: "empty:",
-        xooie: "xooie",
-        base: "base",
-        carousel: "carousel",
-        dropdown: "dropdown",
-        tab: "tab",
-        addons_base: "addons/base",
-        carousel_lentils: "addons/carousel_lentils",
-        carousel_pagination: "addons/carousel_pagination",
-        dropdown_accordion: "addons/dropdown_accordion",
-        tab_animation: "addons/tab_animation",
-        tab_automation: "addons/tab_automation"
+        async: "empty:"
       },
       name: "xooie",
       include: [
-        "carousel",
-        "dropdown",
-        "tab",
-        "carousel_lentils",
-        "carousel_pagination",
-        "dropdown_accordion",
-        "tab_automation",
-        "tab_animation"
+        "xooie/carousel",
+        "xooie/dropdown",
+        "xooie/tab",
+        "xooie/addons/carousel_lentils",
+        "xooie/addons/carousel_pagination",
+        "xooie/addons/dropdown_accordion",
+        "xooie/addons/tab_automation",
+        "xooie/addons/tab_animation"
       ],
       out: "build/xooie-" + version + ".js",
-      optimize: "none"
+      optimize: "uglify"
     },
     lint: {
       files: ['*.js', 'xooie/**/*.js', 'spec/**/*.js']
