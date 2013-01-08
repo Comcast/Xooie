@@ -43,7 +43,7 @@ module.exports = function(grunt) {
       optimize: "none"
     },
     lint: {
-      files: ['xooie/**/*.js', 'spec/**/*.js']
+      files: ['*.js', 'xooie/**/*.js', 'spec/**/*.js']
     },
     watch: {
       files: '<config:lint.files>',
