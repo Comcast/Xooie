@@ -43,7 +43,7 @@ $X = Xooie = (function(static_config) {
                 if (name === 'modules' || name == 'addons') {
                     copyObj(config[name], cfg[name]);
                 } else {
-                    config[name] = cfg[name]
+                    config[name] = cfg[name];
                 }
             }
         }
@@ -66,7 +66,11 @@ $X = Xooie = (function(static_config) {
 
 define(['jquery'], function($){
     var config = Xooie.config,
-        mapName = Xooie.mapName;
+        mapName = Xooie.mapName,
+        
+        instantiateWidget = function(Widget){
+            new Widget(node);
+        };
 
     $X = Xooie = function(element){
         element = $(element);
@@ -85,9 +89,7 @@ define(['jquery'], function($){
             for (var i = 0; i < types.length; i++) {
                 module_name = $X.mapName(types[i], 'modules', 'xooie/');
 
-                require([module_name], function(Widget) {
-                    new Widget(node);
-                });
+                require([module_name], instantiateWidget);
             }
         });
     };
