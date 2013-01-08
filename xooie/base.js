@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'stylesheet'], function($, Stylesheet) {
+define(['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
     var Base = function(name, constructor) {
         var instances, defaultOptions, instanceCounter, initEvent, instanceName, cssRules, stylesInstance, className, Xooie;
 
@@ -71,14 +71,14 @@ define(['jquery', 'stylesheet'], function($, Stylesheet) {
         Xooie.prototype = {
             loadAddon: function(addon){
                 var self = this,
-                    path;
+                    addon_name = $X.mapName(addon, 'addons', 'xooie/addons/');
 
                 if (typeof this.addons === 'undefined') {
                     this.addons = {};
                 }
 
                 try {
-                    require([addon], function(Addon){
+                    require([addon_name], function(Addon){
                         new Addon(self);
                     });
                 } catch (e) {
