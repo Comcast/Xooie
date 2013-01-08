@@ -19,7 +19,7 @@ define(['jquery', 'xooie/addons/base'], function($, Base) {
         var n = ( Math.min(lower, point) - lower ) || ( Math.max(upper, point) - upper );
         var denominator = (normalize) ? Math.max(Math.abs(n),1) : 1;
         return n/denominator;
-    }
+    };
 
 
     var Automation = Base('automation', function(){

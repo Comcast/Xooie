@@ -317,7 +317,7 @@ define(['jquery', 'xooie/base'], function($, Base) {
     };
 
     Carousel.prototype.updatePosition = function(amount) {
-        var match = (amount + '').match(/^([+-]?)(\d+)(.*)$/),
+        var match = (amount + '').match(/^([+\-]?)(\d+)(.*)$/),
             callback,
             self = this;
 
