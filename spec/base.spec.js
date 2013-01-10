@@ -1,5 +1,7 @@
 // Stub function for Mustache template testing
 Mustache = { render: function() {} };
+//Stub function for Underscore template testing
+_ = { template: function() { return this.render; }, render: function() {} };
 
 require(['jquery', 'xooie/base'], function($, Base) {
 
@@ -168,6 +170,20 @@ require(['jquery', 'xooie/base'], function($, Base) {
                     w.render(template, view);
 
                     expect(template.render).toHaveBeenCalledWith(view);
+                });
+
+                it('renders with Underscore.js', function() {
+                    var w = new Widget($('<div/>')),
+                        template = $('<script data-template-language="underscore">Test template</script>'),
+                        view = { test: 'value' };
+
+                    spyOn(_, 'template').andCallThrough();
+                    spyOn(_, 'render');
+
+                    w.render(template, view);
+
+                    expect(_.template).toHaveBeenCalledWith('Test template');
+                    expect(_.render).toHaveBeenCalledWith(view);
                 });
             });
         });

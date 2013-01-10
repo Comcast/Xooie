@@ -158,6 +158,14 @@ define(['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
             } else {
                 return false;
             }
+        },
+
+        'underscore': function(template, view) {
+            if (typeof _ !== 'undefined' && typeof _.template !== 'undefined') {
+                return _.template(template.html())(view);
+            } else {
+                return false;
+            }
         }
     };
 
