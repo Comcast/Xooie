@@ -69,7 +69,7 @@ define('xooie', ['jquery'], function($){
         mapName = Xooie.mapName,
         
         instantiateWidget = function(Widget){
-            new Widget(node);
+            new Widget(this);
         };
 
     $X = Xooie = function(element){
@@ -89,7 +89,7 @@ define('xooie', ['jquery'], function($){
             for (var i = 0; i < types.length; i++) {
                 module_name = $X.mapName(types[i], 'modules', 'xooie/');
 
-                require([module_name], instantiateWidget);
+                require([module_name], instantiateWidget.bind(node));
             }
         });
     };

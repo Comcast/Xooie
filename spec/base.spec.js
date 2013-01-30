@@ -1,7 +1,7 @@
 // Stub function for Mustache template testing
 Mustache = { render: function() {} };
 //Stub function for Underscore template testing
-_ = { template: function() { return this.render; }, render: function() {} };
+_ = { template: function() { return this.render; }, render: function() { return 'string'; } };
 
 require(['jquery', 'xooie/base'], function($, Base) {
 
@@ -178,7 +178,7 @@ require(['jquery', 'xooie/base'], function($, Base) {
                         view = { test: 'value' };
 
                     spyOn(_, 'template').andCallThrough();
-                    spyOn(_, 'render');
+                    spyOn(_, 'render').andCallThrough();
 
                     w.render(template, view);
 
