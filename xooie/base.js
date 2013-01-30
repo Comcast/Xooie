@@ -162,7 +162,7 @@ define(['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
 
         'underscore': function(template, view) {
             if (typeof _ !== 'undefined' && typeof _.template !== 'undefined') {
-                return _.template(template.html())(view);
+                return $(_.template(template.html())(view));
             } else {
                 return false;
             }
