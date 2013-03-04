@@ -115,6 +115,10 @@ define(['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
         Xooie.setCSSRules = function(rules){
             var rule;
 
+            if(typeof stylesInstance.addRule === 'undefined'){
+                return;
+            }
+
             for (rule in rules){
                 cssRules[rule] = stylesInstance.addRule(rule, rules[rule]);
             }
