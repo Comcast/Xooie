@@ -14,16 +14,10 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'xooie/base'], function($, Base) {
+define('xooie/tab', ['jquery', 'xooie/base'], function($, Base) {
 
     var Tab = Base('tab', function() {
         var self = this;
-
-        this.root.on('click', '[data-tab-control]', function(event) {
-            event.preventDefault();
-
-            self.switchToTab($(this).data('tab-index'));
-        });
 
         this.createTabs();
     });
@@ -81,9 +75,15 @@ define(['jquery', 'xooie/base'], function($, Base) {
                 template = this.root.find(this.options.tabTemplateSelector),
                 panels = this.getPanel(),
                 i, element, control,
-                activeTab = 0;
+                activeTab = 0, handler, self = this;
 
             this.getTab().remove();
+
+            handler = function(event) {
+                event.preventDefault();
+
+                self.switchToTab($(this).data('tab-index'));
+            };
 
             for (i = 0; i < panels.length; i++) {
                 if(tabStrip.length > 0 && template.length > 0) {
@@ -99,7 +99,8 @@ define(['jquery', 'xooie/base'], function($, Base) {
                         control = element.find(this.options.controlButtonSelector);
                     }
 
-                    control.data('tab-index', i);
+                    control.data('tab-index', i)
+                           .on('click', handler);
 
                     tabStrip.append(element);
                 }
@@ -115,4 +116,3 @@ define(['jquery', 'xooie/base'], function($, Base) {
 
     return Tab;
 });
-
