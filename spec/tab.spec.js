@@ -183,6 +183,16 @@ require(['jquery', 'xooie/tab'], function($, Tab) {
                 expect(tabStrip.find('li').eq(1).attr('label')).not.toEqual('Panel B');
             });
 
+            it('binds a handler that calls switchToTab with the associated tab index', function(){
+                spyOn(t, 'switchToTab');
+
+                t.createTabs();
+
+                t.getTab(0).trigger('click');
+
+                expect(t.switchToTab).toHaveBeenCalledWith(0);
+            });
+
             it('calls switchToTab', function() {
                 spyOn(t, 'switchToTab');
 
