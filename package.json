@@ -8,9 +8,9 @@
     "npm": "1.1.x"
   },
   "dependencies": {
-    "grunt": ">=0.3.16",
+    "grunt": "0.3.16",
     "requirejs": "*",
-    "grunt-requirejs": "*",
+    "grunt-requirejs": "0.2.14",
     "grunt-jasmine-runner": "latest"
   },
   "scripts": {
