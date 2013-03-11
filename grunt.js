@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 
-  var version = '0.0.6';
+  var version = '0.0.7';
 
   // Project configuration.
   grunt.initConfig({
@@ -22,6 +22,7 @@ module.exports = function(grunt) {
         "xooie/carousel",
         "xooie/dropdown",
         "xooie/tab",
+        "xooie/dialog",
         "xooie/addons/carousel_lentils",
         "xooie/addons/carousel_pagination",
         "xooie/addons/dropdown_accordion",
@@ -29,7 +30,7 @@ module.exports = function(grunt) {
         "xooie/addons/tab_animation"
       ],
       out: "build/xooie-" + version + ".js",
-      optimize: "uglify"
+      optimize: "none"
     },
     lint: {
       files: ['*.js', 'xooie/**/*.js', 'spec/**/*.js']
