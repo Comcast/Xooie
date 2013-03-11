@@ -41,8 +41,7 @@ define(['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
             instances[instanceCounter] = this;
             this.root.data(instanceName, instanceCounter);
 
-            //TODO: change this to a class
-            this.root.attr('id', name + '-' + instanceCounter);
+            this.root.addClass(name + '-' + instanceCounter);
 
             this.options = $.extend({}, Xooie.getDefaultOptions(), this.root.data());
 
