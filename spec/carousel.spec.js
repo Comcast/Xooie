@@ -158,7 +158,7 @@ require(['jquery', 'xooie/carousel'], function($, Carousel) {
 
                 carouselInstance.updateDimensions();
 
-                var rule = carouselInstance.stylesheet.getRule('#' + carouselInstance.root.attr('id') + ' .xooie-carousel-crop');
+                var rule = carouselInstance.stylesheet.getRule('.carousel-' + carouselInstance.root.data('carousel-instance') + ' .xooie-carousel-crop');
 
                 expect(rule.style.height).toEqual('130px');
             });
