@@ -33,11 +33,12 @@ define('xooie/tab', ['jquery', 'xooie/base'], function($, Base) {
     });
 
     $.extend(Tab.prototype, {
-        switchToTab: function(index) {
+        switchToTab: function(index, key) {
             if (index !== this._currentTab && index >= 0 && index < this.getPanel().length) {
                 var e = $.Event('tabChange');
                 e.fromTab = this._currentTab;
                 e.toTab = index;
+                e.which = key;
 
                 this.getPanel(this._currentTab).removeClass(this.options.activeTabClass);
                 this.getTab(this._currentTab).removeClass(this.options.activeTabClass);
@@ -80,9 +81,11 @@ define('xooie/tab', ['jquery', 'xooie/base'], function($, Base) {
             this.getTab().remove();
 
             handler = function(event) {
-                event.preventDefault();
+                var keys = [13,32];
 
-                self.switchToTab($(this).data('tab-index'));
+                if ([1,13,32].indexOf(event.which) !== -1){
+                    self.switchToTab($(this).data('tab-index'), event.which);
+                }
             };
 
             for (i = 0; i < panels.length; i++) {
@@ -100,7 +103,7 @@ define('xooie/tab', ['jquery', 'xooie/base'], function($, Base) {
                     }
 
                     control.data('tab-index', i)
-                           .on('click', handler);
+                           .on('mouseup keydown', handler);
 
                     tabStrip.append(element);
                 }
