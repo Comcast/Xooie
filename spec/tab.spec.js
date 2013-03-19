@@ -30,12 +30,26 @@ require(['jquery', 'xooie/tab'], function($, Tab) {
             t = new Tab(element);
         });
 
-        it('calls "switchToTab" on tab control click', function() {
+        it('calls "switchToTab" on tab control mouseup', function() {
             spyOn(t, 'switchToTab');
 
-            t.root.find('[data-tab-control]').trigger('click');
+            var e = $.Event('mouseup');
+            e.which = 1;
 
-            expect(t.switchToTab).toHaveBeenCalledWith(0);
+            t.root.find('[data-tab-control]:first').trigger(e);
+
+            expect(t.switchToTab).toHaveBeenCalledWith(0, 1);
+        });
+
+        it('calls "switchToTab" on tab control keydown', function(){
+            spyOn(t, 'switchToTab');
+
+            var e = $.Event('keydown');
+            e.which = 13;
+
+            t.root.find('[data-tab-control]:first').trigger(e);
+
+            expect(t.switchToTab).toHaveBeenCalledWith(0, 13);
         });
 
         describe('tabChange Event', function() {
