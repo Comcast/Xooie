@@ -23,14 +23,22 @@ define('xooie/dialog', ['jquery', 'xooie/base'], function($, Base) {
 
         Dialog._instances[this.id] = this;
 
+        this.root.attr('data-dialog-id', this.id);
+
         //add accessibility attributes
         this.root.find(this.options.containerSelector).attr('role', 'dialog');
 
         this.root.addClass('xooie-dialog');
 
         this.handlers = {
-            click: function(event){
+            mouseup: function(event){
                 Dialog.close(self.id);
+            },
+
+            keyup: function(event){
+                if([13,32].indexOf(event.which) !== -1){
+                    Dialog.close(self.id);
+                }
             }
         };
     });
