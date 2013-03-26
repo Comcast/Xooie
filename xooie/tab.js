@@ -78,6 +78,10 @@ define('xooie/tab', ['jquery', 'xooie/base'], function($, Base) {
                 i, element, control,
                 activeTab = 0, handler, self = this;
 
+            if (template.length === 0){
+                return;
+            }
+
             this.getTab().remove();
 
             handler = function(event) {

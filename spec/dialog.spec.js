@@ -75,12 +75,26 @@ require(['jquery', 'xooie/dialog'], function($, Dialog) {
                 expect(dialog2.deactivate).toHaveBeenCalled();
             });
 
-            it('binds all handlers to the closeButton', function(){
+            it('binds a mouseup handler to the closeButton', function(){
                 this.dialog.activate();
 
                 spyOn(Dialog, 'close');
 
-                this.dialog.root.find(this.dialog.options.closeButtonSelector).trigger('click');
+                this.dialog.root.find(this.dialog.options.closeButtonSelector).trigger('mouseup');
+
+                expect(Dialog.close).toHaveBeenCalledWith(this.dialog.id);
+            });
+
+            it('binds a keyup handler to the closeButton', function(){
+                this.dialog.activate();
+
+                spyOn(Dialog, 'close');
+
+                var event = $.Event('keyup');
+
+                event.which = 32;
+
+                this.dialog.root.find(this.dialog.options.closeButtonSelector).trigger(event);
 
                 expect(Dialog.close).toHaveBeenCalledWith(this.dialog.id);
             });
@@ -173,7 +187,7 @@ require(['jquery', 'xooie/dialog'], function($, Dialog) {
         describe('When calling the Dialog.open method...', function(){
             beforeEach(function(){
                 spyOn(this.dialog, 'activate');
-            }); 
+            });
 
             it('activates the dialog if nothing is active', function(){
                 Dialog.open(0);
