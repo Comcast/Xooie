@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'xooie/addons/base'], function($, Base) {
+define('xooie/addons/carousel_lentils', ['jquery', 'xooie/addons/base'], function($, Base) {
 
     var Lentils = Base('lentils', function(){
         var self = this;

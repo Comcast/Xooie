@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'xooie/base'], function($, Base) {
+define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
 
     var resizeTimer = null,
         carouselElements = $(),

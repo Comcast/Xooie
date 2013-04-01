@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'xooie/addons/base', 'async'], function($, Base, async) {
+define('xooie/addons/tab_animation', ['jquery', 'xooie/addons/base', 'async'], function($, Base, async) {
 
     var Animation = Base('animation', function(){
         var self = this,
