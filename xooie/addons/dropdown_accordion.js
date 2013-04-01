@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'xooie/addons/base'], function($, Base){
+define('xooie/addons/dropdown_accordion', ['jquery', 'xooie/addons/base'], function($, Base){
 
     var Accordion = Base('accordion', function() {
         var self = this;

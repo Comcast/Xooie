@@ -28,9 +28,6 @@ define(['jquery', 'xooie/base', 'xooie/addons/base'], function($, Base, AddonBas
         });
 
         describe('When a new Addon is created...', function(){
-            it('returns an empty object if no module is passed to the constructor', function(){
-                expect(new Addon()).toEqual({});
-            });
 
             it('invokes the constructor when an instance of the Addon is created', function(){
                 new Addon(w);
