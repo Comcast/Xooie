@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery'], function($) {
+define('xooie/addons/base', ['jquery'], function($) {
     var Base = function(name, constructor){
         var defaultOptions = {},
             initEvent = name.toLowerCase() + 'AddonInit',
@@ -47,6 +47,10 @@ define(['jquery'], function($) {
 
                 this.module.root.trigger(initEvent);
             };
+
+        wrapper.prototype.cleanup = function() {
+            this.module.root.removeClass(className);
+        };
 
         wrapper.getDefaultOptions = function(){
             return defaultOptions;

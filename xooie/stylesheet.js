@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery'], function($) {
+define('xooie/stylesheet', ['jquery'], function($) {
     var Stylesheet = function(name){
         var i, title;
 

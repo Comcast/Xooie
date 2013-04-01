@@ -97,6 +97,13 @@ define('xooie', ['jquery'], function($){
     Xooie.config = config;
     Xooie.mapName = mapName;
 
+    Xooie.registeredClasses = [];
+    Xooie.garbageCollect = function() {
+        for (var i = 0; i < this.registeredClasses.length; i++) {
+            this.registeredClasses[i].garbageCollect();
+        }
+    };
+
     return Xooie;
 });
 
