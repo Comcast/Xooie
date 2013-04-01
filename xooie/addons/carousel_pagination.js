@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'xooie/addons/base'], function($, Base){
+define('xooie/addons/carousel_pagination', ['jquery', 'xooie/addons/base'], function($, Base){
 
     var Pagination = Base('pagination', function() {
         var self = this;

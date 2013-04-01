@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define(['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
+define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
     var Base = function(name, constructor) {
         var instances, defaultOptions, instanceCounter, initEvent, instanceName, cssRules, stylesInstance, className, Xooie;
 
@@ -41,7 +41,8 @@ define(['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
             instances[instanceCounter] = this;
             this.root.data(instanceName, instanceCounter);
 
-            this.root.addClass(name + '-' + instanceCounter);
+            this.instanceClass = name + '-' + instanceCounter;
+            this.root.addClass(this.instanceClass);
 
             this.options = $.extend({}, Xooie.getDefaultOptions(), this.root.data());
 
@@ -95,6 +96,20 @@ define(['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
                 } else {
                     return result;
                 }
+            },
+
+            cleanup: function() {
+                var name;
+
+                for (name in this.addons) {
+                    if (this.addons.hasOwnProperty(name)) {
+                        this.addons[name].cleanup();
+                    }
+                }
+
+                this.root.removeClass(className);
+                this.root.removeClass(this.instanceClass);
+                this.root.data(instanceName, false);
             }
 
         };
@@ -132,6 +147,23 @@ define(['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
                 $.extend(defaultOptions, options);
             }
         };
+
+        Xooie.garbageCollect = function() {
+            var id, instance;
+
+            for (id in instances) {
+                if (instances.hasOwnProperty(id)) {
+                    instance = instances[id];
+
+                    if (instance.root.parents('body').length === 0) {
+                        instance.cleanup();
+                        delete instances[id];
+                    }
+                }
+            }
+        };
+
+        $X.registeredClasses.push(Xooie);
 
         return Xooie;
     };
