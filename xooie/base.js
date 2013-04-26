@@ -23,7 +23,8 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         defaultOptions = {};
 
         name = name.toLowerCase();
-        initEvent = name + 'Init';
+        initEvent = 'xooie-init.' + name;
+        refreshEvent = name + 'xooie-refresh.' + name;
         instanceName = name + '-instance';
         instanceCounter = 0;
         className = 'is-' + name + '-instantiated';
@@ -35,6 +36,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
             this.root = $(root);
 
             if (this.root.data(instanceName)) {
+                this.root.trigger(refreshEvent);
                 return instances[this.root.data(instanceName)];
             }
             instanceCounter++;
@@ -114,11 +116,12 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
         };
 
-        $.event.special[initEvent] = {
+        $.event.special['xooie-init'] = {
             add: function(handleObj) {
                 var control = $(this).data(instanceName);
                 if (control) {
-                    var event = $.Event(initEvent);
+                    var event = $.Event('xooie-init');
+                    event.namespace = name;
                     event.data = handleObj.data;
 
                     handleObj.handler.call(this, event);
