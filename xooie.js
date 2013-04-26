@@ -23,7 +23,8 @@ $X = Xooie = (function(static_config) {
         },
         obj = function() {
             return false;
-        };
+        },
+        gcTimer = null;
 
     function copyObj(dst, src) {
         var name;
@@ -32,6 +33,12 @@ $X = Xooie = (function(static_config) {
             if (src.hasOwnProperty(name)) {
                 dst[name] = src[name];
             }
+        }
+    }
+
+    function gcCallback() {
+        if (typeof Xooie.garbageCollect !== 'undefined') {
+            Xooie.garbageCollect();
         }
     }
 
@@ -47,6 +54,17 @@ $X = Xooie = (function(static_config) {
                 }
             }
         }
+
+        if (typeof cfg.gcInterval !== 'undefined') {
+            if (config.gcInterval) {
+                gcTimer = setInterval(gcCallback, config.gcInterval);
+            } else {
+                if (gcTimer) {
+                    clearInterval(gcTimer);
+                }
+                gcTimer = null;
+            }
+        }
     };
 
     obj.mapName = function(name, type, root) {
@@ -56,6 +74,10 @@ $X = Xooie = (function(static_config) {
             return config[type][name];
         }
     };
+
+    obj.config({
+        gcInterval: 0
+    });
 
     if (static_config) {
         obj.config(static_config);
@@ -67,7 +89,7 @@ $X = Xooie = (function(static_config) {
 define('xooie', ['jquery'], function($){
     var config = Xooie.config,
         mapName = Xooie.mapName,
-        
+
         instantiateWidget = function(Widget){
             new Widget(this);
         };
