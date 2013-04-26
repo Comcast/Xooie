@@ -194,7 +194,7 @@ require(['jquery', 'xooie/base'], function($, Base) {
                 var element = $('<div/>'),
                     handler = jasmine.createSpy();
 
-                element.bind('testInit', handler);
+                element.bind('xooie-init.test', handler);
 
                 new Widget(element);
 
@@ -207,7 +207,7 @@ require(['jquery', 'xooie/base'], function($, Base) {
 
                 new Widget(element);
 
-                element.bind('testInit', handler);
+                element.bind('xooie-init.test', handler);
 
                 expect(handler).toHaveBeenCalled();
             });
