@@ -68,7 +68,7 @@ define(['jquery', 'xooie/base', 'xooie/addons/base'], function($, Base, AddonBas
 
             it('triggers an event indicating that the addon has been instantiated', function(){
                 var testVal = false;
-                w.root.on('testAddonInit', function(){
+                w.root.on('xooie-addon-init.test', function(){
                     testVal = true;
                 });
 
