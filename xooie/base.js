@@ -15,6 +15,21 @@
 */
 
 define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
+    $.event.special['xooie-init'] = {
+        add: function(handleObj) {
+            var control = $(this).data(handleObj.namespace + '-instance');
+            if (control) {
+                var event = $.Event('xooie-init');
+                event.namespace = handleObj.namespace;
+                event.data = handleObj.data;
+
+                handleObj.handler.call(this, event);
+            }
+        }
+    };
+
+    var _loadedAddons = {};
+
     var Base = function(name, constructor) {
         var instances, defaultOptions, instanceCounter, initEvent, instanceName, cssRules, stylesInstance, className, Xooie;
 
@@ -34,16 +49,17 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
         Xooie = function(root) {
             this.root = $(root);
+            this._name = name;
 
             if (this.root.data(instanceName)) {
                 this.root.trigger(refreshEvent);
                 return instances[this.root.data(instanceName)];
             }
-            instanceCounter++;
+            instanceCounter+=1;
             instances[instanceCounter] = this;
             this.root.data(instanceName, instanceCounter);
 
-            this.instanceClass = name + '-' + instanceCounter;
+            this.instanceClass = this._name + '-' + instanceCounter;
             this.root.addClass(this.instanceClass);
 
             this.options = $.extend({}, Xooie.getDefaultOptions(), this.root.data());
@@ -80,12 +96,17 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
                     this.addons = {};
                 }
 
-                try {
-                    require([addon_name], function(Addon){
-                        new Addon(self);
-                    });
-                } catch (e) {
-                    //need to determine how to handle missing addons
+                if (_loadedAddons[addon_name]) {
+                    new _loadedAddons[addon_name](self);
+                } else {
+                    try {
+                        require([addon_name], function(Addon){
+                            _loadedAddons[addon_name] = Addon;
+                            new Addon(self);
+                        });
+                    } catch (e) {
+                        //need to determine how to handle missing addons
+                    }
                 }
             },
 
@@ -114,19 +135,6 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
                 this.root.data(instanceName, false);
             }
 
-        };
-
-        $.event.special['xooie-init'] = {
-            add: function(handleObj) {
-                var control = $(this).data(instanceName);
-                if (control) {
-                    var event = $.Event('xooie-init');
-                    event.namespace = name;
-                    event.data = handleObj.data;
-
-                    handleObj.handler.call(this, event);
-                }
-            }
         };
 
         Xooie.setCSSRules = function(rules){
