@@ -90,8 +90,16 @@ define('xooie', ['jquery'], function($){
     var config = Xooie.config,
         mapName = Xooie.mapName,
 
-        instantiateWidget = function(Widget){
-            new Widget(this);
+        _loadedModules = {},
+        loadModule = function(moduleName, node){
+            if (_loadedModules[moduleName]) {
+                new _loadedModules[moduleName](node);
+            } else {
+                require([moduleName], function(Widget){
+                    _loadedModules[moduleName] = Widget;
+                    new Widget(node);
+                });
+            }
         };
 
     $X = Xooie = function(element){
@@ -108,16 +116,20 @@ define('xooie', ['jquery'], function($){
                 module_name,
                 types = node.data('widgetType').split(/\s+/);
 
+
+
             for (var i = 0; i < types.length; i++) {
                 module_name = $X.mapName(types[i], 'modules', 'xooie/');
 
-                require([module_name], instantiateWidget.bind(node));
+                loadModule(module_name, node);
             }
         });
     };
 
     Xooie.config = config;
     Xooie.mapName = mapName;
+
+    
 
     Xooie.registeredClasses = [];
     Xooie.garbageCollect = function() {
