@@ -28,8 +28,6 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         }
     };
 
-    var _loadedAddons = {};
-
     var Base = function(name, constructor) {
         var instances, defaultOptions, instanceCounter, initEvent, instanceName, cssRules, stylesInstance, className, Xooie;
 
@@ -96,17 +94,12 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
                     this.addons = {};
                 }
 
-                if (_loadedAddons[addon_name]) {
-                    new _loadedAddons[addon_name](self);
-                } else {
-                    try {
-                        require([addon_name], function(Addon){
-                            _loadedAddons[addon_name] = Addon;
-                            new Addon(self);
-                        });
-                    } catch (e) {
-                        //need to determine how to handle missing addons
-                    }
+                try {
+                    $X._requireShim(addon_name, function(Addon){
+                        new Addon(self);
+                    });
+                } catch (e) {
+                    //need to determine how to handle missing addons
                 }
             },
 
