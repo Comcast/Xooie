@@ -103,16 +103,15 @@ define('xooie', ['jquery'], function($){
         widgetElements.each(function(){
             var node = $(this),
                 module_name,
-                types = node.data('widgetType').split(/\s+/);
-
-
+                types = node.data('widgetType').split(/\s+/),
+                require_handler = function(Widget) {
+                  new Widget(node);
+                };
 
             for (var i = 0; i < types.length; i++) {
                 module_name = $X.mapName(types[i], 'modules', 'xooie/');
 
-                $X._requireShim(module_name, function(Widget) {
-                    new Widget(node);
-                });
+                $X._requireShim(module_name, require_handler);
             }
         });
     };
@@ -143,7 +142,7 @@ define('xooie', ['jquery'], function($){
                 moduleSpec.callbacks = [];
             });
         } else {
-            moduleSpec = loadedModules[module]
+            moduleSpec = loadedModules[module];
         }
 
         if (moduleSpec.loaded) {
