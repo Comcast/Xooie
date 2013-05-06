@@ -89,18 +89,7 @@ $X = Xooie = (function(static_config) {
 define('xooie', ['jquery'], function($){
     var config = Xooie.config,
         mapName = Xooie.mapName,
-
-        _loadedModules = {},
-        loadModule = function(moduleName, node){
-            if (_loadedModules[moduleName]) {
-                new _loadedModules[moduleName](node);
-            } else {
-                require([moduleName], function(Widget){
-                    _loadedModules[moduleName] = Widget;
-                    new Widget(node);
-                });
-            }
-        };
+        loadedModules = {};
 
     $X = Xooie = function(element){
         element = $(element);
@@ -121,7 +110,9 @@ define('xooie', ['jquery'], function($){
             for (var i = 0; i < types.length; i++) {
                 module_name = $X.mapName(types[i], 'modules', 'xooie/');
 
-                loadModule(module_name, node);
+                $X._requireShim(module_name, function(Widget) {
+                    new Widget(node);
+                });
             }
         });
     };
@@ -129,7 +120,38 @@ define('xooie', ['jquery'], function($){
     Xooie.config = config;
     Xooie.mapName = mapName;
 
-    
+    Xooie._requireShim = function(module, callback) {
+        var moduleSpec;
+
+        if (typeof loadedModules[module] === 'undefined') {
+            moduleSpec = loadedModules[module] = {
+                content: null,
+                loaded: false,
+                callbacks: []
+            };
+
+            require([module], function(Module) {
+                var i;
+
+                moduleSpec.content = Module;
+                moduleSpec.loaded = true;
+
+                for (i = 0; i < moduleSpec.callbacks.length; i++) {
+                    moduleSpec.callbacks[i](Module);
+                }
+
+                moduleSpec.callbacks = [];
+            });
+        } else {
+            moduleSpec = loadedModules[module]
+        }
+
+        if (moduleSpec.loaded) {
+            callback(moduleSpec.content);
+        } else {
+            moduleSpec.callbacks.push(callback);
+        }
+    };
 
     Xooie.registeredClasses = [];
     Xooie.garbageCollect = function() {
