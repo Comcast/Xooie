@@ -107,7 +107,7 @@ define('xooie/tab', ['jquery', 'xooie/base'], function($, Base) {
                     }
 
                     control.data('tab-index', i)
-                           .on('mouseup keydown', handler);
+                           .on('mouseup keyup', handler);
 
                     tabStrip.append(element);
                 }
