@@ -37,7 +37,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
         name = name.toLowerCase();
         initEvent = 'xooie-init.' + name;
-        refreshEvent = name + 'xooie-refresh.' + name;
+        refreshEvent = 'xooie-refresh.' + name;
         instanceName = name + '-instance';
         instanceCounter = 0;
         className = 'is-' + name + '-instantiated';
