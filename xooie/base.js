@@ -333,12 +333,12 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
         //defaultOptions = {};
 
-        //name = name.toLowerCase();
-        //initEvent = 'xooie-init.' + name;
-        //refreshEvent = name + 'xooie-refresh.' + name;
-        //instanceName = name + '-instance';
-        //instanceCounter = 0;
-        //className = 'is-' + name + '-instantiated';
+        name = name.toLowerCase();
+        initEvent = 'xooie-init.' + name;
+        refreshEvent = 'xooie-refresh.' + name;
+        instanceName = name + '-instance';
+        instanceCounter = 0;
+        className = 'is-' + name + '-instantiated';
 
         //cssRules = {};
         //stylesInstance = new Stylesheet('Xooie');
