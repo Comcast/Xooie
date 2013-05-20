@@ -19,10 +19,14 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
     //  Extend and module
     //  create stylesheet that can be modified
 
+    var Base,
+        definedProps, instanceCache,
+        _stylesheet;
+
     $.event.special['xooie-init'] = {
         add: function(handleObj) {
-            var control = $(this).data(handleObj.namespace + '-instance');
-            if (control) {
+            var control = $(this).data('instance');
+            if (typeof control !== 'undefined') {
                 var event = $.Event('xooie-init');
                 event.namespace = handleObj.namespace;
                 event.data = handleObj.data;
@@ -58,44 +62,69 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         }
     }
 
-    var Base,
-        definedProps, instances, instanceId,
-        _stylesheet;
+    function cacheInstance (instance) {
+        if (typeof instance !== 'undefined') {
+            var index = instanceCache._index;
+
+            instanceCache._index += 1;
+
+            if (typeof instanceCache[index] === 'undefined') {
+                instanceCache[index] = instance;
+
+                return index;
+            } else {
+                return cacheInstance(instance);
+            }
+        }
+    }
+
+    function clearInstance (instance) {
+        var id = instance.get('id');
+
+        if (instanceCache.hasOwnProperty(id)) {
+            instance.cleanup();
+            delete instanceCache[id];
+        }
+    }
 
     //an array of all properties that have been defined
     definedProps = [];
 
     //An array that contains all instances of all instantiated modules.
-    instances = [];
+    instanceCache = { _index: 0 };
 
     Base = function(element) {
-        this.root = $(element);
-
-        //cache the root data
-        this._data = this.root.data();
+        element = $(element);
 
         //set the default options
-        this.setData();
+        this.setData(element.data());
 
         //do instance tracking
-        if (this.root.data('instance')) {
-            this.root.trigger(this.get('refreshEvent'));
-            return instances[this.root.data('instance')];
+        //TODO: check if the cache has a defined value for this instance
+        if (element.data('instance')) {
+            if (typeof instanceCache[element.data('instance')] !== 'undefined'){
+                element.trigger(this.get('refreshEvent'));
+                return instanceCache[element.data('instance')];
+            } else {
+                this.cleanup();
+            }
         }
 
-        //set instanceId to the index of the newly-pushed element...
-        var instanceId = (instances.push(this)) - 1;
+        var id = cacheInstance(this);
 
-        //...and set the instance value on the root element to that id.
-        //It is set as an attribute so it can be selected via css
-        this.root.atrr('data-instance', instanceId);
+        this.set('id', id);
+        
+        element.attr('data-instance', id);
 
-        //create stylesheet object
+        this.set('root', element);
 
-        //extend cssRules object
+        //expose css rules somehow
+
 
         //load addons - this is where it gets tricky.
         //addons need to be loaded AFTER the constructor is called.
+
+        //trigger initialization??
     };
 
     //CLASS METHODS
@@ -117,11 +146,11 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
     Base.defineReadable = function(name, defaultValue){
         var prop = propertyDetails(name);
 
-        propertyDispatcher(name);
+        propertyDispatcher(name, this.prototype);
 
         if (typeof this.prototype[prop.getter] !== 'function') {
             this.prototype[prop.getter] = function() {
-                var value = typeof this[prop.name] !== 'undefined' ? this[prop.name] : defaultValue;
+                var value = typeof this[prop.value] !== 'undefined' ? this[prop.value] : defaultValue;
 
                 if (typeof this[prop.processor] === 'function') {
                     return this[prop.processor](value);
@@ -134,20 +163,26 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
     Base.define = function(name, defaultValue){
         this.defineReadable(name, defaultValue);
-        this.defineWriteable(name);
+        this.defineWritable(name);
     };
 
     Base.extend = function(constructor){
-        var _super = this;
+        var _super = this,
+            _child;
+
+        _child = function(element) {
+            _super.apply(this, element);
+            constructor.apply(this, element);
+        };
 
         //set the base constructor as the super?
         // -- could be problematic, expecially if we keep extending
 
-        constructor = constructor || function(element){ _super.apply(this, element); };
+        //constructor = constructor || function(element){ _super.apply(this, element); };
 
-        $.extend(true, constructor, _super);
+        $.extend(true, _child, _super);
 
-        return constructor;
+        return _child;
     };
 
     Base.setStyleRules = function(rules){
@@ -169,6 +204,10 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
     //PROPERTY DEFINITIONS
 
+    Base.define('id');
+
+    Base.define('root');
+
     Base.define('namespace', '');
 
     Base.define('templateLanguage', 'micro_template');
@@ -186,7 +225,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         var prop = propertyDetails(name);
 
         if (typeof this[prop.setter] === 'function') {
-            this[prop.setter](name, value);
+            this[prop.setter](value);
         }
     };
 
@@ -196,15 +235,17 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         return this[prop.getter]();
     };
 
-    Base.prototype.setData = function() {
+    Base.prototype.setData = function(data) {
         var i;
 
         for (i = 0; i < definedProps.length; i+=1) {
-            if (typeof this._data[definedProps[i]] !== 'undefined') {
-                this.set(definedProps[i], this._data[definedProps[i]]);
+            if (typeof data[definedProps[i]] !== 'undefined') {
+                this.set(definedProps[i], data[definedProps[i]]);
             }
         }
     };
+
+    Base.prototype.cleanup = function() { };
 
     Base.prototype._process_refreshEvent = function(refreshEvent){
         return refreshEvent + '.' + this.get('namespace');
@@ -279,7 +320,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
             }
         }
     };
-
+/*
     Base.prototype = {
         loadAddon: function(addon){
             var self = this,
@@ -324,7 +365,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         }
     };
 
-
+*/
 
     var _Base = function(name, constructor) {
         var instances, defaultOptions, instanceCounter, initEvent, instanceName, cssRules, stylesInstance, className, Xooie;
@@ -471,8 +512,6 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
     };
 
     //Base.default_template_language = 'micro_template';
-
-    
 
     return Base;
 });
