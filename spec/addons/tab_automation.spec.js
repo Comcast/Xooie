@@ -1,4 +1,4 @@
-define(['jquery', 'xooie/tab', 'xooie/addons/tab_automation'], function($, Tab, Automation) {
+require(['jquery', 'xooie/tab', 'xooie/addons/tab_automation'], function($, Tab, Automation) {
     describe('Tab Automation Addon', function(){
         var tabInst, autoInst, el, offset;
 
@@ -7,7 +7,7 @@ define(['jquery', 'xooie/tab', 'xooie/addons/tab_automation'], function($, Tab, 
             spyOn($.fn, 'height').andReturn(1200);
 
             el = $([
-                '<div data-addons="tab_automation" data-delay="1">',
+                '<div data-delay="1">',
                     '<ul data-role="tab-strip"></ul>',
                     '<script type="application/x-jquery-tmpl" data-role="tab-template">',
                         '<li data-tab-conrol="true"></li>',
@@ -20,7 +20,9 @@ define(['jquery', 'xooie/tab', 'xooie/addons/tab_automation'], function($, Tab, 
 
             tabInst = new Tab(el);
 
-            autoInst = tabInst.addons.automation;
+            tabInst.addons = {};
+
+            autoInst = new Automation(tabInst);
         });
 
         afterEach(function(){

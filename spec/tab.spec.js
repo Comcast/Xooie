@@ -41,10 +41,10 @@ require(['jquery', 'xooie/tab'], function($, Tab) {
             expect(t.switchToTab).toHaveBeenCalledWith(0, 1);
         });
 
-        it('calls "switchToTab" on tab control keydown', function(){
+        it('calls "switchToTab" on tab control keyup', function(){
             spyOn(t, 'switchToTab');
 
-            var e = $.Event('keydown');
+            var e = $.Event('keyup');
             e.which = 13;
 
             t.root.find('[data-tab-control]:first').trigger(e);

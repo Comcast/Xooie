@@ -31,19 +31,27 @@ module.exports = function(grunt) {
     },
     jasmine: {
       test: {
-        src: "xooie/base.js",
+        src: "xooie/**/*.js",
         options: {
-          specs: ["spec/base.spec.js"],
-          template: require('grunt-template-jasmine-requirejs'),
+          specs: "spec/**/*.spec.js",
+          template: require("grunt-template-jasmine-requirejs"),
+          vendor: ["lib/jquery.js","lib/require.js","lib/micro_tmpl.js","lib/jasmine-jquery.js"],
+          helpers: "spec/helpers.js",
           templateOptions: {
             requireConfigFile: 'lib/config.js'
           }
         }
       }
+    },
+    jshint: {
+      files: 'xooie/**/*.js'
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+
+  grunt.registerTask('test', ['jshint', 'jasmine']);
 
 };

@@ -1,7 +1,7 @@
 {
   "name": "Xooie",
   "description": "A highly modular, extensible JavaScript UI framework.",
-  "version": "0.1.0",
+  "version": "0.0p8",
   "keywords": [
     "ui",
     "modular",
@@ -40,6 +40,7 @@
     "grunt": "~0.4.1",
     "grunt-contrib-requirejs": "~0.4.1",
     "grunt-contrib-jasmine": "~0.4.2",
-    "grunt-template-jasmine-requirejs": "~0.1.2"
+    "grunt-template-jasmine-requirejs": "~0.1.2",
+    "grunt-contrib-jshint": "~0.5.4"
   }
 }
