@@ -12,10 +12,3 @@ if (!Function.prototype.bind) {
         };
     };
 }
-
-require.config({
-    paths: {
-        jquery: 'lib/jquery',
-        async: 'lib/async'
-    }
-});

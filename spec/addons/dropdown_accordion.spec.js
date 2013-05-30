@@ -1,11 +1,15 @@
-define(['jquery', 'xooie/dropdown', 'xooie/addons/dropdown_accordion'], function($, Dropdown, Accordion) {
+require(['jquery', 'xooie/dropdown', 'xooie/addons/dropdown_accordion'], function($, Dropdown, Accordion) {
     describe('Dropdown Accordion', function(){
-        var el, d;
+        var el, d, a;
 
         beforeEach(function(){
-            el = $('<div data-addons="dropdown_accordion"><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div></div>');
+            el = $('<div><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div></div>');
         
             d = new Dropdown(el);
+
+            d.addons = {};
+
+            a = new Accordion(d);
         });
 
         describe('When instantiating the addon...', function(){
