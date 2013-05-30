@@ -435,7 +435,9 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
                 try {
                     $X._requireShim(addon_name, function(Addon){
-                        new Addon(self);
+                        if (typeof Addon === 'function') {
+                            new Addon(self);
+                        }
                     });
                 } catch (e) {
                     //need to determine how to handle missing addons
