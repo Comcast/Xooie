@@ -1,10 +1,10 @@
-define(['jquery', 'xooie/tab', 'xooie/addons/tab_animation', 'async'], function($, Tab, Animation, async) {
+require(['jquery', 'xooie/tab', 'xooie/addons/tab_animation', 'async'], function($, Tab, Animation, async) {
     describe('Tab Animation Addon', function(){
         var tabInst, aniInst, el;
 
         beforeEach(function(){
             el = $([
-                '<div data-addons="tab_animation">',
+                '<div>',
                     '<ul data-role="tab-strip"></ul>',
                     '<script type="application/x-jquery-tmpl" data-role="tab-template">',
                         '<li data-tab-conrol="true"></li>',
@@ -17,7 +17,9 @@ define(['jquery', 'xooie/tab', 'xooie/addons/tab_animation', 'async'], function(
 
             tabInst = new Tab(el);
 
-            aniInst = tabInst.addons.animation;
+            tabInst.addons = {};
+
+            aniInst = new Animation(tabInst);
         });
 
         describe('When changing tabs...', function(){
