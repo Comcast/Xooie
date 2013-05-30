@@ -1,4 +1,4 @@
-define(['jquery', 'xooie/carousel', 'xooie/addons/carousel_lentils'], function($, Carousel, Lentils) {
+require(['jquery', 'xooie/carousel', 'xooie/addons/carousel_lentils'], function($, Carousel, Lentils) {
 
     describe('Carousel Lentil Addon', function(){
         var element, c, l, positionLeft, template;
@@ -11,7 +11,7 @@ define(['jquery', 'xooie/carousel', 'xooie/addons/carousel_lentils'], function($
             });
 
             element = $([
-                '<div data-addons="carousel_lentils">',
+                '<div>',
                     '<div data-role="carousel-content">',
                         '<span></span>',
                         '<span style="height: 100px; margin: 10px"></span>',
@@ -30,13 +30,16 @@ define(['jquery', 'xooie/carousel', 'xooie/addons/carousel_lentils'], function($
 
             c = new Carousel(element);
 
+            c.addons = {};
+
             spyOn(c, 'render').andReturn('<li></li>');
 
-            l = c.addons.lentils;
+            l = new Lentils(c);
         });
 
         describe('When instantiating the adddon...', function(){
             it('adds the class is-carousel-lentiled to the root', function(){
+                console.log(c.root);
                 expect(c.root.hasClass('is-carousel-lentiled')).toBe(true);
             });
 
@@ -157,6 +160,8 @@ define(['jquery', 'xooie/carousel', 'xooie/addons/carousel_lentils'], function($
                 });
 
                 it('does not render lentils if the pagination addon is not present', function(){
+                    c.render.reset();
+
                     expect(l.lentilBuilders.page(container, template)).toBeUndefined();
                     expect(c.render).not.toHaveBeenCalled();
                 });

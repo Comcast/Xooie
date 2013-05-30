@@ -1,5 +1,9 @@
 build/*
 
+app/*
+
+*.gem
+
 _SpecRunner.html
 
 .DS_Store
