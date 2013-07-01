@@ -1,6 +1,6 @@
 require(['jquery', 'xooie/tab'], function($, Tab) {
 
-    describe('Tab', function() {
+    xdescribe('Tab', function() {
 
         var element, t;
 

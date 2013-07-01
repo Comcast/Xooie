@@ -19,14 +19,13 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
     //  Extend and module
     //  create stylesheet that can be modified
 
-    var Base,
-        definedProps, instanceCache,
+    var Base, instanceCache,
         _stylesheet;
 
     $.event.special['xooie-init'] = {
         add: function(handleObj) {
-            var control = $(this).data('instance');
-            if (typeof control !== 'undefined') {
+            var id = $(this).data('instance');
+            if (typeof id !== 'undefined') {
                 var event = $.Event('xooie-init');
                 event.namespace = handleObj.namespace;
                 event.data = handleObj.data;
@@ -40,7 +39,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         return {
             getter: '_get_' + name,
             setter: '_set_' + name,
-            procesor: '_process_' + name,
+            processor: '_process_' + name,
             validator: '_validate_' + name,
             value: '_' + name
         };
@@ -50,7 +49,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         var prop = propertyDetails(name);
 
         if (typeof prototype[name] !== 'function') {
-            definedProps.push(name);
+            prototype._definedProps.push(name);
 
             prototype[name] = function(value) {
                 if (typeof value === 'undefined') {
@@ -87,17 +86,16 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         }
     }
 
-    //an array of all properties that have been defined
-    definedProps = [];
-
     //An array that contains all instances of all instantiated modules.
     instanceCache = { _index: 0 };
 
     Base = function(element) {
+        var self = this;
+
         element = $(element);
 
         //set the default options
-        this.setData(element.data());
+        this._setData(element.data());
 
         //do instance tracking
         //TODO: check if the cache has a defined value for this instance
@@ -116,15 +114,29 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         
         element.attr('data-instance', id);
 
-        this.set('root', element);
+        this.root(element);
+
+        element.addClass(this.get('className'));
 
         //expose css rules somehow
 
+        var initCheck = function(){
+            if (!self._extendCount || self._extendCount <= 0) {
+                //load addons
+                element.trigger(self.get('initEvent'));
+                self._extendCount = null;
+            } else {
+                setTimeout(initCheck, 0);
+            }
+        };
 
-        //load addons - this is where it gets tricky.
-        //addons need to be loaded AFTER the constructor is called.
+        if (typeof this._extendCount > 0) {
+            setTimeout(initCheck, 0);
+        } else {
+            initCheck();
+        }
 
-        //trigger initialization??
+        
     };
 
     //CLASS METHODS
@@ -170,17 +182,16 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         var _super = this,
             _child;
 
-        _child = function(element) {
-            _super.apply(this, element);
-            constructor.apply(this, element);
+        _child = function() {
+            _super.apply(this, arguments);
+            constructor.apply(this, arguments);
+            this._extendCount -= 1;
         };
 
-        //set the base constructor as the super?
-        // -- could be problematic, expecially if we keep extending
-
-        //constructor = constructor || function(element){ _super.apply(this, element); };
-
         $.extend(true, _child, _super);
+        $.extend(true, _child.prototype, _super.prototype);
+
+        _child.prototype._extendCount = typeof _child.prototype._extendCount === 'undefined' ? 1 : _child.prototype._extendCount += 1;
 
         return _child;
     };
@@ -201,6 +212,8 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         }
     };
 
+    //an array of all properties that have been defined
+    Base.prototype._definedProps = [];
 
     //PROPERTY DEFINITIONS
 
@@ -221,6 +234,16 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
     //PROTOTYPE DEFINITIONS
 
+    Base.prototype._setData = function(data) {
+        var i;
+
+        for (i = 0; i < this._definedProps.length; i+=1) {
+            if (typeof data[this._definedProps[i]] !== 'undefined') {
+                this.set(this._definedProps[i], data[this._definedProps[i]]);
+            }
+        }
+    };
+
     Base.prototype.set = function(name, value) {
         var prop = propertyDetails(name);
 
@@ -235,32 +258,22 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         return this[prop.getter]();
     };
 
-    Base.prototype.setData = function(data) {
-        var i;
-
-        for (i = 0; i < definedProps.length; i+=1) {
-            if (typeof data[definedProps[i]] !== 'undefined') {
-                this.set(definedProps[i], data[definedProps[i]]);
-            }
-        }
-    };
-
     Base.prototype.cleanup = function() { };
 
     Base.prototype._process_refreshEvent = function(refreshEvent){
-        return refreshEvent + '.' + this.get('namespace');
+        return this.namespace() === '' ? refreshEvent : refreshEvent + '.' + this.namespace();
     };
 
     Base.prototype._process_initEvent = function(initEvent){
-        return initEvent + '.' + this.get('namespace');
+        return this.namespace() === '' ? initEvent : initEvent + '.' + this.namespace();
     };
 
     Base.prototype._process_className = function(className) {
-        return className + '-' + this.get('namespace');
+        return this.namespace() === '' ? className : className + '-' + this.namespace();
     };
 
     //Template rendering
-    //Base.defaultTemplateLanguage = 'micro_template';
+
     //render methods could be private...
     Base.renderMethods = {
         'micro_template': function(template, view) {
@@ -295,16 +308,6 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
             }
         }
     };
-
-    /*Base.getDefaultOptions = function(){
-        return defaultOptions || {};
-    };
-
-    Base.setDefaultOptions = function(options) {
-        if (typeof options !== 'undefined') {
-            $.extend(defaultOptions, options);
-        }
-    };*/
 
     Base.garbageCollect = function() {
         var id, instance;
@@ -411,7 +414,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
             //constructor.apply(this, arguments);
 
-            this.root.addClass(className);
+            //this.root.addClass(className);
 
             if(this.options.addons) {
                 addons = this.options.addons.split(' ');
@@ -421,7 +424,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
                 }
             }
 
-            this.root.trigger(initEvent);
+            //this.root.trigger(initEvent);
         };
 
         Xooie.prototype = {
@@ -512,8 +515,6 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
         return Xooie;
     };
-
-    //Base.default_template_language = 'micro_template';
 
     return Base;
 });

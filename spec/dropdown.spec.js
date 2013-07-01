@@ -1,5 +1,5 @@
 require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
-    describe('Dropdown', function(){
+    xdescribe('Dropdown', function(){
         var el, d;
 
         describe('When initializing a dropdown...', function(){

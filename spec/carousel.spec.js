@@ -1,6 +1,6 @@
 require(['jquery', 'xooie/carousel'], function($, Carousel) {
 
-    describe('Carousel', function(){
+    xdescribe('Carousel', function(){
         var element, carouselInstance, positionLeft;
 
         beforeEach(function(){

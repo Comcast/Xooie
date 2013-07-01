@@ -1,5 +1,5 @@
 require(['jquery', 'xooie/dropdown', 'xooie/addons/dropdown_accordion'], function($, Dropdown, Accordion) {
-    describe('Dropdown Accordion', function(){
+    xdescribe('Dropdown Accordion', function(){
         var el, d, a;
 
         beforeEach(function(){
