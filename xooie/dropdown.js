@@ -86,18 +86,20 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
             }
         }, this.options.dropdownHandleSelector);
 
-        handles.each(function(index){
-            var handle = $(this),
-                expander = expanders.eq(index);
+        this.root.on('xooie-init.dropdown xooie-refresh.dropdown', function(){
+            handles.each(function(index){
+                var handle = $(this),
+                    expander = expanders.eq(index);
 
 
-            handle.attr({
-                'data-dropdown-index': index,
-                'aria-selected': false
-            });
-            expander.attr({
-                'data-dropdown-index': index,
-                'aria-hidden': true
+                handle.attr({
+                    'data-dropdown-index': index,
+                    'aria-selected': false
+                });
+                expander.attr({
+                    'data-dropdown-index': index,
+                    'aria-hidden': true
+                });
             });
         });
 
