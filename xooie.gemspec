@@ -1,9 +1,9 @@
 require 'json'
 
-FileUtils.mkdir_p 'app/assets/javascripts'
+FileUtils.mkdir_p 'app/vendor/javascripts'
 
-FileUtils.cp 'xooie.js', 'app/assets/javascripts'
-FileUtils.cp_r 'xooie', 'app/assets/javascripts'
+FileUtils.cp 'xooie.js', 'app/vendor/javascripts'
+FileUtils.cp_r 'xooie', 'app/vendor/javascripts'
 
 json = File.read('package.json')
 config = JSON.parse(json)
