@@ -2,7 +2,7 @@ require(['jquery', 'xooie/base', 'xooie/addons/base'], function($, Base, AddonBa
 
     var constructor, baseConstructor, Widget, Addon, w, a;
 
-    describe('Addon Base', function(){
+    xdescribe('Addon Base', function(){
         beforeEach(function(){
             define('testWidget', function(){
                 return true;

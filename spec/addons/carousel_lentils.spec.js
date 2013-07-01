@@ -1,6 +1,6 @@
 require(['jquery', 'xooie/carousel', 'xooie/addons/carousel_lentils'], function($, Carousel, Lentils) {
 
-    describe('Carousel Lentil Addon', function(){
+    xdescribe('Carousel Lentil Addon', function(){
         var element, c, l, positionLeft, template;
 
         beforeEach(function(){

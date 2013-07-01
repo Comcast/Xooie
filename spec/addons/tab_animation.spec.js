@@ -1,5 +1,5 @@
 require(['jquery', 'xooie/tab', 'xooie/addons/tab_animation', 'async'], function($, Tab, Animation, async) {
-    describe('Tab Animation Addon', function(){
+    xdescribe('Tab Animation Addon', function(){
         var tabInst, aniInst, el;
 
         beforeEach(function(){

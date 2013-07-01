@@ -119,8 +119,82 @@ define('xooie', ['jquery'], function($){
     Xooie.config = config;
     Xooie.mapName = mapName;
 
-    Xooie._requireShim = function(module, callback) {
-        var moduleSpec;
+    Xooie._requireShim = function(modules, callback) {
+        var loaded,
+            notLoaded,
+            loadCheck,
+            i;
+
+        loaded = [];
+        notLoaded = [];
+
+        loadCheck = function(){
+            var contentArry,
+                j;
+
+            contentArry = [];
+
+            for (j = 0; j < modules.length; j += 1) {
+                if (!loadedModules[modules[j]].loaded) {
+                    return false;
+                } else {
+                    contentArry.push(loadedModules[modules[j]].content);
+                }
+            }
+
+            callback.apply(this, contentArry);
+        };
+
+        //iterate through each module
+            //determine if it is loaded
+            //if yes, put in callback array
+            //if no, put in require array
+
+
+        for (i = 0; i < modules.length; i += 1) {
+            if (typeof loadedModules[modules[i]] === 'undefined') {
+                loadedModules[modules[i]] = {
+                    content: null,
+                    loaded: false,
+                    callbacks: []
+                };
+            }
+
+            loadedModules[modules[i]].callbacks.push(loadCheck);
+
+            notLoaded.push(modules[i]);
+        }
+
+
+        if (notLoaded.length > 0) {
+            require(notLoaded, function(){
+                var moduleSpec,
+                    i, j;
+
+                for (i = 0; i < arguments.length; i += 1) {
+                    if (typeof arguments[i] !== 'undefined') {
+                        moduleSpec = loadedModules[notLoaded[i]];
+
+                        moduleSpec.content = arguments[i];
+                        moduleSpec.loaded = true;
+
+                        for (j = 0; j < moduleSpec.callbacks.length; j += 1) {
+                            moduleSpec.callbacks[j]();
+                        }
+
+                        moduleSpec.callbacks = [];
+                    }
+                }
+            });
+        } else {
+            loadCheck();
+        }
+
+
+
+
+        /////////
+        /*
 
         if (typeof loadedModules[module] === 'undefined') {
             moduleSpec = loadedModules[module] = {
@@ -149,7 +223,7 @@ define('xooie', ['jquery'], function($){
             callback(moduleSpec.content);
         } else {
             moduleSpec.callbacks.push(callback);
-        }
+        } */
     };
 
     Xooie.registeredClasses = [];

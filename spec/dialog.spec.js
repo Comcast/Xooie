@@ -1,5 +1,5 @@
 require(['jquery', 'xooie/dialog'], function($, Dialog) {
-    describe('Dialog', function(){
+    xdescribe('Dialog', function(){
         var el, counter = 0;
 
         beforeEach(function(){

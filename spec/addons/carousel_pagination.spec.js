@@ -1,5 +1,5 @@
 require(['jquery', 'xooie/carousel', 'xooie/addons/carousel_pagination'], function($, Carousel, Pagination) {
-    describe('Carousel Pagination Addon', function(){
+    xdescribe('Carousel Pagination Addon', function(){
         var element, carouselInstance, paginationInstance, positionLeft;
 
         beforeEach(function(){
