@@ -233,11 +233,12 @@ require(['jquery', 'xooie/carousel'], function($, Carousel) {
         });
 
         describe('When setting the position of the carousel...', function(){
-            var testOffset;
+            var testOffset, testDuration;
 
             beforeEach(function(){
-                spyOn($.fn, 'animate').andCallFake(function(data, callback) {
+                spyOn($.fn, 'animate').andCallFake(function(data, duration, callback) {
                     testOffset = data.scrollLeft;
+                    testDuration = duration;
 
                     callback();
                 });
@@ -245,6 +246,13 @@ require(['jquery', 'xooie/carousel'], function($, Carousel) {
 
             afterEach(function(){
                 testOffset = null;
+                testDuration = null;
+            });
+
+            it('sets the duration to 200', function(){
+                carouselInstance.updatePosition(0);
+
+                expect(testDuration).toBe(200);
             });
 
             it('triggers a carouselMove event', function() {
@@ -482,8 +490,8 @@ require(['jquery', 'xooie/carousel'], function($, Carousel) {
 
         describe('When scrolling multiple times in a row...', function(){
             beforeEach(function(){
-                spyOn($.fn, 'animate').andCallFake(function(data, complete){
-                    setTimeout(complete, 250);
+                spyOn($.fn, 'animate').andCallFake(function(data, duration, complete){
+                    setTimeout(complete, duration);
                 });
             });
 
@@ -495,24 +503,16 @@ require(['jquery', 'xooie/carousel'], function($, Carousel) {
                 expect(carouselInstance.isScrolling).toBe(true);
             });
 
-            it('queues up another call to update the position that invokes when the first scroll animation is complete', function(){
+            it('stops the animation and calls a new animation', function(){
+                spyOn($.fn, 'stop').andCallThrough();
 
                 carouselInstance.root.find(carouselInstance.options.controlSelector).trigger('click');
 
                 carouselInstance.root.find(carouselInstance.options.controlSelector).trigger('click');
 
-                expect($.fn.animate.callCount).toBe(1);
+                expect($.fn.animate.callCount).toBe(2);
 
-                waits(250);
-
-                runs(function(){
-                    expect($.fn.animate.callCount).toBe(2);
-
-                    carouselInstance.root.find(carouselInstance.options.controlSelector).trigger('click');
-
-                    expect($.fn.animate.callCount).toBe(3);
-
-                });
+                expect($.fn.stop).toHaveBeenCalled();
             });
 
             it('sets the isScroling property to false when complete', function(){
@@ -520,10 +520,12 @@ require(['jquery', 'xooie/carousel'], function($, Carousel) {
 
                 expect(carouselInstance.isScrolling).toBe(true);
 
-                waits(250);
+                waitsFor(function(){
+                    return !carouselInstance.isScrolling;
+                });
 
                 runs(function(){
-                    expect(carouselInstance.isScrolling).toBe(false);
+                    expect(true);
                 });
             });
         });
