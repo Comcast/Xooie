@@ -73,7 +73,7 @@ define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
 
             "px": function(quantity, direction) {
                 var position;
-
+                
                 if (typeof direction === 'undefined') {
                     position = 0;
                     direction = 1;
@@ -316,12 +316,16 @@ define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
         this.root.toggleClass('is-carousel-rightmost', this.getRightLimit() <= this.wrapper.innerWidth());
     };
 
-    Carousel.prototype.updatePosition = function(amount) {
+    Carousel.prototype.updatePosition = function(amount, cb) {
         var match = (amount + '').match(/^([+\-]?)(\d+)(.*)$/),
             callback,
             self = this;
 
         if (!match) {
+            if (typeof cb === 'function') {
+                cb();
+            }
+
             return;
         }
 
@@ -349,21 +353,21 @@ define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
 
             self.root.trigger('carouselMove', offset);
 
-            self.wrapper.animate({ scrollLeft: offset },
+            self.wrapper.animate({ scrollLeft: offset }, 200,
                 function(){
                     self.isScrolling = false;
-                    if (clickQueue.length > 0) {
-                        clickQueue.shift()();
+                    if (typeof cb === 'function') {
+                        cb();
                     }
                 }
             );
         };
 
         if (this.isScrolling) {
-            clickQueue.push(callback);
-        } else {
-            callback();
+            self.wrapper.stop(true,true);
         }
+        
+        callback();
 
     };
 
