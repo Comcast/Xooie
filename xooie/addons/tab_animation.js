@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define('xooie/addons/tab_animation', ['jquery', 'xooie/addons/base', 'async'], function($, Base, async) {
+define('xooie/addons/tab_animation', ['jquery', 'xooie/addons/base'], function($, Base) {
 
     var Animation = Base('animation', function(){
         var self = this,
@@ -223,12 +223,25 @@ define('xooie/addons/tab_animation', ['jquery', 'xooie/addons/base', 'async'], f
             var from = this.module.getPanel(currentIndex),
                 to = this.module.getPanel(index),
                 container = from.parents(this.options.panelContainerSelector),
-                calls;
+                count = 1,
+                calls, i,
+                step_callback = function() {
+                    count--;
+
+                    if (count === 0 && callback) {
+                        callback();
+                    }
+                };
 
             if (typeof this.animationMethods[this.options.animationMode] === 'function') {
                 calls = this.animationMethods[this.options.animationMode](to, from, container, direction);
 
-                async.parallel(calls, callback || function() {});
+                for (i = 0; i < calls.length; i++) {
+                    count++;
+                    calls[i](step_callback);
+                }
+
+                step_callback();
             }
         }
     });
