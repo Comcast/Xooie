@@ -1,4 +1,5 @@
 require 'json'
+require 'fileutils'
 
 FileUtils.mkdir_p 'vendor/assets/javascripts'
 
