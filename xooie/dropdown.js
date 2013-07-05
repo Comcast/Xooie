@@ -231,7 +231,7 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
 
             if (_active){
                 handle.trigger('dropdownExpand', [i, _data]);
-                this.setFocus(expander);
+                //this.setFocus(expander);
             } else {
                 handle.trigger('dropdownCollapse', [i, _data]);
             }
