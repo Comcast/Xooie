@@ -1,4 +1,4 @@
-require(['jquery', 'xooie/base'], function($, Base) {
+require(['jquery', 'xooie/widgets/base'], function($, Base) {
 
     describe('Xooie Base Module', function() {
 
