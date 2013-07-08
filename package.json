@@ -34,13 +34,15 @@
     "requirejs": "2.1.6"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "docs": "rm -r doc && ndoc xooie"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-requirejs": "~0.4.1",
     "grunt-contrib-jasmine": "~0.4.2",
     "grunt-template-jasmine-requirejs": "~0.1.2",
-    "grunt-contrib-jshint": "~0.5.4"
+    "grunt-contrib-jshint": "~0.5.4",
+    "ndoc": "~3.1.0"
   }
 }

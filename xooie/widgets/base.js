@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define('xooie/widgets/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
+define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
      //things I want to be able to do:
     //  Extend and module
     //  create stylesheet that can be modified
@@ -377,12 +377,12 @@ define('xooie/widgets/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($
 
         //defaultOptions = {};
 
-        name = name.toLowerCase();
-        initEvent = 'xooie-init.' + name;
-        refreshEvent = 'xooie-refresh.' + name;
-        instanceName = name + '-instance';
-        instanceCounter = 0;
-        className = 'is-' + name + '-instantiated';
+        //name = name.toLowerCase();
+        //initEvent = 'xooie-init.' + name;
+        //refreshEvent = name + 'xooie-refresh.' + name;
+        //instanceName = name + '-instance';
+        //instanceCounter = 0;
+        //className = 'is-' + name + '-instantiated';
 
         //cssRules = {};
         //stylesInstance = new Stylesheet('Xooie');
