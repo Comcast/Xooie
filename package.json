@@ -1,7 +1,7 @@
 {
-  "name": "Xooie",
+  "name": "xooie",
   "description": "A highly modular, extensible JavaScript UI framework.",
-  "version": "0.0.12",
+  "version": "0.0.14",
   "keywords": [
     "ui",
     "modular",
