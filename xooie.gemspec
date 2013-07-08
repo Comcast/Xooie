@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
     'vendor/assets/javascripts/xooie.js',
     'vendor/assets/javascripts/xooie/**/*',
     'lib/xooie.rb',
-    'lib/Xooie/**/*',
     'README.md',
     'License.txt'
   ]

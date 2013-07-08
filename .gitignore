@@ -4,6 +4,7 @@ app/*
 vendor/*
 
 *.gem
+Gemfile.lock
 
 _SpecRunner.html
 
