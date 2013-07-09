@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
+define('xooie/widgets/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
      //things I want to be able to do:
     //  Extend and module
     //  create stylesheet that can be modified
@@ -141,7 +141,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
     //CLASS METHODS
 
-    Base.defineWritable = function(name) {
+    Base.defineReadOnly = function(name) {
         var prop = propertyDetails(name);
 
         propertyDispatcher(name, this.prototype);
@@ -155,7 +155,7 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
         }
     };
 
-    Base.defineReadable = function(name, defaultValue){
+    Base.defineWriteOnly = function(name, defaultValue){
         var prop = propertyDetails(name);
 
         propertyDispatcher(name, this.prototype);
@@ -174,8 +174,8 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
     };
 
     Base.define = function(name, defaultValue){
-        this.defineReadable(name, defaultValue);
-        this.defineWritable(name);
+        this.defineReadOnly(name, defaultValue);
+        this.defineWriteOnly(name);
     };
 
     Base.extend = function(constructor){
@@ -225,11 +225,11 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
 
     Base.define('templateLanguage', 'micro_template');
 
-    Base.defineReadable('refreshEvent', 'xooie-refresh');
+    Base.defineReadOnly('refreshEvent', 'xooie-refresh');
 
-    Base.defineReadable('initEvent', 'xooie-init');
+    Base.defineReadOnly('initEvent', 'xooie-init');
 
-    Base.defineReadable('className', 'is-instantiated');
+    Base.defineReadOnly('className', 'is-instantiated');
 
 
     //PROTOTYPE DEFINITIONS

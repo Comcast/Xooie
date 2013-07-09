@@ -56,15 +56,40 @@ $X = Xooie = (function(static_config) {
         }
     }
 
+/**
+ * $X.config(cfg)
+ *
+ * Defines the url strings for Xooie modules that will be used to require
+ * said modules.  Modules can be grouped as widgets or addons, or they can
+ * be defined generically as neither.
+ *      {
+ *          widgets: {
+ *              widgetModule: 'path/to/widget'
+ *          },
+ *          addons: {
+ *              addonModule: 'path/to/addon'
+ *          },
+ *          miscModule: 'path/to/module'
+ *      }
+ * The key for each key/value pair is the widget or addon type that will be
+ * added to the markup to instantiate the module.
+ **/
+
     obj.config = function(cfg) {
-        var name;
+        var name, newName;
 
         for (name in cfg) {
             if (cfg.hasOwnProperty(name)) {
-                if (name === 'modules' || name == 'addons') {
-                    copyObj(config[name], cfg[name]);
+                //support deprecated modules name for widgets
+                if (name === 'modules') {
+                    newName = 'widgets';
                 } else {
-                    config[name] = cfg[name];
+                    newName = name;
+                }
+                if (newName === 'widgets' || newName == 'addons') {
+                    copyObj(config[newName], cfg[name]);
+                } else {
+                    config[newName] = cfg[name];
                 }
             }
         }
@@ -130,15 +155,23 @@ define('xooie', ['jquery', 'xooie_helpers'], function($, helpers){
             node = $(nodes[i]);
 
             // Add all of the widget types to the list of modules we need:
-            moduleNames = [].concat(helpers.parseData(node.data(widgetDataAttr)));
+            moduleNames = helpers.parseData(node.data(widgetDataAttr));
+
+            // For each widget we check to see if the url is already in our
+            // list of urls to require:
+            for (j = 0; j < moduleNames.length; j+=1) {
+                url = $X._mapName(moduleNames[j], 'widgets', 'xooie/widgets');
+
+                if (moduleUrls.indexOf(url) === -1) {
+                    moduleUrls.push(url);
+                }
+            }
 
             // Do the same with each addon name:
-            moduleNames = moduleNames.concat(helpers.parseData(tmpNode.data(addonDataAttr)));
+            moduleNames = helpers.parseData(tmpNode.data(addonDataAttr));
 
-            // For each name in the moduleNames array, check if the MAPPED NAME is already
-            // in our list of urls to require:
             for (j = 0; j < moduleNames.length; j+=1) {
-                url = $X._mapName(moduleNames[j]);
+                url = $X._mapName(moduleNames[j], 'addons', 'xooie/addons');
 
                 if (moduleUrls.indexOf(url) === -1) {
                     moduleUrls.push(url);
@@ -164,7 +197,7 @@ define('xooie', ['jquery', 'xooie_helpers'], function($, helpers){
                 for (j = 0; j < widgets.length; j+=1) {
 
                     // Get the index of this module from the moduleUrls:
-                    argIndex = moduleUrls.indexOf($X._mapName(widgets[j]));
+                    argIndex = moduleUrls.indexOf($X._mapName(widgets[j]), 'widgets', 'xooie/widgets');
 
                     // Instantiate the new instance using the argIndex to find the right module:
                     widgetInst = new arguments[argIndex](node);
@@ -176,7 +209,7 @@ define('xooie', ['jquery', 'xooie_helpers'], function($, helpers){
                         }
 
                         // Get the index of the addon module from moduleUrls:
-                        argIndex = moduleUrls.indexOf($X._mapName(addons[k]));
+                        argIndex = moduleUrls.indexOf($X._mapName(addons[k]), 'addons', 'xooie/addons');
 
                         // Instantiate the new instance of the addon:
                         new arguments[argIndex](widgetInst);
@@ -190,6 +223,7 @@ define('xooie', ['jquery', 'xooie_helpers'], function($, helpers){
     Xooie._mapName = mapName;
 
     Xooie.registeredClasses = [];
+    
     Xooie.garbageCollect = function() {
         for (var i = 0; i < this.registeredClasses.length; i++) {
             this.registeredClasses[i].garbageCollect();
