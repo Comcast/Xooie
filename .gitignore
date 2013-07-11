@@ -6,6 +6,9 @@ vendor/*
 *.gem
 Gemfile.lock
 
+.grunt
+doc
+
 _SpecRunner.html
 
 .DS_Store
