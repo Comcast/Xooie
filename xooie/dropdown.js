@@ -199,9 +199,15 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
     };
 
     Dropdown.prototype.getExpander = function(index){
-        var expanders = this.root.find(this.options.dropdownExpanderSelector);
+        var selectorString;
 
-        return (typeof index !== 'undefined' && index >= 0) ? expanders.eq(index) : expanders;
+        if (typeof index === 'undefined' || isNaN(index)) {
+            selectorString = this.options.dropdownExpanderSelector;
+        } else {
+            selectorString = this.options.dropdownExpanderSelector + '[data-dropdown-index="' + index + '"]';
+        }
+
+        return this.root.find(selectorString);
     };
 
     Dropdown.prototype.setState = function(index, data, active){
