@@ -39,7 +39,6 @@ require(['jquery', 'xooie/carousel', 'xooie/addons/carousel_lentils'], function(
 
         describe('When instantiating the adddon...', function(){
             it('adds the class is-carousel-lentiled to the root', function(){
-                console.log(c.root);
                 expect(c.root.hasClass('is-carousel-lentiled')).toBe(true);
             });
 
