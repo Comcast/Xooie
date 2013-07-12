@@ -29,7 +29,10 @@ define('xooie/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, St
     };
 
     var Base = function(name, constructor) {
-        var instances, defaultOptions, instanceCounter, initEvent, instanceName, cssRules, stylesInstance, className, Xooie;
+        var instances, defaultOptions, instanceCounter,
+            initEvent, refreshEvent,
+            instanceName, cssRules,
+            stylesInstance, className, Xooie;
 
         instances = [];
 
