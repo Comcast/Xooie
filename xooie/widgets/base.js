@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define('xooie/widgets/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
+define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/stylesheet'], function($, $X, Stylesheet) {
      //things I want to be able to do:
     //  Extend and module
     //  create stylesheet that can be modified
@@ -141,7 +141,7 @@ define('xooie/widgets/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($
 
     //CLASS METHODS
 
-    Base.defineReadOnly = function(name) {
+    Base.defineWriteOnly = function(name) {
         var prop = propertyDetails(name);
 
         propertyDispatcher(name, this.prototype);
@@ -155,7 +155,7 @@ define('xooie/widgets/base', ['jquery', 'xooie', 'xooie/stylesheet'], function($
         }
     };
 
-    Base.defineWriteOnly = function(name, defaultValue){
+    Base.defineReadOnly = function(name, defaultValue){
         var prop = propertyDetails(name);
 
         propertyDispatcher(name, this.prototype);
