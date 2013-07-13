@@ -110,13 +110,13 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
 
         describe('When defining a new property...', function(){
             it('makes a property both writable and readable', function(){
-                spyOn(Base, 'defineWritable');
-                spyOn(Base, 'defineReadable');
+                spyOn(Base, 'defineWriteOnly');
+                spyOn(Base, 'defineReadOnly');
 
                 Base.define('foo_one');
 
-                expect(Base.defineWritable).toHaveBeenCalledWith('foo_one');
-                expect(Base.defineReadable).toHaveBeenCalledWith('foo_one', undefined);
+                expect(Base.defineWriteOnly).toHaveBeenCalledWith('foo_one');
+                expect(Base.defineReadOnly).toHaveBeenCalledWith('foo_one', undefined);
             });
 
             it('puts the property into the definedProps array', function(){
@@ -149,16 +149,16 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
                 expect(this.base.foo_four()).toBe('bar');
             });
 
-            describe('and defineWritable is called...', function(){
+            describe('and defineWriteOnly is called...', function(){
                 it('permits values to be set', function(){
-                    Base.defineWritable('foo_five');
+                    Base.defineWriteOnly('foo_five');
 
                     expect(typeof Base.prototype._set_foo_five).toBe('function');
                     expect(typeof Base.prototype._get_foo_five).toBe('undefined');
                 });
 
                 it('writes to the property value', function(){
-                    Base.defineWritable('foo_six');
+                    Base.defineWriteOnly('foo_six');
 
                     this.base = new Base($('<div />'));
 
@@ -168,16 +168,16 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
                 });
             });
 
-            describe('and defineReadable is called...', function(){
+            describe('and defineReadOnly is called...', function(){
                 it('permits values to be read', function(){
-                    Base.defineReadable('foo_seven', 'bar');
+                    Base.defineReadOnly('foo_seven', 'bar');
 
                     expect(typeof Base.prototype._set_foo_seven).toBe('undefined');
                     expect(typeof Base.prototype._get_foo_seven).toBe('function');
                 });
 
                 it('reads the property value', function(){
-                    Base.defineReadable('foo_eight');
+                    Base.defineReadOnly('foo_eight');
 
                     this.base = new Base($('<div />'));
 

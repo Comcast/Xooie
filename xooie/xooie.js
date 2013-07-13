@@ -24,15 +24,16 @@ var $X, Xooie;
 
 /**
  * $X(element)
+ * - element (Element | String):  A jQuery collection or string representing the DOM element to be
+ * instantiated as a Xooie widget.
  *
- * Traverses the DOM, starting from the element passed to the method,
- * and instantiates a Xooie widget for every element that has a
- * data-widget-type attribute.
+ * Traverses the DOM, starting from the element passed to the method, and instantiates a Xooie
+ * widget for every element that has a data-widget-type attribute.
  **/
 
 $X = Xooie = (function(static_config) {
     var config = {
-            modules: {},
+            widgets: {},
             addons: {}
         },
         obj = function() {
@@ -51,71 +52,72 @@ $X = Xooie = (function(static_config) {
     }
 
     function gcCallback() {
-        if (typeof Xooie.garbageCollect !== 'undefined') {
-            Xooie.garbageCollect();
+        if (typeof Xooie.cleanup !== 'undefined') {
+            Xooie.cleanup();
         }
     }
 
 /**
- * $X.config(cfg)
+ * $X.config(options)
+ * - options (Object): An object that describes the configuration options for Xooie.
  *
- * Defines the url strings for Xooie modules that will be used to require
- * said modules.  Modules can be grouped as widgets or addons, or they can
- * be defined generically as neither.
- *      {
- *          widgets: {
- *              widgetModule: 'path/to/widget'
- *          },
- *          addons: {
- *              addonModule: 'path/to/addon'
- *          },
- *          miscModule: 'path/to/module'
- *      }
- * The key for each key/value pair is the widget or addon type that will be
- * added to the markup to instantiate the module.
+ * Defines the url strings for Xooie modules that will be used to require said modules.
+ *
+ *
+ * ##### Options
+ *
+ * - **root** (String): The location of all Xooie files.
+ * Default: `xooie`.
+ * - **widgets** (Object): Defines the location of widgets.  By default, Xooie will look for widgets in the
+ * '/widgets' directory, relative to the `{root}`.
+ * - **addons** (Object): Defines the location of addons.  By default, Xooie will look for addons in the
+ * '/addons' directory, relative to the `{root}`.
+ * - **cleanupInterval** (Integer): Defines the interval at which Xooie checks for instantiated widgets that are
+ * no longer active in the DOM.  A value of '0' means no cleanup occurs.
+ * Default: `0`.
  **/
 
-    obj.config = function(cfg) {
-        var name, newName;
+    obj.config = function(options) {
+        var name;
 
-        for (name in cfg) {
-            if (cfg.hasOwnProperty(name)) {
-                //support deprecated modules name for widgets
-                if (name === 'modules') {
-                    newName = 'widgets';
+        for (name in options) {
+            if (options.hasOwnProperty(name)) {
+                if (name === 'widgets' || name == 'addons') {
+                    copyObj(config[name], options[name]);
                 } else {
-                    newName = name;
-                }
-                if (newName === 'widgets' || newName == 'addons') {
-                    copyObj(config[newName], cfg[name]);
-                } else {
-                    config[newName] = cfg[name];
+                    config[name] = options[name];
                 }
             }
         }
 
-        if (typeof cfg.gcInterval !== 'undefined') {
-            if (config.gcInterval) {
-                gcTimer = setInterval(gcCallback, config.gcInterval);
-            } else {
-                if (gcTimer) {
-                    clearInterval(gcTimer);
-                }
-                gcTimer = null;
+        if (typeof options.cleanupInterval !== 'undefined') {
+            gcTimer = clearInterval(gcTimer);
+
+            if (config.cleanupInterval > 0) {
+                gcTimer = setInterval(gcCallback, config.cleanupInterval);
             }
         }
     };
 
-    obj.mapName = function(name, type, root) {
+/** internal
+* $X._mapName(name, type) -> String
+* - name (String): The name of the module, as determeined by the `data-widget-type` or `data-addons` properties.
+* - type (String): The type of module.  Can be either `'widget'` or `'addon'`
+*
+* Maps the name of the widget or addon to the correct url string where the module file is located.
+**/
+
+    obj._mapName = function(name, type) {
         if (typeof config[type][name] === 'undefined') {
-            return root + name;
+            return [config.root, '/', type, '/', name].join('');
         } else {
             return config[type][name];
         }
     };
 
     obj.config({
-        gcInterval: 0
+        root: 'xooie',
+        cleanupInterval: 0
     });
 
     if (static_config) {
@@ -125,9 +127,9 @@ $X = Xooie = (function(static_config) {
     return obj;
 }(Xooie));
 
-define('xooie', ['jquery', 'xooie_helpers'], function($, helpers){
+define('xooie/xooie', ['jquery', 'xooie/xooie_helpers'], function($, helpers){
     var config = Xooie.config,
-        mapName = Xooie.mapName,
+        _mapName = Xooie._mapName,
         widgetSelector = '[data-widget-type]';
         widgetDataAttr = 'widgetType';
         addonDataAttr = 'addons';
@@ -160,7 +162,7 @@ define('xooie', ['jquery', 'xooie_helpers'], function($, helpers){
             // For each widget we check to see if the url is already in our
             // list of urls to require:
             for (j = 0; j < moduleNames.length; j+=1) {
-                url = $X._mapName(moduleNames[j], 'widgets', 'xooie/widgets');
+                url = $X._mapName(moduleNames[j], 'widgets');
 
                 if (moduleUrls.indexOf(url) === -1) {
                     moduleUrls.push(url);
@@ -171,7 +173,7 @@ define('xooie', ['jquery', 'xooie_helpers'], function($, helpers){
             moduleNames = helpers.parseData(tmpNode.data(addonDataAttr));
 
             for (j = 0; j < moduleNames.length; j+=1) {
-                url = $X._mapName(moduleNames[j], 'addons', 'xooie/addons');
+                url = $X._mapName(moduleNames[j], 'addons');
 
                 if (moduleUrls.indexOf(url) === -1) {
                     moduleUrls.push(url);
@@ -197,7 +199,7 @@ define('xooie', ['jquery', 'xooie_helpers'], function($, helpers){
                 for (j = 0; j < widgets.length; j+=1) {
 
                     // Get the index of this module from the moduleUrls:
-                    argIndex = moduleUrls.indexOf($X._mapName(widgets[j]), 'widgets', 'xooie/widgets');
+                    argIndex = moduleUrls.indexOf($X._mapName(widgets[j]), 'widgets');
 
                     // Instantiate the new instance using the argIndex to find the right module:
                     widgetInst = new arguments[argIndex](node);
@@ -209,7 +211,7 @@ define('xooie', ['jquery', 'xooie_helpers'], function($, helpers){
                         }
 
                         // Get the index of the addon module from moduleUrls:
-                        argIndex = moduleUrls.indexOf($X._mapName(addons[k]), 'addons', 'xooie/addons');
+                        argIndex = moduleUrls.indexOf($X._mapName(addons[k]), 'addons');
 
                         // Instantiate the new instance of the addon:
                         new arguments[argIndex](widgetInst);
@@ -220,20 +222,32 @@ define('xooie', ['jquery', 'xooie_helpers'], function($, helpers){
     };
 
     Xooie.config = config;
-    Xooie._mapName = mapName;
+    Xooie._mapName = _mapName;
 
-    Xooie.registeredClasses = [];
+/** internal
+* $X._instantiated -> Array
+*
+* A collection of currently instantiated widgets.
+**/
+    Xooie._instantiated = [];
     
-    Xooie.garbageCollect = function() {
-        for (var i = 0; i < this.registeredClasses.length; i++) {
-            this.registeredClasses[i].garbageCollect();
+/**
+* $X.cleanup()
+*
+* Checks all instantiated widgets to ensure that the root element is still in the DOM.  If the
+* root element is no longer in the DOM, the module is garbage collected.
+**/
+
+    Xooie.cleanup = function() {
+        for (var i = 0; i < this._instantiated.length; i++) {
+            this._instantiated[i].garbageCollect();
         }
     };
 
     return Xooie;
 });
 
-require(['jquery', 'xooie'], function($, $X){
+require(['jquery', 'xooie/xooie'], function($, $X){
     $(document).ready(function() {
         $X($(this));
     });
