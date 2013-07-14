@@ -1,4 +1,4 @@
-define('xooie_helpers', ['jquery'], function($){
+define('xooie/xooie_helpers', ['jquery'], function($){
 
   var helpers = {
     parseData: function(data) {

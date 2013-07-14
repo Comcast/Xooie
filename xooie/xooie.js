@@ -16,7 +16,7 @@
 
 var $X, Xooie;
 
-/**
+/** alias of: $X
  *  Xooie
  *
  *  Xooie is a JavaScript UI widget library.
@@ -100,12 +100,12 @@ $X = Xooie = (function(static_config) {
     };
 
 /** internal
-* $X._mapName(name, type) -> String
-* - name (String): The name of the module, as determeined by the `data-widget-type` or `data-addons` properties.
-* - type (String): The type of module.  Can be either `'widget'` or `'addon'`
-*
-* Maps the name of the widget or addon to the correct url string where the module file is located.
-**/
+ * $X._mapName(name, type) -> String
+ * - name (String): The name of the module, as determeined by the `data-widget-type` or `data-addons` properties.
+ * - type (String): The type of module.  Can be either `'widget'` or `'addon'`
+ *
+ * Maps the name of the widget or addon to the correct url string where the module file is located.
+ **/
 
     obj._mapName = function(name, type) {
         if (typeof config[type][name] === 'undefined') {
@@ -127,7 +127,7 @@ $X = Xooie = (function(static_config) {
     return obj;
 }(Xooie));
 
-define('xooie/xooie', ['jquery', 'xooie/xooie_helpers'], function($, helpers){
+define('xooie/xooie', ['jquery', 'xooie/xooie_helpers', 'xooie/stylesheet'], function($, helpers, Stylesheet){
     var config = Xooie.config,
         _mapName = Xooie._mapName,
         widgetSelector = '[data-widget-type]';
@@ -170,7 +170,7 @@ define('xooie/xooie', ['jquery', 'xooie/xooie_helpers'], function($, helpers){
             }
 
             // Do the same with each addon name:
-            moduleNames = helpers.parseData(tmpNode.data(addonDataAttr));
+            moduleNames = helpers.parseData(node.data(addonDataAttr));
 
             for (j = 0; j < moduleNames.length; j+=1) {
                 url = $X._mapName(moduleNames[j], 'addons');
@@ -184,7 +184,7 @@ define('xooie/xooie', ['jquery', 'xooie/xooie_helpers'], function($, helpers){
         // Now that we have a list of urls to load, let's load them:
         require(moduleUrls, function(){
             var widgets, addons, node,
-                widgetInst, argIndex,
+                addonMods, widgetMod, argIndex,
                 i, j, k;
 
             // We need to iterate through our collection of nodes again:
@@ -199,23 +199,23 @@ define('xooie/xooie', ['jquery', 'xooie/xooie_helpers'], function($, helpers){
                 for (j = 0; j < widgets.length; j+=1) {
 
                     // Get the index of this module from the moduleUrls:
-                    argIndex = moduleUrls.indexOf($X._mapName(widgets[j]), 'widgets');
+                    argIndex = moduleUrls.indexOf($X._mapName(widgets[j], 'widgets'));
+
+                    //Get the widget that we'll be instantiating:
+                    widgetMod = arguments[argIndex];
+
+                    addonMods = [];
+
+                    // Now get each addon that we'll instantiate with the widget:
+                    for (k = 0; k < addons.length; k+=1) {
+                        // Get the index of the addon module from moduleUrls:
+                        argIndex = moduleUrls.indexOf($X._mapName(addons[k], 'addons'));
+
+                        addonMods.push(arguments[argIndex]);
+                    }
 
                     // Instantiate the new instance using the argIndex to find the right module:
-                    widgetInst = new arguments[argIndex](node);
-
-                    // Now create an instance of each addon and assign it to the module:
-                    for (k = 0; k < addons.length; k+=1) {
-                        if (!widgetInst.hasOwnProperty('addons')) {
-                            widgetInst.addons = {};
-                        }
-
-                        // Get the index of the addon module from moduleUrls:
-                        argIndex = moduleUrls.indexOf($X._mapName(addons[k]), 'addons');
-
-                        // Instantiate the new instance of the addon:
-                        new arguments[argIndex](widgetInst);
-                    }
+                    new widgetMod(node, addonMods);
                 }
             }
         });
@@ -224,23 +224,52 @@ define('xooie/xooie', ['jquery', 'xooie/xooie_helpers'], function($, helpers){
     Xooie.config = config;
     Xooie._mapName = _mapName;
 
+/** internal, read-only
+ * $X._stylesheet -> Object
+ *
+ * An instance of the [[Stylesheet]] class used to manipluate a dynamically created Xooie stylesheet
+ **/
+    Xooie._stylesheet = new Stylesheet('Xooie');
+
 /** internal
-* $X._instantiated -> Array
-*
-* A collection of currently instantiated widgets.
-**/
-    Xooie._instantiated = [];
+ * $X._styleRules -> Object
+ *
+ * A cache of css rules defined by the [[Xooie.Widget.createStyleRule]] method.
+ **/
+    Xooie._styleRules = {};
+
+/** internal
+ * $X._instanceCache -> Array
+ *
+ * A collection of currently instantiated widgets.
+ **/
+    Xooie._instanceCache = [];
+
+/** internal
+ * $X._instanceIndex -> Integer
+ *
+ * Tracks the next available instance index in the cache.  This value also serves as the id of the
+ * next instantiated widget.
+ **/
+    Xooie._instanceIndex = 0;
     
 /**
-* $X.cleanup()
-*
-* Checks all instantiated widgets to ensure that the root element is still in the DOM.  If the
-* root element is no longer in the DOM, the module is garbage collected.
-**/
+ * $X.cleanup()
+ *
+ * Checks all instantiated widgets to ensure that the root element is still in the DOM.  If the
+ * root element is no longer in the DOM, the module is garbage collected.
+ **/
 
     Xooie.cleanup = function() {
-        for (var i = 0; i < this._instantiated.length; i++) {
-            this._instantiated[i].garbageCollect();
+        var i, instance;
+
+        for (i = 0; i < $X._instanceCache.length; i++) {
+            instance = $X._instanceCache[i];
+
+            if (instance.root() && instance.root().parents('body').length === 0) {
+                instance.cleanup();
+                delete $X._instanceCache[i];
+            }
         }
     };
 
