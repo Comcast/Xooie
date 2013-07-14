@@ -1,42 +1,42 @@
-require(['jquery', 'xooie/widgets/base'], function($, Base) {
+require(['jquery', 'xooie/widgets/base'], function($, Widget) {
 
-    describe('Xooie Base Module', function() {
+    describe('Xooie Base Widget Module', function() {
 
         beforeEach(function(){
             this.el = $('<div/>');
-            this.base = new Base(this.el);
+            this.widget = new Widget(this.el);
         });
 
         describe('When instantiating a new instance of the module...', function(){
             it('jquery-ifies the element passed in', function(){
                 var element = $('<div id="test" />');
 
-                this.base = new Base(element);
+                this.widget = new Widget(element);
 
-                expect(this.base.get('root').is(element)).toBe(true);
+                expect(this.widget.get('root').is(element)).toBe(true);
             });
 
             it('reads the data attributes of the element and sets the data', function(){
-                spyOn(Base.prototype, '_setData');
+                spyOn(Widget.prototype, '_setData');
 
-                this.base = new Base('<div data-prop="a" />');
+                this.widget = new Widget('<div data-prop="a" />');
 
-                expect(Base.prototype._setData).toHaveBeenCalledWith({ prop: 'a' });
+                expect(Widget.prototype._setData).toHaveBeenCalledWith({ prop: 'a' });
             });
 
             it('sets any defined properties', function(){
-                Base.define('foo', 'bar');
+                Widget.define('foo', 'bar');
 
-                this.base = new Base('<div />');
+                this.widget = new Widget('<div />');
 
-                expect(this.base.get('foo')).toBe('bar');
-                expect(this.base.foo()).toBe('bar');
+                expect(this.widget.get('foo')).toBe('bar');
+                expect(this.widget.foo()).toBe('bar');
             });
 
             it('returns the instance of the module if it has already been instantiated', function(){
-                var base2 = new Base(this.el);
+                var widget2 = new Widget(this.el);
 
-                expect(base2).toEqual(this.base);
+                expect(widget2).toEqual(this.widget);
             });
 
             it('triggers a refresh event if the module has already been instantiated', function(){
@@ -46,22 +46,22 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
                     testVal = true;
                 });
 
-                new Base(this.el);
+                new Widget(this.el);
 
                 expect(testVal).toBe(true);
             });
 
             it('calls the cleanup method if the instance is not in the cache', function(){
-                this.el = $('<div data-instance=10000 />');
-                spyOn(Base.prototype, 'cleanup');
+                this.el = $('<div data-xooie-instance=10000 />');
+                spyOn(Widget.prototype, 'cleanup');
 
-                this.base = new Base(this.el);
+                this.widget = new Widget(this.el);
 
-                expect(Base.prototype.cleanup).toHaveBeenCalled();
+                expect(Widget.prototype.cleanup).toHaveBeenCalled();
             });
 
-            it('sets a data-instance value', function(){
-                expect(this.el.data('instance')).toBe(this.base.get('id'));
+            it('sets a data-xooie-instance value', function(){
+                expect(this.el.data('xooie-instance')).toBe(this.widget.get('id'));
             });
 
             it('triggers the init event if there are no inherited constructors to be called', function(){
@@ -72,30 +72,38 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
                     testVal = true;
                 });
 
-                this.base = new Base(element);
+                this.widget = new Widget(element);
 
                 expect(testVal).toBe(true);
             });
 
             it('loads addons immediately if there are no inherited constructors to be called', function(){
+                var testVal = false,
+                    element = $('<div />'),
+                    addon = function() {
+                        testVal = true;
+                    };
 
+                this.widget = new Widget(element, [addon]);
+
+                expect(testVal).toBe(true);
             });
 
             it('delays triggering the init event if there are constructors to be called', function(){
                 var testVal = false,
                     element = $('<div />'),
-                    BaseExtend = Base.extend(function() { return true; });
+                    WidgetExtend = Widget.extend(function() { return true; });
 
                 element.on('xooie-init', function(){
                     testVal = true;
                 });
 
-                this.base = new BaseExtend(element);
+                this.widget = new WidgetExtend(element);
 
                 expect(testVal).toBe(false);
 
                 waitsFor(function(){
-                    return this.base._extendCount === null;
+                    return this.widget._extendCount === null;
                 });
 
                 runs(function(){
@@ -104,291 +112,283 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
             });
 
             it('delays loading addons if there are inherited constructors to be called', function(){
+                var testVal = false,
+                    element = $('<div />'),
+                    WidgetExtend = Widget.extend(function() { return true; }),
+                    addon = function() {
+                        testVal = true;
+                    };
 
+                element.on('xooie-init', function(){
+                    testVal = true;
+                });
+
+                this.widget = new WidgetExtend(element, [addon]);
+
+                expect(testVal).toBe(false);
+
+                waitsFor(function(){
+                    return this.widget._extendCount === null;
+                });
+
+                runs(function(){
+                    expect(testVal).toBe(true);
+                });
             });
         });
 
         describe('When defining a new property...', function(){
             it('makes a property both writable and readable', function(){
-                spyOn(Base, 'defineWriteOnly');
-                spyOn(Base, 'defineReadOnly');
+                spyOn(Widget, 'defineWriteOnly');
+                spyOn(Widget, 'defineReadOnly');
 
-                Base.define('foo_one');
+                Widget.define('foo_one');
 
-                expect(Base.defineWriteOnly).toHaveBeenCalledWith('foo_one');
-                expect(Base.defineReadOnly).toHaveBeenCalledWith('foo_one', undefined);
+                expect(Widget.defineWriteOnly).toHaveBeenCalledWith('foo_one');
+                expect(Widget.defineReadOnly).toHaveBeenCalledWith('foo_one', undefined);
             });
 
             it('puts the property into the definedProps array', function(){
-                Base.define('foo_two');
+                Widget.define('foo_two');
 
-                expect(Base.prototype._definedProps).toContain('foo_two');
+                expect(Widget.prototype._definedProps).toContain('foo_two');
             });
 
             it('creates a function with the property name', function(){
-                Base.define('foo_three');
+                Widget.define('foo_three');
 
-                expect(typeof Base.prototype.foo_three).toBe('function');
+                expect(typeof Widget.prototype.foo_three).toBe('function');
             });
 
             it('creates a function that sets a value when passed and retrieves a value when called', function(){
-                Base.define('foo_three');
+                Widget.define('foo_three');
 
-                this.base = new Base($('<div />'));
+                this.widget = new Widget($('<div />'));
 
-                this.base.foo_three('bar');
+                this.widget.foo_three('bar');
 
-                expect(this.base.foo_three()).toBe('bar');
+                expect(this.widget.foo_three()).toBe('bar');
             });
 
             it('sets a default value if passed', function(){
-                Base.define('foo_four', 'bar');
+                Widget.define('foo_four', 'bar');
 
-                this.base = new Base($('<div />'));
+                this.widget = new Widget($('<div />'));
 
-                expect(this.base.foo_four()).toBe('bar');
+                expect(this.widget.foo_four()).toBe('bar');
             });
 
             describe('and defineWriteOnly is called...', function(){
                 it('permits values to be set', function(){
-                    Base.defineWriteOnly('foo_five');
+                    Widget.defineWriteOnly('foo_five');
 
-                    expect(typeof Base.prototype._set_foo_five).toBe('function');
-                    expect(typeof Base.prototype._get_foo_five).toBe('undefined');
+                    expect(typeof Widget.prototype._set_foo_five).toBe('function');
+                    expect(typeof Widget.prototype._get_foo_five).toBe('undefined');
                 });
 
                 it('writes to the property value', function(){
-                    Base.defineWriteOnly('foo_six');
+                    Widget.defineWriteOnly('foo_six');
 
-                    this.base = new Base($('<div />'));
+                    this.widget = new Widget($('<div />'));
 
-                    this.base.set('foo_six', 'bar');
+                    this.widget.set('foo_six', 'bar');
 
-                    expect(this.base._foo_six).toBe('bar');
+                    expect(this.widget._foo_six).toBe('bar');
                 });
             });
 
             describe('and defineReadOnly is called...', function(){
                 it('permits values to be read', function(){
-                    Base.defineReadOnly('foo_seven', 'bar');
+                    Widget.defineReadOnly('foo_seven', 'bar');
 
-                    expect(typeof Base.prototype._set_foo_seven).toBe('undefined');
-                    expect(typeof Base.prototype._get_foo_seven).toBe('function');
+                    expect(typeof Widget.prototype._set_foo_seven).toBe('undefined');
+                    expect(typeof Widget.prototype._get_foo_seven).toBe('function');
                 });
 
                 it('reads the property value', function(){
-                    Base.defineReadOnly('foo_eight');
+                    Widget.defineReadOnly('foo_eight');
 
-                    this.base = new Base($('<div />'));
+                    this.widget = new Widget($('<div />'));
 
-                    this.base._foo_eight = 'bar';
+                    this.widget._foo_eight = 'bar';
 
-                    expect(this.base.foo_eight()).toBe('bar');
+                    expect(this.widget.foo_eight()).toBe('bar');
                 });
             });
         });
 
         describe('When extending the base module...', function(){
-            var constructor, Widget;
+            var constructor, Extended;
 
             beforeEach(function(){
                 constructor = jasmine.createSpy('constructor');
             });
 
             it('sets the extendCount to 1 if extending Base', function(){
-                Widget = Base.extend(constructor);
+                Extended = Widget.extend(constructor);
 
-                expect(Widget.prototype._extendCount).toBe(1);
+                expect(Extended.prototype._extendCount).toBe(1);
             });
 
             it('increments the extendCount if an extended widget is extended', function(){
-                Widget = Base.extend(constructor);
+                Extended = Widget.extend(constructor);
 
-                var Widget_Two = Widget.extend(constructor);
+                var Widget_Two = Extended.extend(constructor);
 
                 expect(Widget_Two.prototype._extendCount).toBe(2);
             });
 
             it('returns a new constructor that invokes the Base constructor and the passed constructor', function(){
-                Widget = Base.extend(function() { constructor(); });
+                Extended = Widget.extend(function() { constructor(); });
 
                 this.el = $('<div />');
 
-                var w = new Widget(this.el);
+                var w = new Extended(this.el);
 
                 expect(constructor).toHaveBeenCalled();
                 expect(w.root().is(this.el)).toBe(true);
             });
 
             it('extends the new Widget with the parent widget methods', function(){
-                Widget = Base.extend(function(){ constructor(); });
+                Extended = Widget.extend(function(){ constructor(); });
                 var prop;
 
-                for (prop in Base) {
-                    expect(typeof Widget[prop]).not.toBeUndefined();
+                for (prop in Widget) {
+                    expect(typeof Extended[prop]).not.toBeUndefined();
                 }
             });
 
             it('extends the new Widget prototype with the parent prototype', function(){
-                Widget = Base.extend(function(){ constructor(); });
+                Extended = Widget.extend(function(){ constructor(); });
 
                 var prop;
 
-                for (prop in Base.prototype) {
-                    expect(typeof Widget.prototype[prop]).not.toBeUndefined();
+                for (prop in Widget.prototype) {
+                    expect(typeof Extended.prototype[prop]).not.toBeUndefined();
                 }
             });
         });
 
         describe('When setting a property...', function(){
             it('calls the property setter', function(){
-                Base.define('foo');
+                Widget.define('foo');
 
-                this.base = new Base($('<div />'));
+                this.widget = new Widget($('<div />'));
 
-                spyOn(this.base, '_set_foo');
+                spyOn(this.widget, '_set_foo');
 
-                this.base.set('foo', 'bar');
+                this.widget.set('foo', 'bar');
 
-                expect(this.base._set_foo).toHaveBeenCalledWith('bar');
+                expect(this.widget._set_foo).toHaveBeenCalledWith('bar');
             });
         });
 
         describe('When getting a property...', function(){
             it('calls the property getter', function(){
-                Base.define('foo');
+                Widget.define('foo');
 
-                this.base = new Base($('<div />'));
+                this.widget = new Widget($('<div />'));
 
-                spyOn(this.base, '_get_foo');
+                spyOn(this.widget, '_get_foo');
 
-                this.base.get('foo');
+                this.widget.get('foo');
 
-                expect(this.base._get_foo).toHaveBeenCalled();
+                expect(this.widget._get_foo).toHaveBeenCalled();
             });
         });
 
         describe('Properties and attributes', function(){
             it('defines an id property', function(){
-                expect(Base.prototype.id).not.toBeUndefined();
+                expect(Widget.prototype.id).not.toBeUndefined();
             });
 
             it('defines a root property', function(){
-                expect(Base.prototype.root).not.toBeUndefined();
+                expect(Widget.prototype.root).not.toBeUndefined();
             });
 
             it('defines a namespace property', function(){
-                expect(Base.prototype.namespace).not.toBeUndefined();
+                expect(Widget.prototype.namespace).not.toBeUndefined();
             });
 
             it('sets the default value of namespace to an empty string', function(){
-                expect(this.base.namespace()).toBe('');
+                expect(this.widget.namespace()).toBe('');
             });
 
             it('defines a templateLanguage property', function(){
-                expect(Base.prototype.templateLanguage).not.toBeUndefined();
+                expect(Widget.prototype.templateLanguage).not.toBeUndefined();
             });
 
             it('sets the default value of templateLanguage to micro_template', function(){
-                expect(this.base.templateLanguage()).toBe('micro_template');
+                expect(this.widget.templateLanguage()).toBe('micro_template');
             });
 
             it('sets a read-only property refreshEvent', function(){
-                expect(Base.prototype.refreshEvent).not.toBeUndefined();
-                expect(Base.prototype._get_refreshEvent).not.toBeUndefined();
-                expect(Base.prototype._set_refreshEvent).toBeUndefined();
+                expect(Widget.prototype.refreshEvent).not.toBeUndefined();
+                expect(Widget.prototype._get_refreshEvent).not.toBeUndefined();
+                expect(Widget.prototype._set_refreshEvent).toBeUndefined();
             });
 
             it('sets the default value of refreshEvent to xooie-refresh', function(){
-                expect(this.base.refreshEvent()).toBe('xooie-refresh');
+                expect(this.widget.refreshEvent()).toBe('xooie-refresh');
             });
 
             it('sets a read-only property initEvent', function(){
-                expect(Base.prototype.initEvent).not.toBeUndefined();
-                expect(Base.prototype._get_initEvent).not.toBeUndefined();
-                expect(Base.prototype._set_initEvent).toBeUndefined();
+                expect(Widget.prototype.initEvent).not.toBeUndefined();
+                expect(Widget.prototype._get_initEvent).not.toBeUndefined();
+                expect(Widget.prototype._set_initEvent).toBeUndefined();
             });
 
             it('sets the default value of initEvent to xooie-init', function(){
-                expect(this.base.initEvent()).toBe('xooie-init');
+                expect(this.widget.initEvent()).toBe('xooie-init');
             });
 
             it('sets a read-only property className', function(){
-                expect(Base.prototype.className).not.toBeUndefined();
-                expect(Base.prototype._get_className).not.toBeUndefined();
-                expect(Base.prototype._set_className).toBeUndefined();
+                expect(Widget.prototype.className).not.toBeUndefined();
+                expect(Widget.prototype._get_className).not.toBeUndefined();
+                expect(Widget.prototype._set_className).toBeUndefined();
             });
 
             it('sets the default value of className to is-instantiated', function(){
-                expect(this.base.className()).toBe('is-instantiated');
+                expect(this.widget.className()).toBe('is-instantiated');
             });
 
             describe('When a namespace is set...', function(){
                 beforeEach(function(){
-                    this.base.namespace('foo');
+                    this.widget.namespace('foo');
                 });
 
                 it('appends the namespace to the refresh event', function(){
-                    expect(this.base.refreshEvent()).toBe('xooie-refresh.foo');
+                    expect(this.widget.refreshEvent()).toBe('xooie-refresh.foo');
                 });
 
                 it('appends the namespace to the init event', function(){
-                    expect(this.base.initEvent()).toBe('xooie-init.foo');
+                    expect(this.widget.initEvent()).toBe('xooie-init.foo');
                 });
 
                 it('appends the namsepace to the class name', function(){
-                    expect(this.base.className()).toBe('is-instantiated-foo');
+                    expect(this.widget.className()).toBe('is-instantiated-foo');
                 });
             });
         });
 
-        xdescribe('When initializing the widget with addons...', function(){
-            it('loads each addon defined in the data attribute',function(){
-                spyOn(Widget.prototype, 'loadAddon');
-
-                var element = $('<div data-addons="add1 add2"></div>'),
-                    w = new Widget(element);
-
-                expect(Widget.prototype.loadAddon).toHaveBeenCalledWith('add1');
-                expect(Widget.prototype.loadAddon).toHaveBeenCalledWith('add2');
-            });
-
-            it('creates an addon object on the module if one does not exist', function(){
-                w = new Widget($('<div/>'));
-                define('cimspire/ui/addons/test_test', [], function() { return {}; });
-
-                expect(w.addons).toBeUndefined();
-
-                w.loadAddon('test');
-
-                expect(w.addons).toEqual({});
-            });
-        });
-
-        xdescribe('Rendering templates', function() {
-            var default_language;
+        describe('Rendering templates', function() {
+            var w;
 
             beforeEach(function() {
-                default_language = Base.default_template_language;
-                Base.default_template_language = 'null';
-
-                Base.render['null'] = function(template, view) {
+                Widget._renderMethods['null'] = function(template, view) {
                     return $('<span>Null template</span>');
                 };
-            });
 
-            afterEach(function() {
-                Base.default_template_language = default_language;
-                delete Base.render['null'];
+                w = new Widget($('<div/>'));
+
+                w.templateLanguage('null');
             });
 
             it('calls the default render method if no template backend is specified', function() {
-                var w = new Widget($('<div/>'));
-
-                spyOn(Base.render, 'null');
+                spyOn(Widget._renderMethods, 'null');
                 w.render($('<script>Test template</script>'), {});
 
-                expect(Base.render['null']).toHaveBeenCalled();
+                expect(Widget._renderMethods['null']).toHaveBeenCalled();
             });
 
             describe('Template languages', function() {
@@ -400,6 +400,23 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
 
                     $.fn.render = function() {};
                     $.fn.micro_render = function() {};
+
+                    Mustache = {
+                        render: jasmine.createSpy()
+                    };
+
+                    _ = {
+                        template: function(){
+                            return this.render;
+                        },
+                        render:  function(){
+                            return '';
+                        }
+                    };
+
+                    spyOn(_, 'template').andCallThrough();
+
+                    spyOn(_, 'render').andReturn('');
                 });
 
                 afterEach(function() {
@@ -423,7 +440,6 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
                         template = $('<script data-template-language="mustache">Test template</script>'),
                         view = { test: 'value' };
 
-                    spyOn(Mustache, 'render');
                     w.render(template, view);
 
                     expect(Mustache.render).toHaveBeenCalledWith(template.html(), view);
@@ -445,9 +461,6 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
                         template = $('<script data-template-language="underscore">Test template</script>'),
                         view = { test: 'value' };
 
-                    spyOn(_, 'template').andCallThrough();
-                    spyOn(_, 'render').andCallThrough();
-
                     w.render(template, view);
 
                     expect(_.template).toHaveBeenCalledWith('Test template');
@@ -456,7 +469,7 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
             });
         });
 
-        xdescribe('Init event', function() {
+        describe('Init event', function() {
 
             it('calls Init handlers immediately if the widget has already been initialized', function() {
                 var element = $('<div/>'),
@@ -464,7 +477,7 @@ require(['jquery', 'xooie/widgets/base'], function($, Base) {
 
                 new Widget(element);
 
-                element.bind('xooie-init.test', handler);
+                element.on('xooie-init', handler);
 
                 expect(handler).toHaveBeenCalled();
             });

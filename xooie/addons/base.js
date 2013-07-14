@@ -14,63 +14,143 @@
 *   limitations under the License.
 */
 
-define('xooie/addons/base', ['jquery'], function($) {
-    var Base = function(name, constructor){
-        var defaultOptions, initEvent, className, wrapper;
+/**
+ * class Xooie.Addon
+ *
+ * The base xooie addon module.  This module defines how addons function in relation to
+ * widgets, but contains no specific functionality.
+ **/
+define('xooie/addons/base', ['jquery', 'xooie/widgets/base'], function($, Widget) {
+    
+/**
+ * new Xooie.Addon(widget)
+ * - widget (Widget): An instance of [[Xooie.Widget]].
+ *
+ * Instantiating a new Addon associates the addon with the widget passed into the constructor.  The addon is
+ * stored in the [[Xooie.Widget#addons]] collection.
+ **/
+    var Addon = function(widget) {
+        var self = this;
 
-        defaultOptions = {};
-        initEvent = 'xooie-addon-init.' + name.toLowerCase();
-        className = 'has-' + name.toLowerCase() + '-addon';
+        // Check to see if the module is defined:
+        if (typeof widget === 'undefined') {
+            return false;
+        }
 
-        wrapper = function(module) {
-            //Let's check to see if module is defined...
-            //TODO: intelligently check if module is an instance of the base ui class
-            if (typeof module === 'undefined') {
-                return false;
-            }
+        // If there is already an instance of this addon instantiated for the module, return it:
+        if (widget.addons() && widget.addons().hasOwnProperty(this.name())) {
+            return widget.addons()[this.name()];
+        }
 
-            //if we've already instantiated an instance of this addon for this module, return it
-            if (module.addons && typeof module.addons[name] !== 'undefined') {
-                return module.addons[name];
-            }
+        // Add this addon to the widget's addons collection:
+        widget.addons()[this.name()] = this;
 
-            //module is the module we are extending.
-            this.module = module;
+        widget.root().addClass(this.addonClass());
 
-            //track this addon on the parent module
-            this.module.addons[name] = this;
+        // Reference the widget:
+        this.widget(widget);
 
-            //We'll need to extend the module's base properties
-            this.options = $.extend({}, wrapper.getDefaultOptions(), this.module.options);
+        // Check to see if there are any additional constructors to call;
+        var initCheck = function(){
+            var i;
 
-            this.module.root.addClass(className);
-
-            constructor.apply(this, arguments);
-
-            this.module.root.trigger(initEvent);
-
-        };
-
-        wrapper.prototype.cleanup = function() {
-            this.module.root.removeClass(className);
-        };
-
-        wrapper.prototype.cleanup = function() {
-            this.module.root.removeClass(className);
-        };
-
-        wrapper.getDefaultOptions = function(){
-            return defaultOptions;
-        };
-
-        wrapper.setDefaultOptions = function(options){
-            if (typeof options !== 'undefined') {
-                $.extend(defaultOptions, options);
+            if (!self._extendCount || self._extendCount <= 0) {
+                self.widget().root().trigger(self.get('initEvent'));
+                self._extendCount = null;
+            } else {
+                setTimeout(initCheck, 0);
             }
         };
 
-        return wrapper;
+        if (typeof this._extendCount > 0) {
+            setTimeout(initCheck, 0);
+        } else {
+            initCheck();
+        }
     };
 
-    return Base;
+/**
+ * Xooie.Addon.defineReadOnly(name, defaultValue)
+ *
+ * Same as [[Xooie.Widget.defineReadOnly]].
+ **/
+    Addon.defineReadOnly = Widget.defineReadOnly;
+
+/**
+ * Xooie.Addon.defineWriteOnly(name)
+
+ * Same as [[Xooie.Widget.defineWriteOnly]].
+ **/
+    Addon.defineWriteOnly = Widget.defineWriteOnly;
+
+/**
+ * Xooie.Addon.define(name, defaultValue)
+ *
+ * Same as [[Xooie.Widget.define]].
+ **/
+    Addon.define = Widget.define;
+
+/**
+ * Xooie.Addon.extend(constructor)
+ *
+ * Same as [[Xooie.Widget.extend]].
+ **/
+    Addon.extend = Widget.extend;
+
+/** internal
+ * Xooie.Addon#_definedProps -> Array
+ *
+ * Same as [[Xooie.Widget#_definedProps]].
+ **/
+    Addon.prototype._definedProps = [];
+
+/** internal
+ * Xooie.Addon#_extendCount -> Integer | null
+ *
+ * Same as [[Xooie.Widget#_extendCount]]
+ **/
+    Addon.prototype._extendCount = null;
+
+
+    Addon.define('widget');
+
+    Addon.define('name', 'addon');
+
+    Addon.defineReadOnly('initEvent','xooie-addon-init');
+
+    Addon.defineReadOnly('addonClass', 'has-addon');
+
+/**
+ * Xooie.Addon#set(name, value)
+ *
+ * Same as [[Xooie.Widget#set]]
+ **/
+    Addon.prototype.set = Widget.prototype.set;
+
+/**
+ * Xooie.Addon#set(name)
+ *
+ * Same as [[Xooie.Widget#get]]
+ **/
+    Addon.prototype.get = Widget.prototype.get;
+
+/**
+ * Xooie.Addon#cleanup()
+ *
+ * Removes the `addonClass` from the `root` of the associated `widget` and prepares this widget to be
+ * garbage collected.
+ **/
+    Addon.prototype.cleanup = function() {
+        this.widget().root().removeClass(this.addonClass());
+    };
+
+    Addon.prototype._process_initEvent = function(initEvent) {
+        return this.name() === 'addon' ? initEvent : initEvent + '.' + this.name();
+    };
+
+    Addon.prototype._process_addonClass = function(addonClass) {
+        return this.name() === 'addon' ? addonClass : 'has-' + this.name() + '-addon';
+    };
+
+    return Addon;
 });

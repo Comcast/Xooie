@@ -1,7 +1,33 @@
 require(['jquery', 'xooie/xooie'], function($, $X){
   describe('Xooie', function(){
 
-    describe('Xooie.config', function(){
+    xdescribe('$X', function(){
+      it('jquery-ifies a string selector', function(){
+
+      });
+
+      it('finds all elements that are decendant of the element with the data-widget-type attribute', function(){
+
+      });
+
+      it('calls require with a collection of all widget and addon urls', function(){
+
+      });
+
+      it('only adds a url to the collection of urls once', function(){
+
+      });
+
+      it('instantiates the widget', function(){
+
+      });
+
+      it('instantiates all addons', function(){
+
+      });
+    });
+
+    describe('$X.config', function(){
       it('sets an absolute path for a widget', function(){
         $X.config({widgets: { testWidget: 'test/widget' }});
 
@@ -85,7 +111,7 @@ require(['jquery', 'xooie/xooie'], function($, $X){
       });
     });
 
-    describe('Xooie._mapName', function(){
+    describe('$X._mapName', function(){
       it('returns a url made up of the root path, the type and the name of the module', function(){
         expect($X._mapName('test', 'widgets')).toBe('xooie/widgets/test');
       });
@@ -101,25 +127,54 @@ require(['jquery', 'xooie/xooie'], function($, $X){
       });
     });
 
-    describe('Xooie.cleanup', function(){
-      it('calls the garbageCollect method on each instantiated widget', function(){
-        var w1, w2;
+    describe('$X.cleanup', function(){
+      var w1, w2, rootEl;
+
+      beforeEach(function(){
+        rootEl = $('<div />');
 
         w1 = {
-          garbageCollect: jasmine.createSpy('w1 garbage collect')
+          root : function() { return rootEl; },
+          cleanup: jasmine.createSpy('w1 garbage collect')
         };
 
         w2 = {
-          garbageCollect: jasmine.createSpy('w2 garbage collect')
+          root : function() { return rootEl; },
+          cleanup: jasmine.createSpy('w2 garbage collect')
         };
 
-        $X._instantiated.push(w1);
-        $X._instantiated.push(w2);
+        $X._instanceCache.push(w1);
+        $X._instanceCache.push(w2);
+      });
+
+      afterEach(function(){
+        $X._instanceCache = [];
+      });
+
+      it('calls the cleanup method on each instantiated widget if it is no longer in the DOM', function(){
+        spyOn(rootEl, 'parents').andReturn($());
 
         $X.cleanup();
 
-        expect(w1.garbageCollect).toHaveBeenCalled();
-        expect(w2.garbageCollect).toHaveBeenCalled();
+        expect(w1.cleanup).toHaveBeenCalled();
+        expect(w2.cleanup).toHaveBeenCalled();
+      });
+
+      it('deletes the instance from the cache', function(){
+        spyOn(rootEl, 'parents').andReturn($());
+
+        $X.cleanup();
+
+        expect($X._instanceCache.indexOf(w2)).toBe(-1);
+      });
+
+      it('does not call cleanup if the widget is in the DOM', function(){
+        spyOn(rootEl, 'parents').andReturn($('<div />'));
+
+        $X.cleanup();
+
+        expect(w1.cleanup).not.toHaveBeenCalled();
+        expect(w2.cleanup).not.toHaveBeenCalled();
       });
     });
 

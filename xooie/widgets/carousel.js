@@ -238,6 +238,28 @@ define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
         }
     });
 
+    Carousel.createStyleRule('.xooie-carousel-wrapper', {
+        'overflow-x': 'scroll',
+        'overflow-y': 'hidden'
+    });
+
+    Carousel.createStyleRule('.xooie-carousel-crop', {
+        'overflow-y': 'hidden'
+    });
+
+    Carousel.createStyleRule('.xooie-carousel-content', {
+        display: 'table-cell',
+        'white-space': 'nowrap',
+        'font-size': '0px'
+    });
+
+    Carousel.createStyleRule('.xooie-carousel-item', {
+        display: 'inline-block',
+        zoom: '1',
+        '*display': 'inline',
+        'font-size': '1em'
+    });
+
     cache = {
         currentItem: 0,
         lastItem: 0
