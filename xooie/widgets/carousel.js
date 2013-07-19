@@ -303,7 +303,7 @@ define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
 
     Carousel.prototype.getRightLimit = function(){
         try {
-            var lastItem = this.content.children(':last'),
+            var lastItem = this.content.children(':visible:last'),
                 position = lastItem.position();
 
             if (position && typeof position.left !== 'undefined') {
