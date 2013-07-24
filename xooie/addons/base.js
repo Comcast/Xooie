@@ -20,8 +20,15 @@
  * The base xooie addon module.  This module defines how addons function in relation to
  * widgets, but contains no specific functionality.
  **/
-define('xooie/addons/base', ['jquery', 'xooie/widgets/base'], function($, Widget) {
-    
+define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, Shared) {
+/**
+ * Xooie.Addon@xooie-addon-init(event)
+ * - event (Event): A jQuery event object
+ *
+ * A jQuery special event triggered when the addon is successfully initialized.  Triggers on the `root` element
+ * of the adodn's widget.  Unlike [[Xooie.Widget@xooie-init]], this event only triggers when the addon is first instantiated.
+ **/
+
 /**
  * new Xooie.Addon(widget)
  * - widget (Widget): An instance of [[Xooie.Widget]].
@@ -62,7 +69,7 @@ define('xooie/addons/base', ['jquery', 'xooie/widgets/base'], function($, Widget
             }
         };
 
-        if (typeof this._extendCount > 0) {
+        if (this._extendCount > 0) {
             setTimeout(initCheck, 0);
         } else {
             initCheck();
@@ -71,31 +78,47 @@ define('xooie/addons/base', ['jquery', 'xooie/widgets/base'], function($, Widget
 
 /**
  * Xooie.Addon.defineReadOnly(name, defaultValue)
+ * - name (String): The name of the property to define as a read-only property.
+ * - defaultValue (Object): An optional default value.
  *
- * Same as [[Xooie.Widget.defineReadOnly]].
+ * See [[Xooie.Shared.defineReadOnly]].
  **/
-    Addon.defineReadOnly = Widget.defineReadOnly;
+    Addon.defineReadOnly = function(name, defaultValue){
+        Shared.defineReadOnly(this, name, defaultValue);
+    };
 
 /**
  * Xooie.Addon.defineWriteOnly(name)
-
- * Same as [[Xooie.Widget.defineWriteOnly]].
+ * - name (String): The name of the property to define as a write-only property
+ *
+ * See [[Xooie.Shared.defineWriteOnly]].
  **/
-    Addon.defineWriteOnly = Widget.defineWriteOnly;
+    Addon.defineWriteOnly = function(name){
+        Shared.defineWriteOnly(this, name);
+    };
 
 /**
- * Xooie.Addon.define(name, defaultValue)
+ * Xooie.Widget.define(name[, defaultValue])
+ * - name (String): The name of the property to define.
+ * - defaultValue: An optional default value.
  *
- * Same as [[Xooie.Widget.define]].
+ * A method that defines a property as both readable and writable.  In reality it calls both [[Xooie.Addon.defineReadOnly]]
+ * and [[Xooie.Addon.defineWriteOnly]].
  **/
-    Addon.define = Widget.define;
+    Addon.define = function(name, defaultValue){
+        this.defineReadOnly(name, defaultValue);
+        this.defineWriteOnly(name);
+    };
 
 /**
- * Xooie.Addon.extend(constructor)
+ * Xooie.Addon.extend(constructor) -> Addon
+ * - constructor (Function): The constructor for the new [[Xooie.Addon]] class.
  *
- * Same as [[Xooie.Widget.extend]].
+ * See [[Xooie.Shared.extend]].
  **/
-    Addon.extend = Widget.extend;
+    Addon.extend = function(constructor){
+        return Shared.extend(constructor, this);
+    };
 
 /** internal
  * Xooie.Addon#_definedProps -> Array
@@ -107,32 +130,82 @@ define('xooie/addons/base', ['jquery', 'xooie/widgets/base'], function($, Widget
 /** internal
  * Xooie.Addon#_extendCount -> Integer | null
  *
- * Same as [[Xooie.Widget#_extendCount]]
+ * Same as [[Xooie.Widget#_extendCount]].
  **/
     Addon.prototype._extendCount = null;
 
-
+/** internal
+ * Xooie.Addon#_widget -> Widget
+ *
+ * The widget for which this addon was instantiated.
+ **/
+/**
+ * Xooie.Addon#widget([value]) -> Widget
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Addon#_widget]].  Returns the current value of
+ * [[Xooie.Addon#_widget]] if no value is passed or sets the value.
+ **/
     Addon.define('widget');
 
+/** internal
+ * Xooie.Addon#_name -> String
+ *
+ * The name of the addon.
+ **/
+/**
+ * Xooie.Addon#name([value]) -> String
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Addon#_name]].  Returns the current value of
+ * [[Xooie.Addon#_name]] if no value is passed or sets the value.
+ **/
     Addon.define('name', 'addon');
 
-    Addon.defineReadOnly('initEvent','xooie-addon-init');
+/** internal, read-only
+ * Xooie.Addon#_initEvent -> String
+ *
+ * The name of the event triggered when the addon is instantiated.
+ **/
+/** read-only
+ * Xooie.Addon#initEvent() -> String
+ *
+ * The method for getting [[Xooie.Addon#_initEvent]].
+ **/
+    Addon.defineReadOnly('initEvent', 'xooie-addon-init');
 
+/** internal, read-only
+ * Xooie.Addon#_addonClass -> String
+ *
+ * The class added to the widget root indicating that this addon has been instantiated.
+ **/
+/** read-only
+ * Xooie.Addon#addonClass() -> String
+ *
+ * The method for getting [[Xooie.Addon#_addonClass]].
+ **/
     Addon.defineReadOnly('addonClass', 'has-addon');
 
 /**
- * Xooie.Addon#set(name, value)
+ * Xooie.Addon#get(name) -> object
+ * - name (String): The name of the property to be retrieved.
  *
- * Same as [[Xooie.Widget#set]]
+ * See [[Xooie.Shared.get]].
  **/
-    Addon.prototype.set = Widget.prototype.set;
+    Addon.prototype.get = function(name) {
+        return Shared.get(this, name);
+    };
 
 /**
- * Xooie.Addon#set(name)
+ * Xooie.Addon#set(name, value)
+ * - name (String): The name of the property to be set.
+ * - value: The value of the property to be set.
  *
- * Same as [[Xooie.Widget#get]]
+ * See [[Xooie.Shared.set]].
  **/
-    Addon.prototype.get = Widget.prototype.get;
+    Addon.prototype.set = function(name, value) {
+        return Shared.set(this, name, value);
+    };
 
 /**
  * Xooie.Addon#cleanup()
@@ -144,10 +217,22 @@ define('xooie/addons/base', ['jquery', 'xooie/widgets/base'], function($, Widget
         this.widget().root().removeClass(this.addonClass());
     };
 
+/** internal
+ * Xooie.Addon#_process_initEvent(initEvent) -> String
+ * - initEvent (String): The unmodified initEvent string.
+ *
+ * Adds the [[Xooie.Addon#name]] to the `initEvent`
+ **/
     Addon.prototype._process_initEvent = function(initEvent) {
         return this.name() === 'addon' ? initEvent : initEvent + '.' + this.name();
     };
 
+/** internal
+ * Xooie.Addon#_process_addonClass(className) -> String
+ * - className (String): The unmodified className string.
+ *
+ * Adds the [[Xooie.Addon#name]] to the `addonClass`
+ **/
     Addon.prototype._process_addonClass = function(addonClass) {
         return this.name() === 'addon' ? addonClass : 'has-' + this.name() + '-addon';
     };

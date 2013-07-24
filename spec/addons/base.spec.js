@@ -1,81 +1,193 @@
-require(['jquery', 'xooie/base', 'xooie/addons/base'], function($, Base, AddonBase) {
+require(['jquery', 'xooie/widgets/base', 'xooie/addons/base', 'xooie/shared'], function($, Widget, Addon, Shared) {
 
-    var constructor, baseConstructor, Widget, Addon, w, a;
-
-    xdescribe('Addon Base', function(){
+    describe('Addon Base', function(){
         beforeEach(function(){
-            define('testWidget', function(){
-                return true;
-            });
+            this.el = $('<div />');
 
-            define('test', function(){
-                return true;
-            });
-
-            baseConstructor = function(){
-                return true;
-            };
-
-            constructor = jasmine.createSpy();
-
-            Widget = Base('testWidget', baseConstructor);
-
-            w = new Widget($('<div/>'));
-
-            w.addons = {};
-
-            Addon = AddonBase('test', constructor);
+            this.widget = new Widget(this.el);
         });
 
-        describe('When a new Addon is created...', function(){
+        describe('When instantiating the addon...', function(){
 
-            it('invokes the constructor when an instance of the Addon is created', function(){
-                new Addon(w);
+            it('returns an existing instance of the addon', function(){
+                var addon_first = new Addon(this.widget);
 
-                expect(constructor).toHaveBeenCalled();
+                this.addon = new Addon(this.widget);
+
+                expect(this.addon).toBe(addon_first);
             });
 
-            it('returns the same instance of an addon if it has already been instantiated on a module', function(){
-                var a1 = new Addon(w),
-                    a2 = new Addon(w);
+            it('sets the addon to the widget.addons object', function(){
+                this.addon = new Addon(this.widget);
 
-                expect(a1).toEqual(a2);
+                expect(this.widget.addons()['addon']).toBe(this.addon);
             });
 
-            it('sets the module as a property of the addon instance', function(){
-                var a = new Addon(w);
+            it('adds the addonClass to the root of the widget', function(){
+                this.addon = new Addon(this.widget);
 
-                expect(a.module).toEqual(w);
+                expect(this.widget.root().hasClass(this.addon.addonClass())).toBe(true);
             });
 
-            it('extends the addon options with options from the base module', function(){
-                Addon.setDefaultOptions({
-                    test: 'A'
-                });
+            it('sets the widget to the widget property', function(){
+                this.addon = new Addon(this.widget);
 
-                w.options.test = 'B';
-
-                var a = new Addon(w);
-
-                expect(a.options.test).toBe('B');
+                expect(this.addon.widget()).toBe(this.widget);
             });
 
-            it('adds a class name of "has-test-addon" to the root of the base module', function(){
-                new Addon(w);
-
-                expect(w.root.hasClass('has-test-addon')).toBe(true);
-            });
-
-            it('triggers an event indicating that the addon has been instantiated', function(){
+            it('triggers the init event if there are no inherited constructors to be called', function(){
                 var testVal = false;
-                w.root.on('xooie-addon-init.test', function(){
+
+                this.el.on('xooie-addon-init', function(){
                     testVal = true;
                 });
 
-                new Addon(w);
+                this.addon = new Addon(this.widget);
 
                 expect(testVal).toBe(true);
             });
+
+            it('delays triggering the init event if there are constructors to be called', function(){
+                var testVal = false,
+                    AddonExtend = Addon.extend(function() { return true; });
+
+                this.el.on('xooie-addon-init', function(){
+                    testVal = true;
+                });
+
+                this.addon = new AddonExtend(this.widget);
+
+                expect(testVal).toBe(false);
+
+                waitsFor(function(){
+                    return this.addon._extendCount === null;
+                });
+
+                runs(function(){
+                    expect(testVal).toBe(true);
+                });
+            });
+        });
+
+        describe('When defining a new property...', function(){
+            it('makes a property both writable and readable', function(){
+                spyOn(Addon, 'defineWriteOnly');
+                spyOn(Addon, 'defineReadOnly');
+
+                Addon.define('foo_one');
+
+                expect(Addon.defineWriteOnly).toHaveBeenCalledWith('foo_one');
+                expect(Addon.defineReadOnly).toHaveBeenCalledWith('foo_one', undefined);
+            });
+
+            it('calls the Shared.defineReadOnly method', function(){
+                spyOn(Shared, 'defineReadOnly');
+
+                Addon.defineReadOnly('foo', 'bar');
+
+                expect(Shared.defineReadOnly).toHaveBeenCalledWith(Addon, 'foo', 'bar');
+            });
+
+            it('calls the Shared.defineWriteOnly method', function(){
+                spyOn(Shared, 'defineWriteOnly');
+
+                Addon.defineWriteOnly('foo');
+
+                expect(Shared.defineWriteOnly).toHaveBeenCalledWith(Addon, 'foo');
+            });
+        });
+
+        describe('When getting and setting properties...', function(){
+            beforeEach(function(){
+                this.addon = new Addon(this.widget);
+            });
+
+            it('calls the Shared get method', function(){
+                spyOn(Shared, 'get');
+
+                this.addon.get('foo');
+
+                expect(Shared.get).toHaveBeenCalledWith(this.addon, 'foo');
+            });
+
+            it('calls the Shared set method', function(){
+                spyOn(Shared, 'set');
+
+                this.addon.set('foo', 'bar');
+
+                expect(Shared.set).toHaveBeenCalledWith(this.addon, 'foo', 'bar');
+            });
+        });
+
+        describe('When extending the Addon...', function(){
+            it('calls the Shared extend method', function(){
+                spyOn(Shared, 'extend');
+
+                var constructor = function(){};
+
+                Addon.extend(constructor);
+
+                expect(Shared.extend).toHaveBeenCalledWith(constructor, Addon);
+            });
+        });
+
+        describe('Properties and attributes', function(){
+            it('defines a widget property', function(){
+                expect(Addon.prototype.widget).not.toBeUndefined();
+            });
+
+            it('defines a name property', function(){
+                expect(Addon.prototype.name).not.toBeUndefined();
+            });
+
+            it('sets the default value of name to "addon"', function(){
+                this.addon = new Addon(this.widget);
+
+                expect(this.addon.name()).toBe('addon');
+            });
+
+            it('defines an initEvent property', function(){
+                expect(Addon.prototype.initEvent).not.toBeUndefined();
+            });
+
+            it('processes the initEvent property so that if the default name is present, it returns "xooie-addon-init"', function(){
+                this.addon = new Addon(this.widget);
+
+                expect(this.addon.initEvent()).toBe('xooie-addon-init');
+            });
+
+            it('processes the initEvent property so that it adds the name to the event', function(){
+                this.addon = new Addon(this.widget);
+
+                this.addon.name('foo');
+
+                expect(this.addon.initEvent()).toBe('xooie-addon-init.foo');
+            });
+
+            it('defines an addonClass property', function(){
+                expect(Addon.prototype.addonClass).not.toBeUndefined();
+            });
+
+            it('processes the initEvent so that it if the default name is present it returns "has-addon"', function(){
+                this.addon = new Addon(this.widget);
+                expect(this.addon.addonClass()).toBe('has-addon');
+            });
+
+            it('processes the addonClass so that it adds the name to the class', function(){
+                this.addon = new Addon(this.widget);
+
+                this.addon.name('foo');
+
+                expect(this.addon.addonClass()).toBe('has-foo-addon');
+            });
+        });
+
+        it('removes the addonClass from the widget root element when cleanup is called', function(){
+            this.addon = new Addon(this.widget);
+
+            this.addon.cleanup();
+
+            expect(this.widget.root().hasClass(this.addon.addonClass())).toBe(false);
         });
 
     });

@@ -1,4 +1,4 @@
-require(['jquery', 'xooie/widgets/base'], function($, Widget) {
+require(['jquery', 'xooie/widgets/base', 'xooie/shared'], function($, Widget, Shared) {
 
     describe('Xooie Base Widget Module', function() {
 
@@ -148,152 +148,50 @@ require(['jquery', 'xooie/widgets/base'], function($, Widget) {
                 expect(Widget.defineReadOnly).toHaveBeenCalledWith('foo_one', undefined);
             });
 
-            it('puts the property into the definedProps array', function(){
-                Widget.define('foo_two');
+            it('calls the Shared.defineReadOnly method', function(){
+                spyOn(Shared, 'defineReadOnly');
 
-                expect(Widget.prototype._definedProps).toContain('foo_two');
+                Widget.defineReadOnly('foo', 'bar');
+
+                expect(Shared.defineReadOnly).toHaveBeenCalledWith(Widget, 'foo', 'bar');
             });
 
-            it('creates a function with the property name', function(){
-                Widget.define('foo_three');
+            it('calls the Shared.defineWriteOnly method', function(){
+                spyOn(Shared, 'defineWriteOnly');
 
-                expect(typeof Widget.prototype.foo_three).toBe('function');
-            });
+                Widget.defineWriteOnly('foo');
 
-            it('creates a function that sets a value when passed and retrieves a value when called', function(){
-                Widget.define('foo_three');
-
-                this.widget = new Widget($('<div />'));
-
-                this.widget.foo_three('bar');
-
-                expect(this.widget.foo_three()).toBe('bar');
-            });
-
-            it('sets a default value if passed', function(){
-                Widget.define('foo_four', 'bar');
-
-                this.widget = new Widget($('<div />'));
-
-                expect(this.widget.foo_four()).toBe('bar');
-            });
-
-            describe('and defineWriteOnly is called...', function(){
-                it('permits values to be set', function(){
-                    Widget.defineWriteOnly('foo_five');
-
-                    expect(typeof Widget.prototype._set_foo_five).toBe('function');
-                    expect(typeof Widget.prototype._get_foo_five).toBe('undefined');
-                });
-
-                it('writes to the property value', function(){
-                    Widget.defineWriteOnly('foo_six');
-
-                    this.widget = new Widget($('<div />'));
-
-                    this.widget.set('foo_six', 'bar');
-
-                    expect(this.widget._foo_six).toBe('bar');
-                });
-            });
-
-            describe('and defineReadOnly is called...', function(){
-                it('permits values to be read', function(){
-                    Widget.defineReadOnly('foo_seven', 'bar');
-
-                    expect(typeof Widget.prototype._set_foo_seven).toBe('undefined');
-                    expect(typeof Widget.prototype._get_foo_seven).toBe('function');
-                });
-
-                it('reads the property value', function(){
-                    Widget.defineReadOnly('foo_eight');
-
-                    this.widget = new Widget($('<div />'));
-
-                    this.widget._foo_eight = 'bar';
-
-                    expect(this.widget.foo_eight()).toBe('bar');
-                });
+                expect(Shared.defineWriteOnly).toHaveBeenCalledWith(Widget, 'foo');
             });
         });
 
-        describe('When extending the base module...', function(){
-            var constructor, Extended;
-
-            beforeEach(function(){
-                constructor = jasmine.createSpy('constructor');
-            });
-
-            it('sets the extendCount to 1 if extending Base', function(){
-                Extended = Widget.extend(constructor);
-
-                expect(Extended.prototype._extendCount).toBe(1);
-            });
-
-            it('increments the extendCount if an extended widget is extended', function(){
-                Extended = Widget.extend(constructor);
-
-                var Widget_Two = Extended.extend(constructor);
-
-                expect(Widget_Two.prototype._extendCount).toBe(2);
-            });
-
-            it('returns a new constructor that invokes the Base constructor and the passed constructor', function(){
-                Extended = Widget.extend(function() { constructor(); });
-
-                this.el = $('<div />');
-
-                var w = new Extended(this.el);
-
-                expect(constructor).toHaveBeenCalled();
-                expect(w.root().is(this.el)).toBe(true);
-            });
-
-            it('extends the new Widget with the parent widget methods', function(){
-                Extended = Widget.extend(function(){ constructor(); });
-                var prop;
-
-                for (prop in Widget) {
-                    expect(typeof Extended[prop]).not.toBeUndefined();
-                }
-            });
-
-            it('extends the new Widget prototype with the parent prototype', function(){
-                Extended = Widget.extend(function(){ constructor(); });
-
-                var prop;
-
-                for (prop in Widget.prototype) {
-                    expect(typeof Extended.prototype[prop]).not.toBeUndefined();
-                }
-            });
-        });
-
-        describe('When setting a property...', function(){
-            it('calls the property setter', function(){
-                Widget.define('foo');
-
-                this.widget = new Widget($('<div />'));
-
-                spyOn(this.widget, '_set_foo');
-
-                this.widget.set('foo', 'bar');
-
-                expect(this.widget._set_foo).toHaveBeenCalledWith('bar');
-            });
-        });
-
-        describe('When getting a property...', function(){
-            it('calls the property getter', function(){
-                Widget.define('foo');
-
-                this.widget = new Widget($('<div />'));
-
-                spyOn(this.widget, '_get_foo');
+        describe('When getting and setting properties...', function(){
+            it('calls the Shared get method', function(){
+                spyOn(Shared, 'get');
 
                 this.widget.get('foo');
 
-                expect(this.widget._get_foo).toHaveBeenCalled();
+                expect(Shared.get).toHaveBeenCalledWith(this.widget, 'foo');
+            });
+
+            it('calls the Shared set method', function(){
+                spyOn(Shared, 'set');
+
+                this.widget.set('foo', 'bar');
+
+                expect(Shared.set).toHaveBeenCalledWith(this.widget, 'foo', 'bar');
+            });
+        });
+
+        describe('When extending the Widget...', function(){
+            it('calls the Shared extend method', function(){
+                spyOn(Shared, 'extend');
+
+                var constructor = function(){};
+
+                Widget.extend(constructor);
+
+                expect(Shared.extend).toHaveBeenCalledWith(constructor, Widget);
             });
         });
 
