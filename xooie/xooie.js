@@ -63,7 +63,6 @@ $X = Xooie = (function(static_config) {
  *
  * Defines the url strings for Xooie modules that will be used to require said modules.
  *
- *
  * ##### Options
  *
  * - **root** (String): The location of all Xooie files.

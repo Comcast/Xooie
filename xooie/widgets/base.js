@@ -21,7 +21,7 @@
  * specific functionality.
  **/
 
-define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
+define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/shared'], function($, $X, Shared) {
 
     var Widget;
 
@@ -54,34 +54,13 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
  * is passed to [[$X]].  Triggers on the `root` element of the widget.
  **/
 
-    function propertyDetails (name) {
-        return {
-            getter: '_get_' + name,
-            setter: '_set_' + name,
-            processor: '_process_' + name,
-            validator: '_validate_' + name,
-            value: '_' + name
-        };
-    }
-
-    function propertyDispatcher (name, prototype) {
-        var prop = propertyDetails(name);
-
-        if (typeof prototype[name] !== 'function') {
-            prototype._definedProps.push(name);
-
-            prototype[name] = function(value) {
-                if (typeof value === 'undefined') {
-                    return this[prop.getter]();
-                } else {
-                    return this[prop.setter](value);
-                }
-            };
-        }
-    }
-
-    // recursively attempts to find the next available index, starting at the current
-    // instanceIndex
+/** internal
+ * Xooie.Widget.cacheInstance(instance) -> Integer
+ * - instance (Widget): An instance of a Xooie widget to be cached
+ *
+ * Recursively checks for the next available index in [[$X._instanceCache]] using [[$X._instanceIndex]]
+ * as a reference point.  Returns the index.
+ **/
     function cacheInstance (instance) {
         if (typeof instance !== 'undefined') {
             var index = $X._instanceIndex;
@@ -155,7 +134,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
             }
         };
 
-        if (typeof this._extendCount > 0) {
+        if (this._extendCount > 0) {
             setTimeout(initCheck, 0);
         } else {
             initCheck();
@@ -214,21 +193,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
  * Xooie.Widget.defineWriteOnly(name)
  * - name (String): The name of the property to define as a write-only property
  *
- * Defines a write-only property that can be set using [[Xooie.Widget#set]] or by passing a value to
- * the `{{name}}` method on teh instance of the widget.
+ * See [[Xooie.Shared.defineWriteOnly]].
  **/
     Widget.defineWriteOnly = function(name) {
-        var prop = propertyDetails(name);
-
-        propertyDispatcher(name, this.prototype);
-
-        if (typeof this.prototype[prop.setter] !== 'function') {
-            this.prototype[prop.setter] = function(value){
-                if (typeof this[prop.valiator] !== 'function' || this[prop.validator](name)) {
-                    this[prop.value] = value;
-                }
-            };
-        }
+        Shared.defineWriteOnly(this, name);
     };
 
 /**
@@ -236,25 +204,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
  * - name (String): The name of the property to define as a read-only property.
  * - defaultValue (Object): An optional default value.
  *
- * Defines a read-only property that can be accessed either by [[Xooie.Widget#get]] or calling the `{{name}}` method
- * on the instance of the widget.
+ * See [[Xooie.Shared.defineReadOnly]].
  **/
     Widget.defineReadOnly = function(name, defaultValue){
-        var prop = propertyDetails(name);
-
-        propertyDispatcher(name, this.prototype);
-
-        if (typeof this.prototype[prop.getter] !== 'function') {
-            this.prototype[prop.getter] = function() {
-                var value = typeof this[prop.value] !== 'undefined' ? this[prop.value] : defaultValue;
-
-                if (typeof this[prop.processor] === 'function') {
-                    return this[prop.processor](value);
-                }
-
-                return value;
-            };
-        }
+        Shared.defineReadOnly(this, name, defaultValue);
     };
 
 /**
@@ -271,29 +224,13 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
     };
 
 /**
- * Xooie.Widget.extend(constructor)
+ * Xooie.Widget.extend(constructor) -> Widget
  * - constructor (Function): The constructor for the new [[Xooie.Widget]] class.
  *
- * Creates a new Xooie widget class that inherits all properties from the extended class.
- * Constructors for the class are called in order from the top-level constructor to the
- * base Widget constructor.
+ * See [[Xooie.Shared.extend]].
  **/
     Widget.extend = function(constructor){
-        var _super = this,
-            _child;
-
-        _child = function() {
-            _super.apply(this, arguments);
-            constructor.apply(this, arguments);
-            this._extendCount -= 1;
-        };
-
-        $.extend(true, _child, _super);
-        $.extend(true, _child.prototype, _super.prototype);
-
-        _child.prototype._extendCount = _child.prototype._extendCount === null ? 1 : _child.prototype._extendCount += 1;
-
-        return _child;
+        return Shared.extend(constructor, this);
     };
 
 /**
@@ -411,7 +348,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
  * The method for setting or getting [[Xooie.Widget#_addons]].  Returns the current value of
  * [[Xooie.Widget#_addons]] if no value is passed or sets the value.
  **/
-    Widget.defineReadOnly('addons', {});
+    Widget.defineReadOnly('addons');
 
 /** internal, read-only
  * Xooie.Widget#_refreshEvent -> String
@@ -421,11 +358,9 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
  * Default: `xooie-refresh`.
  **/
 /** read-only
- * Xooie.Widget#refreshEvent([value]) -> String
- * - value: an optional value to be set.
+ * Xooie.Widget#refreshEvent() -> String
  *
- * The method for setting or getting [[Xooie.Widget#_refreshEvent]].  Returns the current value of
- * [[Xooie.Widget#_refreshEvent]] if no value is passed or sets the value.
+ * The method for getting [[Xooie.Widget#_refreshEvent]].
  **/
     Widget.defineReadOnly('refreshEvent', 'xooie-refresh');
 
@@ -437,11 +372,9 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
  * Default: `xooie-init`.
  **/
 /** read-only
- * Xooie.Widget#initEvent([value]) -> String
- * - value: an optional value to be set.
+ * Xooie.Widget#initEvent() -> String
  *
- * The method for setting or getting [[Xooie.Widget#_initEvent]].  Returns the current value of
- * [[Xooie.Widget#_initEvent]] if no value is passed or sets the value.
+ * The method for getting [[Xooie.Widget#_initEvent]].
  **/
     Widget.defineReadOnly('initEvent', 'xooie-init');
 
@@ -452,11 +385,9 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
  * Default: `is-instantiated`.
  **/
 /** read-only
- * Xooie.Widget#className([value]) -> String
- * - value: an optional value to be set.
+ * Xooie.Widget#className() -> String
  *
- * The method for setting or getting [[Xooie.Widget#_className]].  Returns the current value of
- * [[Xooie.Widget#_className]] if no value is passed or sets the value.
+ * The method for getting [[Xooie.Widget#_className]].
  **/
     Widget.defineReadOnly('className', 'is-instantiated');
 
@@ -467,11 +398,9 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
  * Default: `{{namespace}}-{{id}}`
  **/
 /** read-only
- * Xooie.Widget#instanceClass([value]) -> String
- * - value: an optional value to be set.
+ * Xooie.Widget#instanceClass() -> String
  *
- * The method for setting or getting [[Xooie.Widget#_instanceClass]].  Returns the current value of
- * [[Xooie.Widget#_instanceClass]] if no value is passed or sets the value.
+ * The method for getting [[Xooie.Widget#_instanceClass]].
  **/
     Widget.defineReadOnly('instanceClass');
 
@@ -495,30 +424,24 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
     };
 
 /**
+ * Xooie.Widget#get(name) -> object
+ * - name (String): The name of the property to be retrieved.
+ *
+ * See [[Xooie.Shared.get]].
+ **/
+    Widget.prototype.get = function(name) {
+        return Shared.get(this, name);
+    };
+
+/**
  * Xooie.Widget#set(name, value)
  * - name (String): The name of the property to be set.
  * - value: The value of the property to be set.
  *
- * Sets a property, so long as that property has been defined.
+ * See [[Xooie.Shared.set]].
  **/
     Widget.prototype.set = function(name, value) {
-        var prop = propertyDetails(name);
-
-        if (typeof this[prop.setter] === 'function') {
-            this[prop.setter](value);
-        }
-    };
-
-/**
- * Xooie.Widget#get(name) -> object
- * - name (String): The name of the property to be retrieved.
- *
- * Retrieves the value of the property.  Returns `undefined` if the property has not been defined.
- **/
-    Widget.prototype.get = function(name) {
-        var prop = propertyDetails(name);
-
-        return this[prop.getter]();
+        return Shared.set(this, name, value);
     };
 
 /**
@@ -558,6 +481,21 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie'], function($, $X) {
         } else {
             return result;
         }
+    };
+
+/** internal
+ * Xooie.Widget#_process_addons(addons) -> Object
+ * - addons (Object): The collection of instantiated addons for this widget
+ *
+ * Checks to see if the addons object has been defined.  We can't define objects as
+ * 'default' values for properties since the object will be the same for each instance.
+ **/
+    Widget.prototype._process_addons = function(addons){
+        if (typeof addons === 'undefined'){
+            addons = this._addons = {};
+        }
+
+        return addons;
     };
 
 /** internal
