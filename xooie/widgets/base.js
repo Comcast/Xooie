@@ -21,7 +21,7 @@
  * specific functionality.
  **/
 
-define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/shared'], function($, $X, Shared) {
+define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/shared'], function($, $X, shared) {
 
     var Widget;
 
@@ -193,10 +193,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/shared'], function
  * Xooie.Widget.defineWriteOnly(name)
  * - name (String): The name of the property to define as a write-only property
  *
- * See [[Xooie.Shared.defineWriteOnly]].
+ * See [[Xooie.shared.defineWriteOnly]].
  **/
     Widget.defineWriteOnly = function(name) {
-        Shared.defineWriteOnly(this, name);
+        shared.defineWriteOnly(this, name);
     };
 
 /**
@@ -204,10 +204,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/shared'], function
  * - name (String): The name of the property to define as a read-only property.
  * - defaultValue (Object): An optional default value.
  *
- * See [[Xooie.Shared.defineReadOnly]].
+ * See [[Xooie.shared.defineReadOnly]].
  **/
     Widget.defineReadOnly = function(name, defaultValue){
-        Shared.defineReadOnly(this, name, defaultValue);
+        shared.defineReadOnly(this, name, defaultValue);
     };
 
 /**
@@ -227,10 +227,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/shared'], function
  * Xooie.Widget.extend(constructor) -> Widget
  * - constructor (Function): The constructor for the new [[Xooie.Widget]] class.
  *
- * See [[Xooie.Shared.extend]].
+ * See [[Xooie.shared.extend]].
  **/
     Widget.extend = function(constructor){
-        return Shared.extend(constructor, this);
+        return shared.extend(constructor, this);
     };
 
 /**
@@ -427,10 +427,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/shared'], function
  * Xooie.Widget#get(name) -> object
  * - name (String): The name of the property to be retrieved.
  *
- * See [[Xooie.Shared.get]].
+ * See [[Xooie.shared.get]].
  **/
     Widget.prototype.get = function(name) {
-        return Shared.get(this, name);
+        return shared.get(this, name);
     };
 
 /**
@@ -438,10 +438,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/shared'], function
  * - name (String): The name of the property to be set.
  * - value: The value of the property to be set.
  *
- * See [[Xooie.Shared.set]].
+ * See [[Xooie.shared.set]].
  **/
     Widget.prototype.set = function(name, value) {
-        return Shared.set(this, name, value);
+        return shared.set(this, name, value);
     };
 
 /**

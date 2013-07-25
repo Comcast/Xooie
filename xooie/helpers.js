@@ -17,7 +17,7 @@ define('xooie/helpers', ['jquery'], function($){
     toAry: function(str) {
         if (typeof str === 'string') {
             return str.split(/\s+/);
-        } else if (typeof str === 'array') {
+        } else if (str instanceof Array) {
             return str;
         }
     }

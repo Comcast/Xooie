@@ -1,4 +1,4 @@
-require(['jquery', 'xooie/shared', 'xooie/widget/base'], function($, Shared, Widget){
+require(['jquery', 'xooie/shared', 'xooie/widgets/base'], function($, Shared, Widget){
   describe('Xooie shared functionality', function(){
     beforeEach(function(){
 
@@ -20,11 +20,9 @@ require(['jquery', 'xooie/shared', 'xooie/widget/base'], function($, Shared, Wid
       });
 
       it('creates a function that retrieves a value', function(){
-          Shared.defineReadOnly(Widget, 'foo_three');
+          Shared.defineReadOnly(Widget, 'foo_three', 'bar');
 
           this.widget = new Widget($('<div />'));
-
-          this.widget.foo_three('bar');
 
           expect(this.widget.foo_three()).toBe('bar');
       });
@@ -129,7 +127,7 @@ require(['jquery', 'xooie/shared', 'xooie/widget/base'], function($, Shared, Wid
 
     describe('When setting a property...', function(){
         it('calls the property setter', function(){
-            Shared.define('foo', Widget);
+            Shared.defineWriteOnly(Widget, 'foo');
 
             this.widget = new Widget($('<div />'));
 
@@ -143,7 +141,7 @@ require(['jquery', 'xooie/shared', 'xooie/widget/base'], function($, Shared, Wid
 
     describe('When getting a property...', function(){
         it('calls the property getter', function(){
-            Widget.define('foo');
+            Shared.defineReadOnly(Widget, 'foo');
 
             this.widget = new Widget($('<div />'));
 
