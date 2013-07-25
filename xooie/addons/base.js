@@ -20,7 +20,7 @@
  * The base xooie addon module.  This module defines how addons function in relation to
  * widgets, but contains no specific functionality.
  **/
-define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, Shared) {
+define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
 /**
  * Xooie.Addon@xooie-addon-init(event)
  * - event (Event): A jQuery event object
@@ -81,20 +81,20 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, Shared) {
  * - name (String): The name of the property to define as a read-only property.
  * - defaultValue (Object): An optional default value.
  *
- * See [[Xooie.Shared.defineReadOnly]].
+ * See [[Xooie.shared.defineReadOnly]].
  **/
     Addon.defineReadOnly = function(name, defaultValue){
-        Shared.defineReadOnly(this, name, defaultValue);
+        shared.defineReadOnly(this, name, defaultValue);
     };
 
 /**
  * Xooie.Addon.defineWriteOnly(name)
  * - name (String): The name of the property to define as a write-only property
  *
- * See [[Xooie.Shared.defineWriteOnly]].
+ * See [[Xooie.shared.defineWriteOnly]].
  **/
     Addon.defineWriteOnly = function(name){
-        Shared.defineWriteOnly(this, name);
+        shared.defineWriteOnly(this, name);
     };
 
 /**
@@ -114,10 +114,10 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, Shared) {
  * Xooie.Addon.extend(constructor) -> Addon
  * - constructor (Function): The constructor for the new [[Xooie.Addon]] class.
  *
- * See [[Xooie.Shared.extend]].
+ * See [[Xooie.shared.extend]].
  **/
     Addon.extend = function(constructor){
-        return Shared.extend(constructor, this);
+        return shared.extend(constructor, this);
     };
 
 /** internal
@@ -190,10 +190,10 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, Shared) {
  * Xooie.Addon#get(name) -> object
  * - name (String): The name of the property to be retrieved.
  *
- * See [[Xooie.Shared.get]].
+ * See [[Xooie.shared.get]].
  **/
     Addon.prototype.get = function(name) {
-        return Shared.get(this, name);
+        return shared.get(this, name);
     };
 
 /**
@@ -201,10 +201,10 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, Shared) {
  * - name (String): The name of the property to be set.
  * - value: The value of the property to be set.
  *
- * See [[Xooie.Shared.set]].
+ * See [[Xooie.shared.set]].
  **/
     Addon.prototype.set = function(name, value) {
-        return Shared.set(this, name, value);
+        return shared.set(this, name, value);
     };
 
 /**

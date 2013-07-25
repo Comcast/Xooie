@@ -1,5 +1,5 @@
 /**
- * class Xooie.Shared
+ * class Xooie.shared
  *
  * A module that contains functionality that is used both by [[Xooie.Widget]] and [[Xooie.Addon]]
  * This module exists to abstract common functionality so that it can be maintained in one place.
@@ -8,21 +8,23 @@
 define('xooie/shared', ['jquery'], function($){
 
 /** internal
- * Xooie.Shared.propertyDetails(name) -> Object
+ * Xooie.shared.propertyDetails(name) -> Object
  * - name (String): The name of the property
  *
  * Generates a hash of attributes that will be used in setting and getting the property.
- * 
+ *
  * ##### Return values
  *
  * - **getter** (String): The name of the internal getter method for this property.
  * `_get_name`
- * - **setter** (String): The name of the internal setter method for this property. 
+ * - **setter** (String): The name of the internal setter method for this property.
  * `_set_name`
  * - **processor** (String): The name of the internal processor method for this property.
  * `_process_name`
  * - **validator** (String): The name of the internal validator method for this property.
  * `_validate_name`
+ * **default** (String): The name of the internally stored default value for this property.
+ * `_default_name`
  * - **value** (String): The name of the internally stored value for this property.
  * `_name`
  **/
@@ -32,17 +34,18 @@ define('xooie/shared', ['jquery'], function($){
           setter: '_set_' + name,
           processor: '_process_' + name,
           validator: '_validate_' + name,
+          defaultValue: '_default_value_' + name,
           value: '_' + name
       };
   }
 
 /** internal
- * Xooie.Shared.propertyDispatcher(name, prototype)
+ * Xooie.shared.propertyDispatcher(name, prototype)
  * - name (String): The name of the property
  * - prototype (Object): The prototype of the [[Xooie.Widget]] or [[Xooie.Addon]] for which the property is being set.
  *
- * Gets the [[Xooie.Shared.propertyDetails]] for the property, adds the `name` to the list of [[Xooie.Widget#_definedProps]]
- * (or [[Xooie.Addon#_definedProps]]).  Adds a method called `name` to the prototype that allows this property to be set or 
+ * Gets the [[Xooie.shared.propertyDetails]] for the property, adds the `name` to the list of [[Xooie.Widget#_definedProps]]
+ * (or [[Xooie.Addon#_definedProps]]).  Adds a method called `name` to the prototype that allows this property to be set or
  * retrieved.
  **/
   function propertyDispatcher (name, prototype) {
@@ -61,14 +64,14 @@ define('xooie/shared', ['jquery'], function($){
       }
   }
 
-  var Shared = {
+  var shared = {
 /**
- * Xooie.Shared.defineReadOnly(module, name[, defaultValue])
+ * Xooie.shared.defineReadOnly(module, name[, defaultValue])
  * - module (Widget | Addon): The module on which this property will be defined.
  * - name (String): The name of the property to define as a read-only property.
  * - defaultValue (Object): An optional default value.
  *
- * Defines a read-only property that can be accessed either by [[Xooie.Widget#get]]/[[Xooie.Addon#get]] or 
+ * Defines a read-only property that can be accessed either by [[Xooie.Widget#get]]/[[Xooie.Addon#get]] or
  * calling the `{{name}}` method on the instance of the module.
  **/
     defineReadOnly: function(module, name, defaultValue){
@@ -76,9 +79,12 @@ define('xooie/shared', ['jquery'], function($){
 
       propertyDispatcher(name, module.prototype);
 
+      //The default value is reset each time this method is called;
+      module.prototype[prop.defaultValue] = defaultValue;
+
       if (typeof module.prototype[prop.getter] !== 'function') {
           module.prototype[prop.getter] = function() {
-              var value = typeof this[prop.value] !== 'undefined' ? this[prop.value] : defaultValue;
+              var value = typeof this[prop.value] !== 'undefined' ? this[prop.value] : this[prop.defaultValue];
 
               if (typeof this[prop.processor] === 'function') {
                   return this[prop.processor](value);
@@ -89,7 +95,7 @@ define('xooie/shared', ['jquery'], function($){
       }
     },
 /**
- * Xooie.Shared.defineWriteOnly(module, name)
+ * Xooie.shared.defineWriteOnly(module, name)
  * - module (Widget | Addon): The module on which this property will be defined.
  * - name (String): The name of the property to define as a write-only property
  *
@@ -110,7 +116,7 @@ define('xooie/shared', ['jquery'], function($){
         }
     },
 /**
- * Xooie.Shared.extend(constructor, _super) -> Widget | Addon
+ * Xooie.shared.extend(constructor, _super) -> Widget | Addon
  * - constructor (Function): The constructor for the new [[Xooie.Widget]] or [[Xooie.Addon]] class.
  * - _super (Widget | Addon): The module which is to be extended
  *
@@ -133,7 +139,7 @@ define('xooie/shared', ['jquery'], function($){
       return Child;
     },
 /**
- * Xooie.Shared.get(instance, name) -> object
+ * Xooie.shared.get(instance, name) -> object
  * - instance (Widget | Addon): The instance from which the property is to be retrieved.
  * - name (String): The name of the property to be retrieved.
  *
@@ -145,7 +151,7 @@ define('xooie/shared', ['jquery'], function($){
       return instance[prop.getter]();
     },
 /**
- * Xooie.Shared.set(instance, name, value)
+ * Xooie.shared.set(instance, name, value)
  * - instance (Widget | Addon): The instance where the property is being set.
  * - name (String): The name of the property to be set.
  * - value: The value of the property to be set.
@@ -162,5 +168,5 @@ define('xooie/shared', ['jquery'], function($){
 
   };
 
-  return Shared;
+  return shared;
 });
