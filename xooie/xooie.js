@@ -126,7 +126,7 @@ $X = Xooie = (function(static_config) {
     return obj;
 }(Xooie));
 
-define('xooie/xooie', ['jquery', 'xooie/xooie_helpers', 'xooie/stylesheet'], function($, helpers, Stylesheet){
+define('xooie/xooie', ['jquery', 'xooie/helpers', 'xooie/stylesheet'], function($, helpers, Stylesheet){
     var config = Xooie.config,
         _mapName = Xooie._mapName,
         widgetSelector = '[data-widget-type]';
@@ -156,7 +156,7 @@ define('xooie/xooie', ['jquery', 'xooie/xooie_helpers', 'xooie/stylesheet'], fun
             node = $(nodes[i]);
 
             // Add all of the widget types to the list of modules we need:
-            moduleNames = helpers.parseData(node.data(widgetDataAttr));
+            moduleNames = helpers.toAry(node.data(widgetDataAttr));
 
             // For each widget we check to see if the url is already in our
             // list of urls to require:
@@ -169,7 +169,7 @@ define('xooie/xooie', ['jquery', 'xooie/xooie_helpers', 'xooie/stylesheet'], fun
             }
 
             // Do the same with each addon name:
-            moduleNames = helpers.parseData(node.data(addonDataAttr));
+            moduleNames = helpers.toAry(node.data(addonDataAttr));
 
             for (j = 0; j < moduleNames.length; j+=1) {
                 url = $X._mapName(moduleNames[j], 'addons');
@@ -191,8 +191,8 @@ define('xooie/xooie', ['jquery', 'xooie/xooie_helpers', 'xooie/stylesheet'], fun
                 node = $(nodes[i]);
 
                 // This time, we're keeping track of our addons and widges separately:
-                widgets = helpers.parseData(node.data(widgetDataAttr));
-                addons = helpers.parseData(node.data(addonDataAttr));
+                widgets = helpers.toAry(node.data(widgetDataAttr));
+                addons = helpers.toAry(node.data(addonDataAttr));
 
                 // Iterate through each widget type:
                 for (j = 0; j < widgets.length; j+=1) {
