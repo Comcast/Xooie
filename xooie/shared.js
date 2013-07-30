@@ -29,14 +29,14 @@ define('xooie/shared', ['jquery'], function($){
  * `_name`
  **/
   function propertyDetails (name) {
-      return {
-          getter: '_get_' + name,
-          setter: '_set_' + name,
-          processor: '_process_' + name,
-          validator: '_validate_' + name,
-          defaultValue: '_default_value_' + name,
-          value: '_' + name
-      };
+    return {
+      getter: '_get_' + name,
+      setter: '_set_' + name,
+      processor: '_process_' + name,
+      validator: '_validate_' + name,
+      defaultValue: '_default_value_' + name,
+      value: '_' + name
+    };
   }
 
 /** internal
@@ -49,19 +49,19 @@ define('xooie/shared', ['jquery'], function($){
  * retrieved.
  **/
   function propertyDispatcher (name, prototype) {
-      var prop = propertyDetails(name);
+    var prop = propertyDetails(name);
 
-      if (typeof prototype[name] !== 'function') {
-          prototype._definedProps.push(name);
+    if (typeof prototype[name] !== 'function') {
+      prototype._definedProps.push(name);
 
-          prototype[name] = function(value) {
-              if (typeof value === 'undefined') {
-                  return this[prop.getter]();
-              } else {
-                  return this[prop.setter](value);
-              }
-          };
-      }
+      prototype[name] = function(value) {
+        if (typeof value === 'undefined') {
+          return this[prop.getter]();
+        } else {
+          return this[prop.setter](value);
+        }
+      };
+    }
   }
 
   var shared = {
@@ -83,15 +83,15 @@ define('xooie/shared', ['jquery'], function($){
       module.prototype[prop.defaultValue] = defaultValue;
 
       if (typeof module.prototype[prop.getter] !== 'function') {
-          module.prototype[prop.getter] = function() {
-              var value = typeof this[prop.value] !== 'undefined' ? this[prop.value] : this[prop.defaultValue];
+        module.prototype[prop.getter] = function() {
+          var value = typeof this[prop.value] !== 'undefined' ? this[prop.value] : this[prop.defaultValue];
 
-              if (typeof this[prop.processor] === 'function') {
-                  return this[prop.processor](value);
-              }
+          if (typeof this[prop.processor] === 'function') {
+            return this[prop.processor](value);
+          }
 
-              return value;
-          };
+          return value;
+        };
       }
     },
 /**
@@ -105,15 +105,15 @@ define('xooie/shared', ['jquery'], function($){
     defineWriteOnly: function(module, name){
       var prop = propertyDetails(name);
 
-        propertyDispatcher(name, module.prototype);
+      propertyDispatcher(name, module.prototype);
 
-        if (typeof module.prototype[prop.setter] !== 'function') {
-            module.prototype[prop.setter] = function(value){
-                if (typeof this[prop.validator] !== 'function' || this[prop.validator](name)) {
-                    this[prop.value] = value;
-                }
-            };
-        }
+      if (typeof module.prototype[prop.setter] !== 'function') {
+        module.prototype[prop.setter] = function(value){
+          if (typeof this[prop.validator] !== 'function' || this[prop.validator](name)) {
+            this[prop.value] = value;
+          }
+        };
+      }
     },
 /**
  * Xooie.shared.extend(constructor, _super) -> Widget | Addon
@@ -162,7 +162,7 @@ define('xooie/shared', ['jquery'], function($){
       var prop = propertyDetails(name);
 
       if (typeof instance[prop.setter] === 'function') {
-          instance[prop.setter](value);
+        instance[prop.setter](value);
       }
     }
 
