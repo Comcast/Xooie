@@ -169,7 +169,7 @@ define('xooie/xooie', ['jquery', 'xooie/helpers', 'xooie/stylesheet'], function(
             }
 
             // Do the same with each addon name:
-            moduleNames = helpers.toAry(node.data(addonDataAttr));
+            moduleNames = helpers.toAry(node.data(addonDataAttr)) || [];
 
             for (j = 0; j < moduleNames.length; j+=1) {
                 url = $X._mapName(moduleNames[j], 'addons');
@@ -192,7 +192,7 @@ define('xooie/xooie', ['jquery', 'xooie/helpers', 'xooie/stylesheet'], function(
 
                 // This time, we're keeping track of our addons and widges separately:
                 widgets = helpers.toAry(node.data(widgetDataAttr));
-                addons = helpers.toAry(node.data(addonDataAttr));
+                addons = helpers.toAry(node.data(addonDataAttr)) || [];
 
                 // Iterate through each widget type:
                 for (j = 0; j < widgets.length; j+=1) {
