@@ -1,5 +1,5 @@
-require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
-    xdescribe('Dropdown', function(){
+require(['jquery', 'xooie/widgets/dropdown'], function($, Dropdown) {
+    describe('Dropdown', function(){
         var el, d;
 
         describe('When initializing a dropdown...', function(){
@@ -38,7 +38,7 @@ require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
                     expect(d.expand).not.toHaveBeenCalled();
                 });
 
-                xit('binds the event to an alternate selector if a selector is specified', function(){
+                it('binds the event to an alternate selector if a selector is specified', function(){
                     setFixtures('<div class="alt-handle"></div>');
 
                     el.attr('data-triggers', '{"on":{"click": {"delay": 0, "selector": ".alt-handle"}},"off":{}}');
@@ -101,7 +101,7 @@ require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
                 var handle = d.getExpander(0),
                     expander = d.getExpander(0);
 
-                d.options.throttleDelay = 0;
+                d.throttleDelay(0);
 
                 spyOn(d, 'collapse').andCallThrough();
                 spyOn(window, 'clearTimeout').andCallThrough();
@@ -111,7 +111,7 @@ require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
                 waits(0);
 
                 runs(function(){
-                    expect(expander.hasClass(d.options.activeDropdownClass)).toBe(true);
+                    expect(expander.hasClass(d.activeDropdownClass())).toBe(true);
 
                     d.collapse(0,100);
 
@@ -120,14 +120,14 @@ require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
                     waits(100);
 
                     runs(function(){
-                        expect(expander.hasClass(d.options.activeDropdownClass)).toBe(true);
+                        expect(expander.hasClass(d.activeDropdownClass())).toBe(true);
 
                         expander.trigger('mouseleave');
 
                         waits(0);
 
                         runs(function(){
-                            expect(expander.hasClass(d.options.activeDropdownClass)).toBe(false);
+                            expect(expander.hasClass(d.activeDropdownClass())).toBe(false);
                         });
                     });
                 });
@@ -316,7 +316,7 @@ require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
 
                     expect(window.setTimeout).not.toHaveBeenCalled();
 
-                    waits(d.options.throttleDelay);
+                    waits(d.throttleDelay());
 
                     runs(function(){
                         d.setState(0,0,true);
@@ -327,7 +327,7 @@ require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
             });
 
             it('does not set a throttle timer if the throttleDelay is 0', function(){
-                d.options.throttleDelay = 0;
+                d.throttleDelay(0);
 
                 d.setState(0,0,true);
 
@@ -336,31 +336,6 @@ require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
                 runs(function(){
                     expect(d.timers.throttle[0]).toBe(undefined);
                 });
-            });
-        });
-
-        describe('When setting focus on an element', function(){
-            var testEl;
-
-            beforeEach(function(){
-                el = $(['<div>',
-                    '<div data-role="dropdown-handle"></div>',
-                    '<div data-role="dropdown-content" tabindex=0><a href=""></a></div>',
-                '</div>'].join(''));
-
-                d = new Dropdown(el);
-            });
-
-            it('sets focus on the expander if it is focusable', function(){
-
-            });
-
-            it('sets focus on the first focusable child of the expander if the expander is not focusable', function(){
-
-            });
-
-            it('does not set focus if no focusable element is available', function(){
-
             });
         });
     });
