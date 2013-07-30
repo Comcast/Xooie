@@ -17,11 +17,9 @@ require(['jquery', 'xooie/widgets/base', 'xooie/shared'], function($, Widget, Sh
             });
 
             it('reads the data attributes of the element and sets the data', function(){
-                spyOn(Widget.prototype, '_setData');
+                this.widget = new Widget('<div data-namespace="foo" />');
 
-                this.widget = new Widget('<div data-prop="a" />');
-
-                expect(Widget.prototype._setData).toHaveBeenCalledWith({ prop: 'a' });
+                expect(this.widget.namespace()).toBe('foo');
             });
 
             it('sets any defined properties', function(){
@@ -134,6 +132,113 @@ require(['jquery', 'xooie/widgets/base', 'xooie/shared'], function($, Widget, Sh
                 runs(function(){
                     expect(testVal).toBe(true);
                 });
+            });
+
+            it('binds an event handler to the initEvent that calls _applyRoles', function(){
+                spyOn(this.widget, '_applyRoles');
+
+                this.el.trigger(this.widget.initEvent());
+
+                expect(this.widget._applyRoles).toHaveBeenCalled();
+            });
+
+            it('binds an event handler to the refreshEvent that calls _applyRoles', function(){
+                spyOn(this.widget, '_applyRoles');
+
+                this.el.trigger(this.widget.refreshEvent());
+
+                expect(this.widget._applyRoles).toHaveBeenCalled();
+            });
+        });
+
+        describe('When defining a new role...', function() {
+            beforeEach(function(){
+                Widget.defineRole('bar');
+            });
+
+            it('creates an internal getter method', function(){
+                expect(typeof Widget.prototype._get_role_bar).toBe('function');
+            });
+
+            it('creates a selector used by the internal getter to find elements in the root', function(){
+                this.el = $('<div><div data-x-role="bar" /></div>');
+
+                this.widget = new Widget(this.el);
+
+                expect(this.widget._get_role_bar().is('[data-x-role="bar"]')).toBe(true);
+            });
+
+            it('creates an external getter method', function(){
+                expect(typeof Widget.prototype.bars).toBe('function');
+            });
+
+            it('creates and external method that calls the internal method', function(){
+                this.widget = new Widget(this.el);
+
+                spyOn(this.widget, '_get_role_bar');
+
+                this.widget.bars();
+
+                expect(this.widget._get_role_bar).toHaveBeenCalled();
+            });
+
+            it('adds the role to the definedRoles collection', function(){
+                expect(Widget.prototype._definedRoles.indexOf('bar')).not.toBe(-1);
+            });
+        });
+
+        describe('When calling the _applyRoles method...', function(){
+            beforeEach(function(){
+                Widget.defineRole('foo');
+
+                this.widget = new Widget('<div />');
+            });
+
+            it('gets the elements using the getter method', function(){
+                spyOn(this.widget, '_get_role_foo').andReturn($());
+
+                this.widget._applyRoles();
+
+                expect(this.widget._get_role_foo).toHaveBeenCalled();
+            });
+
+            it('calls the renderer method if no elements are found', function(){
+                spyOn(this.widget, '_get_role_foo').andReturn($());
+                this.widget._render_role_foo = jasmine.createSpy('foo renderer');
+
+                this.widget._applyRoles();
+
+                expect(this.widget._render_role_foo).toHaveBeenCalled();
+            });
+
+            it('does not call the renderer if elements are found', function(){
+                spyOn(this.widget, '_get_role_foo').andReturn($('<div />'));
+                this.widget._render_role_foo = jasmine.createSpy('foo renderer');
+
+                this.widget._applyRoles();
+
+                expect(this.widget._render_role_foo).not.toHaveBeenCalled();
+            });
+
+            it('adds an id to each element using the format: x-<id>-<role>-<index>', function(){
+                var el = $('<div />');
+
+                spyOn(this.widget, '_get_role_foo').andReturn(el);
+
+                this.widget._applyRoles();
+
+                expect(el.attr('id')).toBe('x-' + this.widget.id() + '-foo-0');
+            });
+
+            it('calls the processor method', function(){
+                var el = $('<div />');
+
+                spyOn(this.widget, '_get_role_foo').andReturn(el);
+                this.widget._process_role_foo = jasmine.createSpy('foo processor');
+
+                this.widget._applyRoles();
+
+                expect(this.widget._process_role_foo).toHaveBeenCalledWith(el);
             });
         });
 
