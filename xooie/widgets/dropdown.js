@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
+define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base'], function($, Base) {
     
    var parseWhich = function(which) {
         if (typeof which === 'string') {
@@ -27,14 +27,14 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
         return which;
      };
 
-    var Dropdown = Base('dropdown', function() {
+    var Dropdown = Base.extend(function() {
         var self = this,
             handles = self.getHandle(),
             expanders = self.getExpander();
 
         this.handlers = {
             off: function(event){
-                if ((typeof event.data.not !== 'undefined' && ($(event.data.not).is($(this)) || $(event.target).parents(event.data.not).length > 0)) || (typeof event.data.which !== 'undefined' && event.data.which.indexOf(event.which) === -1) || ($(event.target).is(self.getExpander(event.data.index)) || $(event.target).parents(self.options.dropdownExpanderSelector).length > 0) && !$(event.target).is($(this))) {
+                if ((typeof event.data.not !== 'undefined' && ($(event.data.not).is($(this)) || $(event.target).parents(event.data.not).length > 0)) || (typeof event.data.which !== 'undefined' && event.data.which.indexOf(event.which) === -1) || ($(event.target).is(self.getExpander(event.data.index)) || $(event.target).parents(self.dropdownExpanderSelector()).length > 0) && !$(event.target).is($(this))) {
                     return true;
                 }
 
@@ -66,7 +66,7 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
 
         this.addHandlers('on');
 
-        this.root.on({
+        this.root().on({
             dropdownExpand: function(event, index){
                 self.removeHandlers('on', index);
 
@@ -84,9 +84,9 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
                 $(this).attr('aria-selected', false);
                 self.getExpander(index).attr('aria-hidden', true);
             }
-        }, this.options.dropdownHandleSelector);
+        }, this.dropdownHandleSelector());
 
-        this.root.on('xooie-init.dropdown xooie-refresh.dropdown', function(){
+        this.root().on('xooie-init.dropdown xooie-refresh.dropdown', function(){
             handles.each(function(index){
                 var handle = $(this),
                     expander = expanders.eq(index);
@@ -118,27 +118,26 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
 
     });
 
-    Dropdown.setDefaultOptions({
-        dropdownHandleSelector: '[data-role="dropdown-handle"]',
-        dropdownExpanderSelector: '[data-role="dropdown-content"]',
+    Dropdown.define('throttleDelay', 300);
 
-        activeDropdownClass: 'is-dropdown-active',
-
-        throttleDelay: 300,
-        triggers: {
-            on: {
-                focus: {
-                    delay: 0
-                }
-            },
-            off: {
-                blur: {
-                    delay: 0
-                }
+    Dropdown.define('triggers', {
+        on: {
+            focus: {
+                delay: 0
+            }
+        },
+        off: {
+            blur: {
+                delay: 0
             }
         }
-
     });
+
+    Dropdown.defineReadOnly('dropdownHandleSelector', '[data-role="dropdown-handle"]');
+
+    Dropdown.defineReadOnly('dropdownExpanderSelector', '[data-role="dropdown-content"]');
+
+    Dropdown.defineReadOnly('activeDropdownClass', 'is-dropdown-active');
 
     Dropdown.prototype.getTriggerHandle = function(triggerData, index){
         var handles = this.getHandle(index);
@@ -153,7 +152,7 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
     Dropdown.prototype.addHandlers = function(state, index){
         var trigger, handle, triggerData, countName;
 
-        triggerData = this.options.triggers[state];
+        triggerData = this.triggers()[state];
 
         for (trigger in triggerData) {
             if (typeof triggerData[trigger].which !== 'undefined') {
@@ -173,7 +172,7 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
     Dropdown.prototype.removeHandlers = function(state, index){
         var trigger, handle, triggerData, countName, eventCount;
 
-        triggerData = this.options.triggers[state];
+        triggerData = this.triggers()[state];
 
         for (trigger in triggerData) {
             handle = this.getTriggerHandle(triggerData[trigger], index);
@@ -193,7 +192,7 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
     };
 
     Dropdown.prototype.getHandle = function(index){
-        var handles = this.root.find(this.options.dropdownHandleSelector);
+        var handles = this.root().find(this.dropdownHandleSelector());
 
         return (typeof index !== 'undefined' && index >= 0) ? handles.eq(index) : handles;
     };
@@ -202,12 +201,12 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
         var selectorString;
 
         if (typeof index === 'undefined' || isNaN(index)) {
-            selectorString = this.options.dropdownExpanderSelector;
+            selectorString = this.dropdownExpanderSelector();
         } else {
-            selectorString = this.options.dropdownExpanderSelector + '[data-dropdown-index="' + index + '"]';
+            selectorString = this.dropdownExpanderSelector() + '[data-dropdown-index="' + index + '"]';
         }
 
-        return this.root.find(selectorString);
+        return this.root().find(selectorString);
     };
 
     Dropdown.prototype.setState = function(index, data, active){
@@ -232,41 +231,34 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
 
             this.timers[_state][i] = clearTimeout(this.timers[_state][i]);
 
-            expander.toggleClass(this.options.activeDropdownClass, _active);
-            this.getHandle(i).toggleClass(this.options.activeDropdownClass, _active);
+            expander.toggleClass(this.activeDropdownClass(), _active);
+            this.getHandle(i).toggleClass(this.activeDropdownClass(), _active);
 
             if (_active){
                 handle.trigger('dropdownExpand', [i, _data]);
-                //this.setFocus(expander);
             } else {
                 handle.trigger('dropdownCollapse', [i, _data]);
             }
 
-            if (this.options.throttleDelay > 0){
+            if (this.throttleDelay() > 0){
                 this.timers.throttle[i] = setTimeout(function(){
                     self.timers.throttle[i] = clearTimeout(self.timers.throttle[i]);
-                }, this.options.throttleDelay);
+                }, this.throttleDelay());
             }
 
         }.bind(this, index, state, active, data), delay);
     };
 
     Dropdown.prototype.expand = function(index, data) {
-        if (!this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
+        if (!this.getHandle(index).hasClass(this.activeDropdownClass())) {
             this.setState(index, data, true);
         }
     };
 
     Dropdown.prototype.collapse = function(index, data) {
-        if (this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
+        if (this.getHandle(index).hasClass(this.activeDropdownClass())) {
             this.setState(index, data, false);
         }
-    };
-
-    Dropdown.prototype.setFocus = function(element){
-        element.find('a,input,textarea,button,select,iframe,[tabindex][tabindex!=-1]')
-               .first()
-               .focus();
     };
 
     return Dropdown;
