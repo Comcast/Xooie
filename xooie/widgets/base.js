@@ -135,6 +135,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
       }
     }
 
+    element.on(this.get('initEvent') + ' ' + this.get('refreshEvent'), function(){
+      self._applyRoles();
+    });
+
     var id = cacheInstance(this);
 
     this.set('id', id);
@@ -145,10 +149,6 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 
     element.addClass(this.get('className'))
            .addClass(this.get('instanceClass'));
-
-    element.on(this.get('initEvent') + ' ' + this.get('refreshEvent'), function(){
-      self._applyRoles();
-    });
 
     //expose css rules somehow
 
@@ -279,13 +279,13 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
   };
 
 /**
- * Xooie.Widget.extend(constructor) -> Widget
- * - constructor (Function): The constructor for the new [[Xooie.Widget]] class.
+ * Xooie.Widget.extend(constr) -> Widget
+ * - constr (Function): The constructor for the new [[Xooie.Widget]] class.
  *
  * See [[Xooie.shared.extend]].
  **/
-  Widget.extend = function(constructor){
-    return shared.extend(constructor, this);
+  Widget.extend = function(constr){
+    return shared.extend(constr, this);
   };
 
 /**
@@ -324,7 +324,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
   Widget.prototype._definedProps = [];
 
 /** internal
- * Xooie.Widget#_definedRoles -> Array;
+ * Xooie.Widget#_definedRoles -> Array
  *
  * A collection of roles that have been defined for this class instance.
  **/
@@ -546,7 +546,19 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
   };
 
 /** internal
- * Xooie.Widget._applyRoles()
+ * Xooie.Widget#_getRoleId(role, index) -> String
+ * - role (String): The name of the role for which this id is being generated.
+ * - index (Integer): The index at which the particular element exists in the read order.
+ *
+ * Generates an id string to be applied to an element of the specified role.  The format of
+ * this id string is `x-[[Xooie.Widget#id]]-{role}-{index}`.
+ **/
+  Widget.prototype._getRoleId = function(role, index) {
+    return 'x-' + this.id() + '-' + role + '-' + index;
+  };
+
+/** internal
+ * Xooie.Widget#_applyRoles()
  *
  * TODO: Test and document.
  **/
@@ -566,7 +578,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
       }
 
       for (j=0; j < elements.length; j+=1) {
-        $(elements[j]).attr('id', 'x-' + this.id() + '-' + this._definedRoles[i] + '-' + j);
+        $(elements[j]).attr('id', this._getRoleId(this._definedRoles[i], j));
       }
 
       if (helpers.isFunction(this[role.processor])) {

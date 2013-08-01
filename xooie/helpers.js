@@ -42,11 +42,11 @@ define('xooie/helpers', ['jquery'], function($){
   };
 
   helpers.isArray = Array.isArray || function(ary) {
-    return Array.prototype.toString(ary) === '[object, Array]';
+    return Array.prototype.toString(ary) === '[object Array]';
   };
 
   helpers.isObject = function(obj) {
-    return Object.prototype.toString(obj) === '[object, object]';
+    return Object.prototype.toString(obj) === '[object Object]';
   };
 
   helpers.isUndefined = function(obj) {
