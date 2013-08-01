@@ -111,13 +111,13 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
     };
 
 /**
- * Xooie.Addon.extend(constructor) -> Addon
- * - constructor (Function): The constructor for the new [[Xooie.Addon]] class.
+ * Xooie.Addon.extend(constr) -> Addon
+ * - constr (Function): The constructor for the new [[Xooie.Addon]] class.
  *
  * See [[Xooie.shared.extend]].
  **/
-    Addon.extend = function(constructor){
-        return shared.extend(constructor, this);
+    Addon.extend = function(constr){
+        return shared.extend(constr, this);
     };
 
 /** internal

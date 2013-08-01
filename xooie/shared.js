@@ -116,27 +116,30 @@ define('xooie/shared', ['jquery'], function($){
       }
     },
 /**
- * Xooie.shared.extend(constructor, _super) -> Widget | Addon
- * - constructor (Function): The constructor for the new [[Xooie.Widget]] or [[Xooie.Addon]] class.
+ * Xooie.shared.extend(constr, _super) -> Widget | Addon
+ * - constr (Function): The constructor for the new [[Xooie.Widget]] or [[Xooie.Addon]] class.
  * - _super (Widget | Addon): The module which is to be extended
  *
  * Creates a new Xooie widget/addon class that inherits all properties from the extended class.
  * Constructors for the class are called in order from the top-level constructor to the
  * base constructor.
  **/
-    extend: function(constructor, module){
-      function Child() {
-        module.apply(this, arguments);
-        constructor.apply(this, arguments);
-        this._extendCount -= 1;
-      }
+    extend: function(constr, module){
+      var newModule = (function(){
+        return function Child() {
+          module.apply(this, arguments);
+          constr.apply(this, arguments);
+          this._extendCount -= 1;
+        };
+      })();
+      
 
-      $.extend(true, Child, module);
-      $.extend(true, Child.prototype, module.prototype);
+      $.extend(true, newModule, module);
+      $.extend(true, newModule.prototype, module.prototype);
 
-      Child.prototype._extendCount = Child.prototype._extendCount === null ? 1 : Child.prototype._extendCount += 1;
+      newModule.prototype._extendCount = newModule.prototype._extendCount === null ? 1 : newModule.prototype._extendCount += 1;
 
-      return Child;
+      return newModule;
     },
 /**
  * Xooie.shared.get(instance, name) -> object
