@@ -14,8 +14,16 @@
 *   limitations under the License.
 */
 
+/** deprecated: 1.0
+ * class Xooie.Dropdown < Xooie.Widget
+ *
+ * A widget used to hide and show content.
+ * As of v1.0 this widget has been deprecated.  Use the more semantically appropriate
+ * [[Xooie.Tooltip]], [[Xooie.Menu]], [[Xooie.Tab]], or [[Xooie.Accordion]] classes instead.
+ **/
 define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base'], function($, Base) {
-    
+
+
    var parseWhich = function(which) {
         if (typeof which === 'string') {
             which = which.split(',');
@@ -27,6 +35,14 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base'], function($, B
         return which;
      };
 
+/**
+ * Xooie.Dropdown(element[, addons])
+ * - element (Element | String): A jQuery-selected element or string selector for the root element of this widget
+ * - addons (Array): An optional collection of [[Xooie.Addon]] classes to be instantiated with this widget
+ *
+ * Instantiates a new Dropdown widget.  Creates event handlers to manage activating and deactivating the expanders.
+ * Also adds methods to manipulate aria roles.
+ **/
     var Dropdown = Base.extend(function() {
         var self = this,
             handles = self.getHandle(),
@@ -117,6 +133,8 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base'], function($, B
         });
 
     });
+
+    Dropdown.define('namespace', 'dropdown');
 
     Dropdown.define('throttleDelay', 300);
 
