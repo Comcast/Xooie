@@ -4,7 +4,9 @@ require(['jquery', 'xooie/widgets/dropdown'], function($, Dropdown) {
 
         describe('When initializing a dropdown...', function(){
             beforeEach(function(){
-                el = $('<div><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div></div>');
+                el = $('<div><button data-role="dropdown-handle"></button><div data-role="dropdown-content"></div></div>');
+
+                setFixtures(el);
 
                 d = new Dropdown(el);
             });
@@ -12,7 +14,7 @@ require(['jquery', 'xooie/widgets/dropdown'], function($, Dropdown) {
             it('adds a focus event to the handle by default that expands the dropdown', function(){
                 spyOn(d, 'expand');
 
-                d.getHandle().trigger('focus');
+                d.getHandle().focus();
 
                 expect(d.expand).toHaveBeenCalledWith(0, { delay: 0, index: undefined });
             });
@@ -33,7 +35,7 @@ require(['jquery', 'xooie/widgets/dropdown'], function($, Dropdown) {
 
                     spyOn(d, 'expand');
 
-                    d.getHandle().trigger('focus');
+                    d.getHandle().focus();
 
                     expect(d.expand).not.toHaveBeenCalled();
                 });
