@@ -27,9 +27,7 @@
  * For most devices, the native scrollbar is hidden in favor of the directional controls and native scrolling.
  **/
 define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'xooie/event_handler'], function($, helpers, Base, EventHandler) {
-  var Carousel, timers, transitionSupport;
-
-  transitionSupport = helpers.isPropertySupported('transition');
+  var Carousel, timers;
 
 /**
  * Xooie.Carousel@xooie-carousel-resize(event)
