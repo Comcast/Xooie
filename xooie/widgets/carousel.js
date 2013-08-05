@@ -14,409 +14,778 @@
 *   limitations under the License.
 */
 
-define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
+/**
+ * class Xooie.Carousel < Xooie.Widget
+ *
+ * A widget that allows users to horizontally scroll through a collection of elements.  Carousels are
+ * commonly used to display a large amount of images or links in a small amount of space.  The user can
+ * view more items by clicking the directional controls to scroll the content forward or backward.  If
+ * the device recognizes swipe gestues (e.g. mobile or Mac OS) then swiping will also allow the user to
+ * scroll content.
+ * Keyboard-only users will also be able to navigate from item to item using the tab, left or right keys.
+ * Screen reader users will percieve the carousel as a [list](http://www.w3.org/TR/wai-aria/roles#list) of items.
+ * For most devices, the native scrollbar is hidden in favor of the directional controls and native scrolling.
+ **/
+define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'xooie/event_handler'], function($, helpers, Base, EventHandler) {
+  var Carousel, timers, transitionSupport;
 
-    var resizeTimer = null,
-        carouselElements = $(),
-        clickQueue = [],
-        cssRules = {},
-        cache;
+  transitionSupport = helpers.isPropertySupported('transition');
 
-    $(window).on('resize', function() {
-        if (resizeTimer) {
-            clearTimeout(resizeTimer);
-            resizeTimer = null;
-        }
-        if (carouselElements) {
-            resizeTimer = setTimeout(function() {
-                carouselElements.trigger('carouselResize');
-            }, 100);
-        }
-    });
+/**
+ * Xooie.Carousel@xooie-carousel-resize(event)
+ * - event (Event): A jQuery event object
+ *
+ * A jQuery special event triggered to indicate that the carousel instance should be resized.  This
+ * by default is triggered when the window is resized.
+ **/
 
-    var Carousel = Base('carousel', function() {
-        var self = this,
-            scrollTimer,
-            onClick, onScroll, onScrollComplete;
+  timers = {
+    resize: null
+  };
 
-        this.isScrolling = false;
+  $(window).on('resize', function() {
+    if (timers.resize !== null) {
+      clearTimeout(timers.resize);
+      timers.resize = null;
+    }
+    if (Carousel._cache.length > 0) {
+      // TODO: make this delay adjustable
+      timers.resize = setTimeout(function() {
+        Carousel._cache.trigger(Carousel.prototype.resizeEvent());
+      }, 100);
+    }
+  });
 
-        //Define the dispatch tables for various functionality:
-        this.positionUpdaters = {
+/** internal
+ * Xooie.Carousel.parseCtrlStr(ctrlStr) -> Array | undefined
+ *
+ * Checks the data-x-role value of a control and matches it against expected patterns to determine
+ * the control commands, if any.
+ * Returns an array: [Direction, Amount, Mode].
+ * For example, control:right 1 item -> [right, 1, item], whereas control:right continuous returns
+ * [right, undefined, continuous].
+ **/
+  function parseCtrlStr(ctrlStr) {
+    ctrlStr = ctrlStr.toLowerCase();
 
-            "item": function(quantity, direction) {
-                var items = self.content.children(),
-                    bias, offset,
-                    position = self.wrapper.scrollLeft(),
-                    i;
+    var ptrnMatch = ctrlStr.match(/^control:(left|right|goto)\s(\d+)(?:st|nd|rd|th)?\s(.*)$/);
+    
+    if(ptrnMatch === null) {
+      ptrnMatch = ctrlStr.match(/^control:(left|right)()\s(continuous)$/);
+    }
 
-                if (typeof direction === 'undefined') {
-                    if (quantity > 0 && quantity <= items.length) {
-                        offset = Math.round(items.eq(quantity - 1).position().left);
-                    }
-                } else {
-                    direction = direction === -1 ? -1 : 1;
+    if (ptrnMatch !== null) {
+      return ptrnMatch.slice(1);
+    }
+  }
 
-                    bias = -direction;
+/**
+ * new Xooie.Carousel(element[, addons])
+ * - element (Element | String): A jQuery-selected element or string selector for the root element of this widget
+ * - addons (Array): An optional collection of [[Xooie.Addon]] classes to be instantiated with this widget
+ *
+ * Instantiates a new instance of a [[Xooie.Carousel]] widget.  Defines [[Xooie.Carousel#_timers]],
+ * [[Xooie.Carousel#_controlEvents]], [[Xooie.Carousel#_wrapperEvents]], and [[Xooie.Carousel#cropStyle]].
+ * Events are bound to the [[Xooie.Widget#root]] to call [[Xooie.Carousel#updateDimensions]] on [[Xooie.Widget@xooie-init]],
+ * [[Xooie.Widget@xooie-refresh]] and [[Xooie.Carousel@xooie-carousel-resize]].
+ * Carousel instances are tracked in the [[Xooie.Carousel._cache]] collection.
+ **/
+  Carousel = Base.extend(function() {
+    var self = this;
 
-                    if (!quantity || typeof quantity !== 'number') {
-                        quantity = 1;
-                    }
-
-                    i = self.currentItem(bias) + direction * quantity;
-                    i = Math.max(0, Math.min(items.length - 1, i));
-                    offset = Math.round(items.eq(i).position().left);
-                }
-
-                return position + offset;
-            },
-
-            "px": function(quantity, direction) {
-                var position;
-                
-                if (typeof direction === 'undefined') {
-                    position = 0;
-                    direction = 1;
-                } else {
-                    position = self.wrapper.scrollLeft();
-                }
-                return position + direction * quantity;
-            }
-
-        };
-
-        this.snapMethods = {
-
-            "item": function(){
-                var items = self.content.children(),
-                    offset, p1, p2,
-                    i = self.currentItem();
-
-                p1 = items.eq(i).position().left;
-                if (Math.abs(p1) < 1) {
-                    p1 = p1 < 0 ? Math.ceil(p1) : Math.floor(p1);
-                } else {
-                    p1 = Math.round(p1);
-                }
-
-                if (p1 !== 0 && i > 0) {
-                    p2 = items.eq(i - 1).position().left;
-                    if (Math.abs(p2) < 1) {
-                        p2 = p2 < 0 ? Math.ceil(p2) : Math.floor(p2);
-                    } else {
-                        p2 = Math.round(p2);
-                    }
-
-                    if (Math.abs(p1) < Math.abs(p2)) {
-                        offset = p1 + self.wrapper.scrollLeft();
-                    } else {
-                        offset = p2 + self.wrapper.scrollLeft();
-                    }
-
-                    self.wrapper.animate({ scrollLeft: offset });
-                }
-
-            }
-
-        };
-
-        this.displayMethods = {
-            "item": function(container, template){
-                var element, item, items, lastVisible, rightPosition, i;
-
-                items = self.content.children();
-                currentItem = self.currentItem();
-                rightPosition = items.eq(currentItem).position().left + self.wrapper.innerWidth();
-                lastVisible = items.length;
-
-                for (i = currentItem; i < items.length; i += 1) {
-                    item = items.eq(i);
-                    if (Math.floor(item.position().left) + item.outerWidth() * self.options.visibleThreshold >= rightPosition) {
-                        lastVisible = i;
-                        break;
-                    }
-                }
-
-                element = self.render(template, {
-                    current_item: currentItem + 1,
-                    last_visible_item: lastVisible,
-                    total_items: items.length
-                });
-
-                container.append(element);
-            }
-        };
-
-        //select the content area and wrap it in a container
-        this.content = this.root.find(this.options.contentSelector);
-        this.content.wrap('<div/>');
-
-        this.wrapper = this.content.parent();
-        this.wrapper.addClass('xooie-carousel-wrapper');
-
-        //setting the wrapper's parent to overflow-y=hidden allows us to hide the horizontal scrollbar
-        this.wrapper.parent().addClass('xooie-carousel-crop');
-
-        this.cssRules.heightAdjust = this.stylesheet.addRule('.carousel-' + this.root.data('carousel-instance') + ' .xooie-carousel-crop');
-
-        this.content.addClass('xooie-carousel-content');
-
-        this.content.children().addClass('xooie-carousel-item');
-
-        this.root.find(this.options.controlSelector)
-                 .on('click', function(event){
-                    event.preventDefault();
-
-                    self.updatePosition($(this).data('scroll'));
-                 });
-
-        onScrollComplete = function() {
-            self.snap();
-            self.root.trigger('carouselScrollComplete');
-        };
-
-        onScroll = function(){
-            if (scrollTimer) {
-                scrollTimer = clearTimeout(scrollTimer);
-            } else {
-                self.root.removeClass('is-carousel-leftmost is-carousel-rightmost');
-            }
-
-            scrollTimer = setTimeout(onScrollComplete, 250);
-        };
-
-        this.wrapper.on('scroll', onScroll);
-
-        this.root.on({
-            carouselScrollComplete: function(){
-                self.updateDisplay();
-                self.updateLimits();
-            },
-            carouselInit: this.updateDimensions.bind(this),
-            carouselResize: this.updateDimensions.bind(this)
-        });
-
-        //It is possible that images may load after the carousel has instantiated/
-        //Also, this can be used for lazy-loading images
-        //TODO: This can be problematic, since it is triggering update dimensions for each image load
-        this.content.find('img').on('load', this.updateDimensions.bind(this));
-
-        carouselElements = carouselElements.add(this.root);
-    });
-
-    Carousel.setDefaultOptions({
-        contentSelector: '[data-role="carousel-content"]',
-        controlSelector: '[data-role="carousel-control"]',
-
-        displayMode: 'none',
-        displaySelector: '[data-role="carousel-display"]',
-        displayTemplateSelector: '[data-role="carousel-display-template"]',
-
-        snapMode: 'none',
-        visibleThreshold: 0.50
-    });
-
-    //Set css rules for all carousels
-    Carousel.setCSSRules({
-        '.xooie-carousel-wrapper': {
-            'overflow-x': 'scroll',
-            'overflow-y': 'hidden'
-        },
-        '.xooie-carousel-crop': {
-            'overflow-y': 'hidden'
-        },
-        '.xooie-carousel-content': {
-            display: 'table-cell',
-            'white-space': 'nowrap',
-            'font-size': '0px'
-        },
-        '.xooie-carousel-item': {
-            display: 'inline-block',
-            zoom: '1',
-            '*display': 'inline',
-            'font-size': '1em'
-        }
-    });
-
-    Carousel.createStyleRule('.xooie-carousel-wrapper', {
-        'overflow-x': 'scroll',
-        'overflow-y': 'hidden'
-    });
-
-    Carousel.createStyleRule('.xooie-carousel-crop', {
-        'overflow-y': 'hidden'
-    });
-
-    Carousel.createStyleRule('.xooie-carousel-content', {
-        display: 'table-cell',
-        'white-space': 'nowrap',
-        'font-size': '0px'
-    });
-
-    Carousel.createStyleRule('.xooie-carousel-item', {
-        display: 'inline-block',
-        zoom: '1',
-        '*display': 'inline',
-        'font-size': '1em'
-    });
-
-    cache = {
-        currentItem: 0,
-        lastItem: 0
+/** internal
+ * Xooie.Carousel#_timers -> Object
+ *
+ * A hash of all timers currently active.  If no timer is active for a particular type then the value is
+ * set to undefined.
+ *
+ * ##### Timers
+ * - **scroll** (Integer | undefined): Active while the content is being scrolled.  Prevents post-scroll functionality
+ * from triggering until the carousel has completely finished scrolling.
+ * - **continuous** (Integer | undefined): Active while the user is continuously scrolling using a [[Xooie.Carousel#controls]].
+ **/
+    this._timers = {
+      scroll: 0,
+      continuous: 0
     };
 
-    Carousel.prototype.currentItem = function(bias) {
-        var i, items = this.content.children(),
-            position, itemWidth;
+/** internal
+ * Xooie.Carousel#_positioners -> Object
+ *
+ * A dispatch table containing the various methods for scrolling the carousel content.
+ *
+ * ##### Positioners
+ * - [[Xooie.Carousel#_positioners.item]]
+ * - [[Xooie.Carousel#_positioners.pixel]]
+ **/
+    this._positioners = {
 
-        if (typeof bias === 'undefined') {
-            bias = 1;
+/** internal
+* Xooie.Carousel#_positioners.item(direction, quantity)
+* - direction (String): Indicates the directional mode of hte control.  Can be `left`, `right`, or `goto`.
+* - quantity (String | Integer): Indicates the number of items the carousel should be scrolled, or the item position
+* to which the carousel should be scrolled, if the directional mode is `goto`.
+*
+* Calls [[Xooie.Carousel#scrollTo]] with the position of the item designated by the quantity.
+**/
+      item: function(direction, quantity) {
+        var items, pos, i;
+
+        items = this.items();
+
+        quantity = helpers.toInt(quantity);
+
+        if (isNaN(quantity)) {
+          return;
         }
 
-        if (bias === 1) {
-            position = this.content.position().left;
-
-            for (i = 0; i < items.length - 1; i++) {
-                itemWidth = items.eq(i).outerWidth(true);
-
-                if (position + this.options.visibleThreshold * itemWidth >= 0){
-                    return i;
-                } else {
-                    position += itemWidth;
-                }
-            }
-            return items.length - 1;
+        if (direction === 'goto' && quantity < 1 && quantity <= items.length) {
+          pos = Math.round(items.eq(quantity - 1).position().left);
         } else {
-            position = this.content.outerWidth(true) + this.content.position().left;
+          i = this.currentItem(direction === 'right');
 
-            for (i = items.length - 1; i > 0; i -= 1) {
-                itemWidth = items.eq(i).outerWidth(true);
-                position -= itemWidth;
+          direction = direction === 'left' ? -1 : 1;
 
-                if (i > 0 && position <= this.options.visibleThreshold * itemWidth) {
-                    return i;
-                }
-            }
-            return 0;
-        }
-    };
+          i = Math.max(0, Math.min(items.length - 1, i + (direction * quantity)));
 
-    Carousel.prototype.getRightLimit = function(){
-        try {
-            var lastItem = this.content.children(':visible:last'),
-                position = lastItem.position();
-
-            if (position && typeof position.left !== 'undefined') {
-                return Math.floor(position.left) + lastItem.outerWidth(true);
-            }
-        } catch (e) {
-            return;
-        }
-    };
-
-    Carousel.prototype.updateDimensions = function() {
-        var items = this.content.children(),
-            height = 0;
-
-        items.each(function() {
-            var node = $(this);
-            height = Math.max(height, node.outerHeight(true));
-        });
-
-        //set the height of the wrapper's parent (or cropping element) to ensure we hide the scrollbar
-        this.cssRules.heightAdjust.style.height = height + 'px';
-
-        this.updateLimits();
-        this.updateDisplay();
-        this.snap();
-
-        this.root.trigger('carouselUpdated');
-    };
-
-    Carousel.prototype.updateLimits = function() {
-        this.root.toggleClass('is-carousel-leftmost', this.wrapper.scrollLeft() === 0);
-        this.root.toggleClass('is-carousel-rightmost', this.getRightLimit() <= this.wrapper.innerWidth());
-    };
-
-    Carousel.prototype.updatePosition = function(amount, cb) {
-        var match = (amount + '').match(/^([+\-]?)(\d+)(.*)$/),
-            callback,
-            self = this;
-
-        if (!match) {
-            if (typeof cb === 'function') {
-                cb();
-            }
-
-            return;
+          pos = this.wrappers().scrollLeft() + Math.round(items.eq(i).position().left);
         }
 
-        callback = function(){
-            var direction, quantity, units, offset;
+        this.scrollTo(pos);
+      },
 
-            if (match[1] !== '') {
-                direction = (match[1] === '-') ? -1 : 1;
-            }
+/** internal, alias of: [[Xooie.Carousel#_positioners.item]]
+ * Xooie.Carousel#_positioners.items(direction, quantity)
+ **/
+      items: function() {
+        return this._positioners.item.apply(this, arguments);
+      },
 
-            quantity = parseInt(match[2], 10);
-            units = match[3];
+/** internal
+* Xooie.Carousel#_positioners.pixel(direction, quantity)
+* - direction (String): Indicates the directional mode of hte control.  Can be `left`, `right`, or `goto`.
+* - quantity (String | Integer): Indicates the number of pixels the carousel should be scrolled, or the pixel position
+* to which the carousel should be scrolled, if the directional mode is `goto`.
+*
+* Calls [[Xooie.Carousel#scrollTo]] with the pixel position designated by quantity.
+**/
+      pixel: function(direction, quantity) {
+        var pos;
 
-            if (units === '') {
-                units = 'px';
-            }
+        quantity = helpers.toInt(quantity);
 
-            if (typeof self.positionUpdaters[units] === 'function') {
-                offset = self.positionUpdaters[units](quantity, direction);
-            } else {
-                offset = 0;
-            }
-
-            self.isScrolling = true;
-
-            self.root.trigger('carouselMove', offset);
-
-            self.wrapper.animate({ scrollLeft: offset }, 200,
-                function(){
-                    self.isScrolling = false;
-                    if (typeof cb === 'function') {
-                        cb();
-                    }
-                }
-            );
-        };
-
-        if (this.isScrolling) {
-            self.wrapper.stop(true,true);
+        if (isNaN(quantity)) {
+          return;
         }
+
+        if (direction === 'goto' && quantity >= 0) {
+          pos = quantity;
+        } else {
+          direction = direction === 'left' ? -1 : 1;
+
+          pos = this.wrappers().scrollLeft() + (direction * quantity);
+        }
+
+        this.scrollTo(pos);
+      },
+
+/** internal, alias of: [[Xooie.Carousel#_positioners.pixel]]
+ * Xooie.Carousel#_positioners.pixels(direction, quantity)
+ **/
+      pixels: function() {
+        return this._positioners.pixel.apply(this, arguments);
+      },
+
+/** internal, alias of: [[Xooie.Carousel#_positioners.pixel]]
+ * Xooie.Carousel#_positioners.px(direction, quantity)
+ **/
+      px: function() {
+        return this._positioners.pixel.apply(this, arguments);
+      }
+    };
+
+/** internal
+ * Xooie.Carousel#continuousScroll(ctrl, direction)
+ * - ctrl (Element): The control that was activated to initiate the scroll
+ * - direction (String): The direction of the scroll.  Can be `left` or `right`.
+ **/
+    function continuousScroll(ctrl, direction) {
+      clearInterval(self._timers.continuous);
+
+      self._timers.continuous = setInterval(function(dir) {
+        if (ctrl.is(':disabled')) {
+          self._timers.continuous = clearInterval(self._timers.continuous);
+        }
+
+        //TODO: Need some way of setting rate
+        self.scrollTo(self.wrappers().scrollLeft() + (dir * 5));
+      }, 0, [direction === 'right' ? 1 : -1]);
+    }
+
+/** internal
+ * Xooie.Carousel#_controlEvents -> Object
+ *
+ * An instance of [[Xooie.EventHandler]] that manages event handlers to be bound to the
+ * [[Xooie.Carousel#controls]].
+ **/
+    this._controlEvents = new EventHandler(this.namespace());
+
+    this._controlEvents.add({
+      keydown: function(event) {
+          var ctrl, args;
+
+          if ([13,32].indexOf(event.which) !== -1) {
+            ctrl = $(this);
+            args = parseCtrlStr(ctrl.attr('data-x-role'));
+
+            if (args[2] === 'continuous' && !ctrl.is(':disabled')) {
+              continuousScroll(ctrl, args[0]);
+
+              event.preventDefault();
+            }
+          }
+      },
+
+      mousedown: function(event) {
+        var ctrl, args;
+
+        ctrl = $(this);
+        args = parseCtrlStr(ctrl.attr('data-x-role'));
+
+        if (args[2] === 'continuous' && !ctrl.is(':disabled')) {
+          continuousScroll(ctrl, args[0]);
+
+          event.preventDefault();
+        }
+      },
+
+      keyup: function(event) {
+        self._timers.continuous = clearInterval(self._timers.continuous);
+
+        if ($(this).is(':disabled')) {
+          return;
+        }
+
+        if ([13,32].indexOf(event.which) !== -1) {
+          var args = parseCtrlStr($(this).attr('data-x-role'));
+
+          if (helpers.isFunction(self._positioners[args[2]])) {
+            self._positioners[args[2]].apply(self, args);
+          }
+
+          event.preventDefault();
+        }
+      },
+
+      mouseup: function(event) {
+        self._timers.continuous = clearInterval(self._timers.continuous);
+
+        if ($(this).is(':disabled')) {
+          return;
+        }
+
+        var args = parseCtrlStr($(this).attr('data-x-role'));
+
+        if (helpers.isFunction(self._positioners[args[2]])) {
+          self._positioners[args[2]].apply(self, args);
+        }
+
+        event.preventDefault();
+      },
+
+      mouseleave: function(event) {
+        self._timers.continuous = clearInterval(self._timers.continuous);
+      },
+
+      blur: function(event) {
+        self._timers.continuous = clearInterval(self._timers.continuous);
+      }
+    });
+
+    function scrollComplete() {
+      self._timers.scroll = clearTimeout(self._timers.scroll);
+
+      self.updateLimits();
+    }
+
+/** internal
+ * Xooie.Carousel#_wrapperEvents -> Object
+ *
+ * An instance of [[Xooie.EventHandler]] that manages event handlers to be bound to the
+ * [[Xooie.Carousel#wrappers]].
+ **/
+    this._wrapperEvents = new EventHandler(this.namespace());
+
+    this._wrapperEvents.add('scroll', function(event){
+      if (self._timers.scroll) {
+          self._timers.scroll = clearTimeout(self._timers.scroll);
+        } else {
+          self.root().removeClass(self.leftClass() + ' ' + self.rightClass());
         
-        callback();
-
-    };
-
-    Carousel.prototype.updateDisplay = function(){
-        if (this.options.displayMode === 'none') {
-            return;
+          self.controls().prop('disabled', false);
         }
 
-        var container = this.root.find(this.options.displaySelector),
-            template = this.root.find(this.options.displayTemplateSelector);
+        // TODO: make this delay adjustable
+        self._timers.scroll = setTimeout(scrollComplete, 250);
+    });
 
-        if (container.length === 0 || template.length === 0) {
-            return;
+    this.cropStyle(Carousel.createStyleRule('.' + this.instanceClass() + ' .' + this.cropClass() + ', .' + this.instanceClass() + '.' + this.cropClass()));
+
+    // TODO: add functionality to remove from cache
+    Carousel._cache = Carousel._cache.add(this.root());
+
+    this.root().on([
+      this.get('initEvent'),
+      this.get('refreshEvent'),
+      this.get('resizeEvent')].join(' '),
+    function(){
+      self.updateDimensions();
+    });
+
+  });
+
+/** internal
+ * Xooie.Carousel._cache -> jQuery
+ *
+ * A jQuery collection that keeps track of currently instantiated carousel instances.  This collection
+ * is primarily used during a window resize event, where the limits and dimensions are recalculated.
+ **/
+  Carousel._cache = $();
+
+/** internal
+ * Xooie.Carousel#_namespace -> String
+ *
+ * See [[Xooie.Widget#_namespace]]
+ * Default: `carousel`.
+ **/
+/**
+ * Xooie.Carousel#namespace([value]) -> String
+ * - value: an optional value to be set.
+ *
+ * See [[Xooie.Widget#namespace]]
+ **/
+  Carousel.define('namespace', 'carousel');
+
+/** internal
+ * Xooie.Carousel#_isScrolling -> Boolean
+ *
+ * A value that determines whether or not the carousel is currently scrolling
+ * TODO:  Perhaps depricate this in favor of scroll timer detection
+ * Default: `false`.
+ **/
+/**
+ * Xooie.Carousel#isScrolling([value]) -> String
+ * - value: an optional value to be set.
+ *
+ **/
+  Carousel.define('isScrolling', false);
+
+/** internal
+ * Xooie.Carousel#_visibleThreshold -> Integer
+ *
+ * Default: `0.5`.
+ **/
+/**
+ * Xooie.Carousel#visibleThreshold([value]) -> Integer
+ * - value: an optional value to be set.
+ *
+ **/
+  Carousel.define('visibleThreshold', 0.5);
+
+/** internal
+ * Xooie.Carousel#_cropStyle -> cssRule
+ *
+ * Default: `carousel`.
+ **/
+/**
+ * Xooie.Carousel#cropStyle([value]) -> cssRule
+ * - value: an optional value to be set.
+ *
+ **/
+  Carousel.define('cropStyle');
+
+/** internal, read-only
+ * Xooie.Carousel#_resizeEvent -> String
+ *
+ * Default: `xooie-carousel-resize`.
+ **/
+/**
+ * Xooie.Carousel#resizeEvent() -> String
+ *
+ **/
+  Carousel.defineReadOnly('resizeEvent', 'xooie-carousel-resize');
+
+/** internal, read-only
+ * Xooie.Carousel#_wrapperClass -> String
+ *
+ * Default: `xooie-carousel-wrapper`.
+ **/
+/**
+ * Xooie.Carousel#wrapperClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('wrapperClass', 'xooie-carousel-wrapper');
+
+/** internal, read-only
+ * Xooie.Carousel#_cropClass -> String
+ *
+ * Default: `xooie-carousel-crop`.
+ **/
+/**
+ * Xooie.Carousel#cropClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('cropClass', 'xooie-carousel-crop');
+
+/** internal, read-only
+ * Xooie.Carousel#_contentClass -> String
+ *
+ * Default: `xooie-carousel-content`.
+ **/
+/**
+ * Xooie.Carousel#contentClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('contentClass', 'xooie-carousel-content');
+
+/** internal, read-only
+ * Xooie.Carousel#_controlClass -> String
+ *
+ * Default: `xooie-carousel-control`.
+ **/
+/**
+ * Xooie.Carousel#controlClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('controlClass', 'xooie-carousel-control');
+
+/** internal, read-only
+ * Xooie.Carousel#_leftClass -> String
+ *
+ * Default: `is-left-limit`.
+ **/
+/**
+ * Xooie.Carousel#leftClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('leftClass', 'is-left-limit');
+
+/** internal, read-only
+ * Xooie.Carousel#_rightClass -> String
+ *
+ * Default: `is-right-limit`.
+ **/
+/**
+ * Xooie.Carousel#rightClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('rightClass', 'is-right-limit');
+
+// ROLE DEFINITIONS
+
+/**
+ * Xooie.Carousel#wrapper() -> Elements
+ *
+ *
+ **/
+  Carousel.defineRole('wrapper');
+
+/**
+ * Xooie.Carousel#content() -> Elements
+ *
+ * This role maps to the ARIA [tab list](http://www.w3.org/TR/wai-aria/roles#list)
+ **/
+  Carousel.defineRole('content');
+
+/**
+ * Xooie.Carousel#item() -> Elements
+ *
+ * This role maps to the ARIA [listitem role](http://www.w3.org/TR/wai-aria/roles#listitem)
+ **/
+  Carousel.defineRole('item');
+
+/**
+ * Xooie.Carousel#control() -> Elements
+ *
+ * Controls allow the user to scroll the carousel.  The behavior of this scrolling is determined by
+ * the role itself.  Behavior is set using the `data-x-role` attribute: `data-x-role="control:<direction> <quantity> <mode>"`.
+ * The `direction` value indicates which direction the carousel should be moved: `right`, `left`, or `goto`.
+ * The special `goto` value signifies that the control should scroll to a fixed position.
+ * The control syntax is designed to accept somewhat natural language.  Therefore, plurals and n-aries can be used to
+ * describe the behavior.  For example, you can use the following strings: `control:right 2 items`, `control:left 30 pixels`,
+ * `control:goto 5th item`.
+ **/
+  Carousel.defineRole('control');
+
+// STYLE DEFINITIONS
+
+  Carousel.createStyleRule('.' + Carousel.prototype.wrapperClass(), {
+    position: 'relative',
+    'overflow-x': 'scroll',
+    'overflow-y': 'hidden'
+  });
+
+  Carousel.createStyleRule('.' + Carousel.prototype.cropClass(), {
+    'overflow-y': 'hidden'
+  });
+
+  Carousel.createStyleRule('.' + Carousel.prototype.contentClass(), {
+    display: 'table-cell',
+    'white-space': 'nowrap',
+    'font-size': '0px',
+    'transition': 'left 0.5s'
+  });
+
+  Carousel.createStyleRule('ul.' + Carousel.prototype.contentClass(), {
+     'list-style': 'none',
+     'padding': 0,
+     'margin': 0
+  });
+
+  Carousel.createStyleRule('.' + Carousel.prototype.contentClass() + ' > *', {
+    display: 'inline-block',
+    zoom: '1',
+    '*display': 'inline',
+    'font-size': '1em'
+  });
+
+  Carousel.createStyleRule('.' + Carousel.prototype.leftClass() + '.' + Carousel.prototype.rightClass() + ' [data-x-role^="control:left"]' +
+    ', .' + Carousel.prototype.leftClass() + '.' + Carousel.prototype.rightClass() + ' [data-x-role^="control:right"]', {
+    display: 'none'
+  });
+
+/**
+ * Xooie.Carousel#currentItem(biasRight) -> Integer
+ * - biasRight (Boolean): If true, calculates the current item from the right side of the carousel.
+ *
+ * Returns the index of the first visible item.  The value of [[Xooie.Carousel#visibleThreshold]] determines what
+ * percentage of the item must be showing to be considered visible.
+ **/
+  Carousel.prototype.currentItem = function(biasRight) {
+      var content, items,
+          position, itemWidth,
+          i;
+
+      content = this.contents();
+      items = this.items();
+
+      if (biasRight) {
+        position = content.outerWidth(true) + content.position().left;
+
+        for (i = items.length - 1; i > 0; i -= 1) {
+          itemWidth = items.eq(i).outerWidth(true);
+          position -= itemWidth;
+
+          if (i > 0 && position <= this.visibleThreshold() * itemWidth) {
+              return i;
+          }
+        }
+        return 0;
+      } else {
+        position = content.position().left;
+
+        for (i = 0; i < items.length - 1; i++) {
+          itemWidth = items.eq(i).outerWidth(true);
+
+          if (position + this.visibleThreshold() * itemWidth >= 0){
+            return i;
+          } else {
+            position += itemWidth;
+          }
         }
 
-        container.html('');
+        return items.length - 1;
+      }
+  };
 
-        if (typeof this.displayMethods[this.options.displayMode] === 'function') {
-            this.displayMethods[this.options.displayMode](container, template);
+/**
+ * Xooie.Carousel#isLeft() -> Boolean
+ *
+ * Indicates if the carousel is scrolled completely to the left.
+ **/
+  Carousel.prototype.isLeft = function() {
+    return this.wrappers().scrollLeft() === 0;
+  };
+
+/**
+ * Xooie.Carousel#isRight() -> Boolean
+ *
+ * Indicates if the carousel is scrolled completely to the right.
+ **/
+  Carousel.prototype.isRight = function() {
+    var lastItem, position;
+
+    try {
+      lastItem = this.items().filter(':visible:last');
+      position = lastItem.position();
+
+      if (position && !helpers.isUndefined(position.left)) {
+        return Math.floor(position.left) + lastItem.outerWidth(true) <= this.wrappers().innerWidth();
+      }
+    } catch (e) {
+      return false;
+    }
+
+    return false;
+  };
+
+/**
+ * Xooie.Carousel#updateDimensions()
+ *
+ * Updates the height of the carousel based on the height of the tallest visible item in the carousel.
+ * The new height is applied to the [[Xooie.Carousel#cropStyle]] rule rather than the cropping element
+ * itself.  This allows developers to use cascade rules to override the height if they so choose.
+ **/
+  Carousel.prototype.updateDimensions = function() {
+    var height = 0;
+
+    this.items().each(function(){
+      height = Math.max(height, $(this).outerHeight(true));
+    });
+
+    //set the height of the wrapper's parent (or cropping element) to ensure we hide the scrollbar
+    this.cropStyle().style.height = height + 'px';
+
+    this.updateLimits();
+  };
+
+/**
+ * Xooie.Carousel#updateLimits()
+ *
+ * Updates the state of the carousel based on whether or not it is scrolled completely to the left or the right.
+ * If the carousel is scrolled completely to the left then the [[Xooie.Carousel#leftClass]] is applied to the
+ * [[Xooie.Widget#root]] and the left [[Xooie.Carousel#controls]] is disabled.  If the carousel is scrolled
+ * completely to the left then the [[Xooie.Carousel#rightClass]] is applied to the [[Xooie.Widget#root]] and the
+ * right [[Xooie.Carousel#controls]] is disabled.
+ **/
+  Carousel.prototype.updateLimits = function() {
+      var isLeft = this.isLeft(),
+          isRight = this.isRight();
+
+      this.root().toggleClass(this.leftClass(), isLeft);
+      this.controls().filter('[data-x-role^="control:left"]')
+                     .prop('disabled', isLeft);
+
+      this.root().toggleClass(this.rightClass(), isRight);
+      this.controls().filter('[data-x-role^="control:right"]')
+                     .prop('disabled', isRight);
+  };
+
+/**
+ * Xooie.Carousel#scrollTo(pos, cb)
+ * - pos (Integer): The position to which the carousel will be scrolled.
+ * - cb (Function): A callback function that is called when the animation is complete.
+ *
+ * Uses the jQuery animate functionality to scroll the carousel to the designated position.
+ **/
+  Carousel.prototype.scrollTo = function(pos, cb) {
+    var self = this;
+
+    if (this.isScrolling) {
+      this.wrappers().stop(true,true);
+    }
+
+    this.isScrolling = true;
+
+    // TODO: make the scroll timer configurable
+    this.wrappers().animate({ scrollLeft: pos }, 200,
+      function(){
+        self.isScrolling = false;
+        if (helpers.isFunction(cb)) {
+          cb();
         }
-    };
+      }
+    );
+  };
 
-    Carousel.prototype.snap = function(){
-        if (this.getRightLimit() > this.wrapper.innerWidth() && typeof this.snapMethods[this.options.snapMode] === 'function') {
-            this.snapMethods[this.options.snapMode]();
-        }
-    };
+/** internal
+ * Xooie.Carousel#_process_role_content(content) -> Element
+ * - content (Element): A jQuery-selected collection of [[Xooie.Carousel#contents]]
+ *
+ * This method processes the element that has been designated as a [[Xooie.Carousel#contents]].
+ * In addition to applying the [[Xooie.Carousel#contentClass]] the content is also given the
+ * aria role [list](http://www.w3.org/TR/wai-aria/roles#list) if it is neither a `ul` or `ol` element.
+ **/
+  Carousel.prototype._process_role_content = function(content) {
+    content.addClass(this.contentClass());
 
-    return Carousel;
+    if (!content.is('ul,ol')) {
+      content.attr('role', 'list');
+    }
+
+    return content;
+  };
+
+/** internal
+ * Xooie.Carousel#_render_role_wrapper() -> Element
+ *
+ * Renders a `div` tag that is wrapped around the [[Xooie.Carousel#contents]].  This element is
+ * rendered only if no other [[Xooie.Carousel#wrappers]] is present as a decendant of the root of this
+ * widget.
+ **/
+  Carousel.prototype._render_role_wrapper = function() {
+    var wrapper = $('<div data-x-role="wrapper" />');
+
+    this.contents().wrap(wrapper);
+
+    return this.contents().parent();
+  };
+
+/** internal
+ * Xooie.Carousel#_process_role_wrapper(wrapper) -> Element
+ * - wrapper (Element): A jQuery-selected collection of [[Xooie.Carousel#wrappers]]
+ *
+ * This method processes the element that has been designated as a [[Xooie.Carousel#wrappers]].
+ * The [[Xooie.Carousel#wrapperClass]] is added and the [[Xooie.Carousel#_wrapperEvents]] handlers are
+ * bound.  Also, the [[Xooie.Carousel#cropClass]] is added to this element's parent.
+ **/
+  Carousel.prototype._process_role_wrapper = function(wrapper) {
+    wrapper.addClass(this.wrapperClass())
+           .on(this._wrapperEvents.handlers)
+           .parent().addClass(this.cropClass());
+
+    return wrapper;
+  };
+
+/** internal
+ * Xooie.Carousel#_get_role_item() -> Element
+ *
+ * Gets all children of [[Xooie.Carousel#contents]].
+ **/
+  Carousel.prototype._get_role_item = function() {
+    return this.contents().children();
+  };
+
+/** internal
+ * Xooie.Carousel#_get_role_control() -> Element
+ *
+ * TODO: Test and document
+ **/
+  Carousel.prototype._get_role_control = function(){
+    return this.root().find('[data-x-role^="control"]');
+  };
+
+/** internal
+ * Xooie.Carousel#_process_role_control() -> Element
+ *
+ **/
+  Carousel.prototype._process_role_control = function(controls) {
+    controls.on(this._controlEvents.handlers);
+
+    controls.attr('aria-hidden', true)
+            .addClass(this.controlClass());
+
+    return controls;
+  };
+
+/** internal
+ * Xooie.Carousel#_process_resizeEvent() -> String
+ *
+ * Adds the [[Xooie.Widget#namespace]] to the `resizeEvent` string.
+ **/
+  Carousel.prototype._process_resizeEvent = function(resizeEvent) {
+    return this.namespace() === '' ? resizeEvent : resizeEvent + '.' + this.namespace();
+  };
+
+  return Carousel;
 });
