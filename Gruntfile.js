@@ -32,10 +32,10 @@ module.exports = function(grunt) {
     jasmine: {
       test: {
         //src: "xooie/**/*.js",
-        src: ['xooie/widgets/base.js', 'xooie/widgets/dropdown.js', 'xooie/addons/base.js', 'xooie/**.js'],
+        src: ['xooie/widgets/base.js', 'xooie/widgets/dropdown.js', 'xooie/widgets/carousel.js', 'xooie/addons/base.js', 'xooie/**.js'],
         options: {
           //specs: "spec/**/*.spec.js",
-          specs: ['spec/widgets/base.spec.js', 'spec/widgets/dropdown.spec.js', 'spec/addons/base.spec.js', 'spec/**.js'],
+          specs: ['spec/widgets/base.spec.js', 'spec/widgets/dropdown.spec.js', 'spec/widgets/carousel.spec.js', 'spec/addons/base.spec.js', 'spec/**.js'],
           template: require("grunt-template-jasmine-requirejs"),
           vendor: ["lib/jquery.js","lib/require.js","lib/micro_tmpl.js","lib/jasmine-jquery.js"],
           helpers: "spec/helpers.js",
