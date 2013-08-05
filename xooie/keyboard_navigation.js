@@ -3,25 +3,25 @@ define('xooie/keyboard_navigation', ['jquery', 'xooie/helpers'], function($, hel
 
 
   keybindings = {
-      37: function(event) {
-          moveFocus($(event.target), -1);
+    37: function(event) {
+      moveFocus($(event.target), -1);
 
-          event.preventDefault();
-      },
+      event.preventDefault();
+    },
 
-      38: function() {
+    38: function() {
 
-      },
+    },
 
-      39: function(event) {
-        moveFocus($(event.target), 1);
+    39: function(event) {
+      moveFocus($(event.target), 1);
 
-        event.preventDefault();
-      },
+      event.preventDefault();
+    },
 
-      40: function() {
+    40: function() {
 
-      }
+    }
   };
 
 /** internal
@@ -34,7 +34,6 @@ define('xooie/keyboard_navigation', ['jquery', 'xooie/helpers'], function($, hel
  **/
   function moveFocus(current, direction) {
     // TODO: Clean this up. It's a mess
-    // TODO: Fix tabindex=0 (should be considered unindexed)
     // TODO: Write tests.
     // TODO: Add detection of new contexts
     // TODO: Add recollection of last focused item
@@ -203,9 +202,9 @@ define('xooie/keyboard_navigation', ['jquery', 'xooie/helpers'], function($, hel
       return instantiated;
     }
 
-    $(document).on('keydown', function(event) {
+    $(document).on('keyup', function(event) {
       if (helpers.isFunction(keybindings[event.which])) {
-          keybindings[event.which](event);
+        keybindings[event.which](event);
       }
     });
 
