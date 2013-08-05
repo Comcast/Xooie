@@ -18,6 +18,10 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) 
 
   var EventHandler = function(namespace) {
     this.namespace = namespace;
+
+    this.handlers = {};
+
+    this._callbacks = {};
   };
 
   function format(type, namespace) {
@@ -27,10 +31,6 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) 
       return type + '.' + namespace;
     }
   }
-
-  EventHandler.prototype.handlers = {};
-
-  EventHandler.prototype._callbacks = {};
 
   EventHandler.prototype.add = function(type, method) {
     var self = this,
