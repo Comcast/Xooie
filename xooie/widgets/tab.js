@@ -53,7 +53,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  * Instantiates a new Tab instance.  See [[Xooie.Widget]] for more functionality.
  **/
   var Tab = Base.extend(function(){
-    var self = this;  
+    var self = this;
 
     this._tabEvents = new EventHandler(this.namespace());
 
@@ -129,7 +129,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
 
 /**
  * Xooie.Tab#tabpanels() -> Elements
- * 
+ *
  * Tabpanels are elements that contain the content that is shown or hidden when the corresponding
  * [[Xooie.Tab#tabs]] is activated.
  * This role maps to the ARIA [tab role](http://www.w3.org/TR/wai-aria/roles#tab)
@@ -138,7 +138,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
 
 /**
  * Xooie.Tab#tabs() -> Elements
- * 
+ *
  * Tabs are elements that, when activated, also activate the corresponding [[Xooie.Tab#tabpanels]].
  * This role maps to the ARIA [tabpanel role](http://www.w3.org/TR/wai-aria/roles#tabpanel).
  **/
@@ -146,13 +146,13 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
 
 /**
  * Xooie.Tab#tablists() -> Elements
- * 
+ *
  * A tablist is an element that contains all the [[Xooie.Tab#tabs]].  If any tabs are not decendants of
  * the tablist, ownership of the tab is indicated using the `aria-owns` attribute.
  * There should only be one tablist per tab widget.
  * This role maps to the ARIA [tablist role](http://www.w3.org/TR/wai-aria/roles#tablist)
  **/
-  Tab.defineRole('tablist');  
+  Tab.defineRole('tablist');
 
 /**
  * Xooie.Tab#activateTab(tab)
@@ -227,7 +227,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
       $(this).attr('aria-controls', tabpanels.eq(index).attr('id'));
     });
 
-    tabs.on(self._tabEvents.handlers);
+    tabs.on(this._tabEvents.handlers);
     
     return tabs;
   };
@@ -247,6 +247,11 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
     }
   };
 
+/** internal
+ * Xooie.Tab#_render_role_tab() -> Elements
+ *
+ * TODO: Create this method to keep parity with the existing tab functionality
+ **/
   Tab.prototype._render_role_tab = function(){
 
   };
@@ -270,7 +275,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
       if (tablist.has(this).length === 0) {
         owns = tablist.attr('aria-owns') || '';
 
-        owns = owns.split[' '];
+        owns = owns.split(' ');
 
         id = $(this).attr('id');
 
@@ -283,6 +288,14 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
     });
 
     return tablist;
+  };
+/** internal
+ * Xooie.Tab#_render_role_tablist() -> Element
+ *
+ * TODO: Add this method to render the tablist if it is not included.
+ **/
+  Tab.prototype._render_role_tablist = function(){
+
   };
 
 /** internal
