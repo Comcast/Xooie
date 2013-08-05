@@ -142,15 +142,11 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
     var id = cacheInstance(this);
 
     this.set('id', id);
-    
-    element.attr('data-xooie-instance', id);
 
     this.set('root', element);
 
     element.addClass(this.get('className'))
            .addClass(this.get('instanceClass'));
-
-    //expose css rules somehow
 
     var initCheck = function(){
       var i;
@@ -162,6 +158,8 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
             new addons[i](self);
           }
         }
+        
+        element.attr('data-xooie-instance', id);
 
         element.trigger(self.get('initEvent'));
         self._extendCount = null;
@@ -289,15 +287,16 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
   };
 
 /**
- * Xooie.Widget.createStyleRule(selector, properties)
+ * Xooie.Widget.createStyleRule(selector, properties) -> cssRule | undefined
  * - selector (String): The selector used to identify the rule.
  * - properties (Object): A hash of key/value pairs of css properties and values.
  *
  * Creates a new css rule in the Xooie stylesheet.  If the rule exists, it will overwrite said rule.
  **/
+ // TODO: update so that if the rule exists the properties are added to the rule
   Widget.createStyleRule = function(selector, properties) {
     if (typeof $X._stylesheet.addRule !== 'undefined') {
-      $X._stylesheet.addRule(selector, properties);
+      return $X._stylesheet.addRule(selector, properties);
     }
   };
 
