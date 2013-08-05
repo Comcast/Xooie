@@ -9,6 +9,10 @@ require(['jquery', 'xooie/widgets/dropdown'], function($, Dropdown) {
                 setFixtures(el);
 
                 d = new Dropdown(el);
+
+                waitsFor(function(){
+                    return typeof el.attr('data-xooie-instance') !== 'undefined';
+                });
             });
 
             it('adds a focus event to the handle by default that expands the dropdown', function(){
@@ -251,7 +255,13 @@ require(['jquery', 'xooie/widgets/dropdown'], function($, Dropdown) {
                     '<div class="expander" data-role="dropdown-content"></div>',
                 '</div>'].join(''));
 
+                setFixtures(el);
+
                 d = new Dropdown(el);
+
+                waitsFor(function(){
+                    return typeof el.attr('data-xooie-instance') !== 'undefined';
+                });
             });
 
             it('gets all the expanders if no index is provided', function(){
