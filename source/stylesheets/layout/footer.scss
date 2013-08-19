@@ -1,0 +1,8 @@
+@import 'compass';
+@import 'variables';
+@import 'mixins';
+
+.x-footer {
+    padding: base(4);
+    border-top: $dark_border;
+}
