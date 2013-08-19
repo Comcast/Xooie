@@ -58,20 +58,29 @@
     width: 100%;
     font-size: 0;
     padding: 0 base(6);
-    background-color: $turquoise;
-    border-top: 1px solid $turquoise;
-    border-bottom: 1px solid $turquoise;
+    border-bottom: $divider;
+    text-align: center;
+
+    li {
+        margin-right: base(4);
+    }
+
+    &:last-child {
+        margin-right: 0;
+    }
 }
 
 .x-why-button {
     @include link;
-    color: $white;
     font-size: $large;
     padding: base(2) base(4);
+    border: $light_border;
+    border-bottom: 0;
+    border-radius: base(1) base(1) 0 0;
 
     &.is-tab-active {
         color: $dark_grey;
-        background-color: $white;
+        background-color: $light-blue;
     }
 }
 
