@@ -7,24 +7,23 @@ module.exports = function(grunt) {
     requirejs: {
       compile: {
         options: {
-          baseUrl: "/",
+          baseUrl: "",
           paths: {
             jquery: "empty:",
             async: "empty:"
           },
-          name: "xooie",
+          name: "xooie/xooie",
           include: [
-            "xooie/carousel",
-            "xooie/dropdown",
-            "xooie/tab",
-            "xooie/dialog",
+            "xooie/widgets/carousel",
+            "xooie/widgets/dropdown",
+            "xooie/widgets/tab",
+            "xooie/widgets/dialog",
             "xooie/addons/carousel_lentils",
             "xooie/addons/carousel_pagination",
-            "xooie/addons/dropdown_accordion",
             "xooie/addons/tab_automation",
             "xooie/addons/tab_animation"
           ],
-          out: "bin/xooie-<%= pkg.version %>.js",
+          out: "source/javascripts/xooie-<%= pkg.version %>.js",
           optimize: "none"
         }
       }
@@ -55,5 +54,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
 
   grunt.registerTask('test', ['jshint', 'jasmine']);
+  grunt.registerTask('build', ['test', 'requirejs']);
 
 };
