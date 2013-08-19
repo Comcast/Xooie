@@ -81,6 +81,11 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
       }
     });
 
+    // TODO: Test and document this.  Also, create a property for data-activate
+    this.root().on(this.initEvent(), function(){
+      self.activateTab(self.tabs().filter('[data-activate="true"]'));
+    });
+
   });
 
 /** internal
