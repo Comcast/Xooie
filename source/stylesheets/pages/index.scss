@@ -1,0 +1,85 @@
+@import 'compass';
+@import 'variables';
+@import 'mixins';
+
+.x-index-title {
+    @include heading;
+    font-family: JosefinSansLight;
+    text-align: center;
+    font-size: $gargantuan;
+    line-height: $gargantuan;
+    margin: base(30) 0 base(3);
+}
+
+.x-index-subtitle {
+    font-family: JosefinSansLight;
+    @include heading;
+    text-align: center;
+    font-size: $huge;
+}
+
+.x-index-buttons {
+    text-align: center;
+    padding: base(2) 0 base(4);
+
+    [class^="x-button"] {
+        margin-right: base(2);
+    }
+
+    &:last-child {
+        margin-right: 0;
+    }
+}
+
+.x-version-button {
+    font-size: $normal;
+    line-height: $medium;
+}
+
+.x-gem-info {
+    text-align: center;
+    margin-top: base(5);
+    margin-bottom: base(20);
+
+    [class^="x-link"] {
+        display: block;
+    }
+}
+
+.x-why {
+    .x-h2 {
+        text-align: center;
+        margin-left: base(10);
+    }
+}
+
+.x-why-list {
+    @include horizontal-list;
+    width: 100%;
+    font-size: 0;
+    padding: 0 base(6);
+    background-color: $turquoise;
+    border-top: 1px solid $turquoise;
+    border-bottom: 1px solid $turquoise;
+}
+
+.x-why-button {
+    @include link;
+    color: $white;
+    font-size: $large;
+    padding: base(2) base(4);
+
+    &.is-tab-active {
+        color: $dark_grey;
+        background-color: $white;
+    }
+}
+
+.x-why-panel {
+    display: none;
+    padding: base(1) base(10) base(5);
+
+    &.is-tab-active {
+        display: block;
+    }
+}

@@ -1,0 +1,56 @@
+@import 'compass';
+@import 'variables';
+@import 'mixins';
+
+[class^="x-button"] {
+    @include link;
+    @include inline-block;
+    padding: base(1) base(2);
+    border: $light_border;
+    border-radius: base(1);
+    @include box-sizing(border-box);
+
+    &[class^="icon-"]:before,
+    &[class*=" icon-"]:before {
+        position: absolute;
+    }
+
+    &:hover,
+    &:focus {
+        border-color: $blue;
+    }
+}
+
+.x-button-medium {
+    font-size: $medium;
+
+    &[class^="icon-"],
+    &[class*="icon-"] {
+        padding-left: base(2) + $medium;
+    }
+
+    &[class^="icon-"]:before,
+    &[class*=" icon-"]:before {
+        margin-left: -$medium;
+        margin-top: 2px;
+    }
+}
+
+.x-button-large {
+    font-size: $large;
+
+    &[class^="icon-"],
+    &[class*="icon-"] {
+        padding-left: base(2) + $large;
+    }
+
+    &[class^="icon-"]:before,
+    &[class*=" icon-"]:before {
+        margin-left: -$large;
+        margin-top: 1px;
+    }
+}
+
+[class^="x-link"] {
+    @include link;
+}

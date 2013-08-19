@@ -1,0 +1,36 @@
+@import 'compass';
+@import 'variables';
+@import 'mixins';
+
+.x-demo-tab {
+
+}
+
+.x-demo-tablist {
+    @include horizontal-list;
+
+    li {
+        margin-right: base(2);
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.x-demo-tab-control {
+    @include link;
+}
+
+.x-demo-tabpanel {
+    padding: 0;
+    border: 1px solid $dark_grey;
+    height: 0;
+    @include height_transition;
+    overflow: hidden;
+
+    &.is-tab-active {
+        padding: base(2);
+        height: base(20);
+    }
+}

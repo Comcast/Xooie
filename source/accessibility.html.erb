@@ -1,0 +1,60 @@
+<h1>Accessibility</h1>
+
+<p>There's no question about the merit of making websites accessible for all users, regardless of disability.  While many developers have a will, we don't always have a way.  For larger projects the prospect of making a complex interactive website fully accessible can be daunting, to the point where accessibility may be deprioritized.</p>
+
+<p>The truth is, making a website accessible does not have to be complicated, and Xooie can make it even easier.</p>
+
+<h2>How Xooie Makes Accessibility Easier</h2>
+
+<p>Let's take a look at a fairly common design pattern - the tab.</p>
+
+<p>The tab interface is not part of the HTML specification.  As a result, there are no real semantic tags that we can use to identify that a piece of markup is a tab.  Still, let's take a look at what makes up the common tab pattern:</p>
+
+<ul>
+    <li>A tab control that, when activated, makes content visible</li>
+    <li>A list to organize the tab controls</li>
+    <li>A panel that contains the content made visible by the tab control</li>
+</ul>
+
+<p>Semantically speaking, our actionable controls are buttons.  Lists are defined in HTML as ul or ol tags.  There are many ways to indicate sections of content, so let's call our panel a div.</p>
+
+<p style="margin-top: 50px;">Let's take a look at an accessible tab interface:</p>
+
+<pre><code>
+    &lt;div&gt;
+        &lt;ul role="tablist" aria-owns="tab-1 tab-2 tab-3"&gt;&lt;/ul&gt;
+
+        &lt;button id="tab-1" role="tab" aria-controls="tabpanel-1" aria-selected="true"&gt;Header 1&lt;/button&gt;
+        &lt;div id="tabpanel-1" role="tabpanel" aria-expanded="true"&gt;Content for header 1&lt;/div&gt;
+
+        &lt;button id="tab-2" role="tab" aria-controls="tabpanel-2" aria-selected="false"&gt;Header 2&lt;/button&gt;
+        &lt;div id="tabpanel-2" role="tabpanel" aria-expanded="false"&gt;Content for header 2&lt;/div&gt;
+
+        &lt;button id="tab-3" role="tab" aria-controls="tabpanel-3" aria-selected="false"&gt;Header 3&lt;/button&gt;
+        &lt;div id="tabpanel-3" role="tabpanel" aria-expanded="false"&gt;Content for header 3&lt;/div&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<p style="margin-top: 100px;">There's a lot going on here.  First, we identify elements that have specific roles with the appropriate role attribute.  We need to have unique ids for elements that have semantic roles.  Ids are used to define contextual and semantic relationships between elements.  In this case, we are indicating that a tab controls a specific tabpanel.  We need to convey state; in this case, we indicate when a tab is selected and the associated panel is expanded.  This might be an accordion view, where we want to have our tabs inline with our panels.  We still need to group these tabs together as a list, however.  Since the buttons are not decenents of the tablist, we define that relationship by indicating that the tablist owns the tabs.</p>
+
+<p style="margin-top: 50px;">Now let's take a look at this same widget built with Xooie:</p>
+
+<pre><code>
+    &lt;div data-widget-type="tab"&gt;
+
+        &lt;div data-x-role="tabpanel"&gt;Content for header 1&lt;/div&gt;
+
+        &lt;div data-x-role="tabpanel"&gt;Content for header 2&lt;/div&gt;
+
+        &lt;div data-x-role="tabpanel"&gt;Content for header 3&lt;/div&gt;
+        
+    &lt;/div&gt;
+</code></pre>
+
+<p style="margin-top: 100px;">Xooie will take care of adding all the appropriate attributes.  It will even render a tablist element if one was not specified, complete with tabs for each panel.  Of course, if you wish to render tabs the widget will use them instead.  It's that easy!</p>
+
+<h2>Some Simple Rules for Making Content Accessible</h2>
+
+<ul>
+    <li>Use the right tags.  Many assistive technologies will expect to see markup used according to W3C specifications.  Use semantically appropriate tags.  If it's a button, use the &lt;button&gt; tag.</li>
+</ul>

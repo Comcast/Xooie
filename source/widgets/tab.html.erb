@@ -1,0 +1,26 @@
+<h1>Tab</h1>
+
+<!-- Notes for Tab / Accordion
+    There must be a tablist, tab and tabpanel for each tab
+    The tablist may be empty, but it has to indicate that it owns all non-child tabs
+    Tabs are associated with tabpanels based on their respective read orders
+        Why? First, it's easier for the developer to not have to set the associated ids.
+             Second, it's designed to encourage good markup.
+-->
+<div x-demo-tab data-widget-type="tab">
+    <ol class="x-demo-tablist" data-x-role="tablist">
+        <li><button class="x-demo-tab-control" data-x-role="tab" data-activate="true">Tab 1</button></li>
+        <li><button class="x-demo-tab-control" data-x-role="tab">Tab 2</button></li>
+        <li><button class="x-demo-tab-control" data-x-role="tab">Tab 3</button></li>
+    </ol>
+
+    <div class="x-demo-tabpanel" data-x-role="tabpanel">
+        To be, or not to be, that is the question.  Whether it is nobler in the mind to suffer the slings and arrows of outrageous fortune, or to take arms against a sea of troubles and, by opposing, end them?  To die, to sleep. No more.
+    </div>
+    <div class="x-demo-tabpanel" data-x-role="tabpanel">
+        I do much wonder how a man, having laughed at such shallow follies in others, becomes the object of his own scorn by falling in love?  Such a man is Claudio.  I have known him to be an honest man and a soldier, and now he'd rather hear the tabor and the pipe.  I have known when he would have walked ten mile afoot to see a good armor, and now he'll lie awake ten nights carving the fashion of a new doublet.  He was wont to speak plain and honest and now, he's turned orthography.
+    </div>
+    <div class="x-demo-tabpanel" data-x-role="tabpanel">
+
+    </div>
+</div>

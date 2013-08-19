@@ -1,0 +1,31 @@
+@import 'compass';
+@import 'variables';
+@import 'mixins';
+
+[class^="icon-"],
+[class*=" icon-"] {
+    @include icon;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  text-decoration: inherit;
+  display: inline-block;
+  speak: none;
+}
+
+.icon-download:before {
+    content: "\f01a";
+}
+
+.icon-github:before {
+    content: "\f09b";
+}
+
+.icon-github-alt:before {
+    content: "\f113";
+}
+
+.icon-github-sign:before {
+    content: "\f092";
+}
