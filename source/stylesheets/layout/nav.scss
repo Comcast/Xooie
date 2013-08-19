@@ -1,0 +1,39 @@
+@import 'compass';
+@import 'variables';
+@import 'mixins';
+
+.x-nav {
+    position: fixed;
+    overflow: auto;
+    bottom: 0;
+    top: 0;
+    border-right: $divider;
+    color: $dark_grey;
+    width: $nav_width;
+    margin-left: -$nav_width;
+}
+
+.x-nav-list {
+    @include basic-list;
+    border-bottom: $divider;
+
+    &:last-child {
+        border-bottom: 0;
+    }
+}
+
+.x-nav-link {
+    @include link;
+    display: block;
+    padding: base(2);
+
+    &.main {
+        font-size: $large;
+    }
+
+    &:hover,
+    &:focus {
+        background-color: $light_blue;
+        color: $white;
+    }
+}

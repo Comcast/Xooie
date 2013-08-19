@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    
+    <!-- Use title if it's in the page YAML frontmatter -->
+    <title><%= current_page.data.title || "The Middleman" %></title>
+    
+    <%= stylesheet_link_tag "normalize", "all" %>
+    <%= javascript_include_tag  "all" %>
+    <%= javascript_include_tag "xooie-0.0.17-pre" %>
+  </head>
+  
+  <body class="<%= page_classes %>">
+    <nav class="x-nav">
+      <ol class="x-nav-list">
+        <li class="x-nav-list-item"><a class="x-nav-link main" href="/">Xooie</a></li>
+        <li class="x-nav-list-item"><a class="x-nav-link" href="/addons">Addons</a></li>
+        <li class="x-nav-list-item"><a class="x-nav-link" href="/start">Getting Started</a></li>
+        <li class="x-nav-list-item"><a class="x-nav-link" href="/accessibility">Accessibility</a></li>
+        <li class="x-nav-list-item"><a class="x-nav-link" href="/extend">Extend</a></li>
+        <li class="x-nav-list-item"><a class="x-nav-link" href="/docs">API</a></li>
+      </ol>
+      <ol class="x-nav-list">
+        <li class="x-nav-list-item"><a class="x-nav-link" href="/widgets/tab">Tab</a></li>
+        <li class="x-nav-list-item"><a class="x-nav-link" href="/widgets/accordion">Accordion</a></li>
+        <li class="x-nav-list-item"><a class="x-nav-link" href="/widgets/carousel">Carousel</a></li>
+        <li class="x-nav-list-item"><a class="x-nav-link" href="/widgets/dialog">Dialog</a></li>
+      </ol>
+    </nav>
+
+    <section class="x-content">
+      <%= yield %>
+    </section>
+  </body>
+</html>

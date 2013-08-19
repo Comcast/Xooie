@@ -1,0 +1,81 @@
+@import 'compass';
+
+@mixin heading {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+}
+
+// Links and Buttons
+
+@mixin link {
+    color: $dark_grey;
+    text-decoration: none;
+    @include color-transition;
+
+    &:hover,
+    &:focus {
+        color: $blue;
+    }
+}
+
+// List Styling
+
+@mixin basic-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+@mixin horizontal-list {
+    display: inline-block;
+    @include basic-list;
+    font-size: 0;
+
+    > li {
+        display: inline-block;
+        font-size: $normal;
+    }
+}
+
+@mixin numbered-list {
+    list-style-type: decimal;
+    margin: 0;
+    padding: 0;
+}
+
+@mixin bulleted-list {
+    list-style-type: circle;
+    margin: 0;
+    padding: 0;
+}
+
+// Icons
+
+@mixin icon {
+    font-family: FontAwesome;
+    font-weight: normal;
+    font-style: normal;
+    text-decoration: inherit;
+    -webkit-font-smoothing: antialiased;
+}
+
+// Transitions
+
+@mixin color-transition {
+    @include single-transition(color, $short_transition, $default_easing, 0);
+}
+
+@mixin bg-transition {
+    @include single-transition(background-color, $short_transition, $default_easing, 0);
+}
+
+@mixin height-transition {
+    @include single-transition(height, $short_transition, $default_easing, 0);
+}
+
+// Functions
+
+@function base($multiplier) {
+    @return $base_distance * $multiplier
+}

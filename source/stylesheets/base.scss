@@ -1,0 +1,47 @@
+@import 'compass';
+@import 'variables';
+@import 'mixins';
+
+button {
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
+body {
+    margin-left: $nav_width;
+}
+
+.x-h1 {
+
+}
+
+.x-h2 {
+    @include heading;
+    font-size: $xlarge;
+}
+
+.x-h3 {
+    @include heading;
+    font-size: $large;
+}
+
+.x-block-full {
+    border-top: $divider;
+    padding: base(5) base(4);
+}
+
+.x-block-inline {
+    @include inline-block;
+    border: $light_border;
+    padding: base(3);
+}
+
+.x-code-block {
+    @include inline-block;
+    padding: base(2);
+    margin: base(2) 0;
+    border: $light_border;
+    border-radius: base(1);
+    background-color: $almost_white;
+}
