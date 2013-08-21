@@ -657,6 +657,8 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
   Carousel.prototype.scrollTo = function(pos, cb) {
     var self = this;
 
+    pos = Math.floor(pos);
+
     if (this.isScrolling) {
       this.wrappers().stop(true,true);
     }
