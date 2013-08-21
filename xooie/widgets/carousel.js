@@ -113,19 +113,14 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
  * A dispatch table containing the various methods for scrolling the carousel content.
  *
  * ##### Positioners
- * - [[Xooie.Carousel#_positioners.item]]
- * - [[Xooie.Carousel#_positioners.pixel]]
+ * - **item**(direction, quantity): Calls [[Xooie.Carousel#scrollTo]] with the position of the item designated by the quantity.
+ * - **items**(direction, quantity): alias of **item**
+ * - **pixel**(direction, quantity): Calls [[Xooie.Carousel#scrollTo]] with the pixel position designated by quantity.
+ * - **pixels**(direction, quantity): alias of **pixel**
+ * - **px**(direction, quantity): alias of **pixel**
  **/
     this._positioners = {
 
-/** internal
-* Xooie.Carousel#_positioners.item(direction, quantity)
-* - direction (String): Indicates the directional mode of hte control.  Can be `left`, `right`, or `goto`.
-* - quantity (String | Integer): Indicates the number of items the carousel should be scrolled, or the item position
-* to which the carousel should be scrolled, if the directional mode is `goto`.
-*
-* Calls [[Xooie.Carousel#scrollTo]] with the position of the item designated by the quantity.
-**/
       item: function(direction, quantity) {
         var items, pos, i;
 
@@ -152,21 +147,10 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
         this.scrollTo(pos);
       },
 
-/** internal, alias of: [[Xooie.Carousel#_positioners.item]]
- * Xooie.Carousel#_positioners.items(direction, quantity)
- **/
       items: function() {
         return this._positioners.item.apply(this, arguments);
       },
 
-/** internal
-* Xooie.Carousel#_positioners.pixel(direction, quantity)
-* - direction (String): Indicates the directional mode of hte control.  Can be `left`, `right`, or `goto`.
-* - quantity (String | Integer): Indicates the number of pixels the carousel should be scrolled, or the pixel position
-* to which the carousel should be scrolled, if the directional mode is `goto`.
-*
-* Calls [[Xooie.Carousel#scrollTo]] with the pixel position designated by quantity.
-**/
       pixel: function(direction, quantity) {
         var pos;
 
@@ -187,16 +171,10 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
         this.scrollTo(pos);
       },
 
-/** internal, alias of: [[Xooie.Carousel#_positioners.pixel]]
- * Xooie.Carousel#_positioners.pixels(direction, quantity)
- **/
       pixels: function() {
         return this._positioners.pixel.apply(this, arguments);
       },
 
-/** internal, alias of: [[Xooie.Carousel#_positioners.pixel]]
- * Xooie.Carousel#_positioners.px(direction, quantity)
- **/
       px: function() {
         return this._positioners.pixel.apply(this, arguments);
       }
