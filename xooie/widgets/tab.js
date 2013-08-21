@@ -172,7 +172,8 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
        .attr('aria-selected', true);
 
     $('#' + tab.attr('aria-controls')).addClass(this.activeClass())
-                                      .attr('aria-expanded', true);
+                                      .attr('aria-expanded', true)
+                                      .focus();
 
     var e = $.Event('xooie-tab-active');
 
@@ -300,7 +301,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  * TODO: Add this method to render the tablist if it is not included.
  **/
   Tab.prototype._render_role_tablist = function(){
-
+    return $('<ul data-x-role="tablist"></ul>');
   };
 
 /** internal
