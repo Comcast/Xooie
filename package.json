@@ -35,7 +35,7 @@
   },
   "scripts": {
     "test": "grunt test",
-    "docs": "rm -r doc && ndoc xooie"
+    "docs": "rm -r source/doc && ndoc xooie -o source/doc"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
