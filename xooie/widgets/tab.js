@@ -224,13 +224,22 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  **/
   Tab.prototype._process_role_tab = function(tabs){
     var tabpanels = this.tabpanels(),
+        tab, panelId,
         self = this;
 
     tabs.attr('role', 'tab')
         .attr('aria-selected', false);
 
     tabs.each(function(index) {
-      $(this).attr('aria-controls', tabpanels.eq(index).attr('id'));
+      tab = $(this);
+      panelId = tabpanels.eq(index).attr('id');
+
+      $(this).attr('aria-controls', panelId);
+
+      if ($(this).is('a')) {
+        $(this).attr('href', '#' + panelId);
+      }
+
     });
 
     tabs.on(this._tabEvents.handlers);
