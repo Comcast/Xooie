@@ -1,0 +1,31 @@
+/* line 6, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+[class^="icon-"],
+[class*=" icon-"] {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased; }
+
+/* line 11, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  text-decoration: inherit;
+  display: inline-block;
+  speak: none; }
+
+/* line 17, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+.icon-download:before {
+  content: "\f01a"; }
+
+/* line 21, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+.icon-github:before {
+  content: "\f09b"; }
+
+/* line 25, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+.icon-github-alt:before {
+  content: "\f113"; }
+
+/* line 29, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+.icon-github-sign:before {
+  content: "\f092"; }
