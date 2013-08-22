@@ -1,0 +1,34 @@
+/* line 5, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/accordion.scss */
+.x-demo-accordion-control {
+  color: #434345;
+  text-decoration: none;
+  -webkit-transition: color 0.2s ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition: color 0.2s ease-in-out 0;
+  -o-transition: color 0.2s ease-in-out 0;
+  transition: color 0.2s ease-in-out 0;
+  padding: 10px;
+  background-color: #0591ab;
+  color: whitesmoke;
+  width: 100%;
+  text-align: left; }
+  /* line 17, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  .x-demo-accordion-control:hover, .x-demo-accordion-control:focus {
+    color: #0591ab; }
+  /* line 14, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/accordion.scss */
+  .x-demo-accordion-control:hover, .x-demo-accordion-control:focus {
+    background-color: #07c9d4;
+    color: white; }
+
+/* line 22, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/accordion.scss */
+.x-demo-accordion-panel {
+  height: 0;
+  overflow: hidden;
+  -webkit-transition: height 0.2s ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition: height 0.2s ease-in-out 0;
+  -o-transition: height 0.2s ease-in-out 0;
+  transition: height 0.2s ease-in-out 0; }
+  /* line 27, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/accordion.scss */
+  .x-demo-accordion-panel.is-tab-active {
+    height: auto; }

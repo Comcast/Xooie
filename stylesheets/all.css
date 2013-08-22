@@ -1,0 +1,447 @@
+/* line 5, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+button {
+  border: 0;
+  padding: 0;
+  background-color: transparent; }
+
+/* line 11, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+body {
+  margin-left: 150px; }
+
+/* line 15, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+.x-h1 {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-size: 46px;
+  padding: 5px 25px 10px; }
+
+/* line 21, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+.x-h2 {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-size: 36px; }
+
+/* line 26, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+.x-h3 {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-size: 24px; }
+
+/* line 31, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+.x-block-full {
+  border-top: 1px solid #c6c6cc;
+  padding: 25px 20px; }
+
+/* line 36, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+.x-block-inline {
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+  border: 1px solid #c6c6cc;
+  padding: 15px; }
+
+/* line 42, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+.x-code-block {
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #c6c6cc;
+  border-radius: 5px;
+  background-color: whitesmoke; }
+/* line 5, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/buttons.scss */
+[class^="x-button"] {
+  color: #434345;
+  text-decoration: none;
+  -webkit-transition: color 0.2s ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition: color 0.2s ease-in-out 0;
+  -o-transition: color 0.2s ease-in-out 0;
+  transition: color 0.2s ease-in-out 0;
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+  padding: 5px 10px;
+  border: 1px solid #c6c6cc;
+  border-radius: 5px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+  /* line 17, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  [class^="x-button"]:hover, [class^="x-button"]:focus {
+    color: #0591ab; }
+  /* line 14, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/buttons.scss */
+  [class^="x-button"][class^="icon-"]:before, [class^="x-button"][class*=" icon-"]:before {
+    position: absolute; }
+  /* line 19, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/buttons.scss */
+  [class^="x-button"]:hover, [class^="x-button"]:focus {
+    border-color: #0591ab; }
+
+/* line 24, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/buttons.scss */
+.x-button-medium {
+  font-size: 18px; }
+  /* line 28, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/buttons.scss */
+  .x-button-medium[class^="icon-"], .x-button-medium[class*="icon-"] {
+    padding-left: 28px; }
+  /* line 33, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/buttons.scss */
+  .x-button-medium[class^="icon-"]:before, .x-button-medium[class*=" icon-"]:before {
+    margin-left: -18px;
+    margin-top: 2px; }
+
+/* line 39, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/buttons.scss */
+.x-button-large {
+  font-size: 24px; }
+  /* line 43, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/buttons.scss */
+  .x-button-large[class^="icon-"], .x-button-large[class*="icon-"] {
+    padding-left: 34px; }
+  /* line 48, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/buttons.scss */
+  .x-button-large[class^="icon-"]:before, .x-button-large[class*=" icon-"]:before {
+    margin-left: -24px;
+    margin-top: 1px; }
+
+/* line 54, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/buttons.scss */
+[class^="x-link"] {
+  color: #434345;
+  text-decoration: none;
+  -webkit-transition: color 0.2s ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition: color 0.2s ease-in-out 0;
+  -o-transition: color 0.2s ease-in-out 0;
+  transition: color 0.2s ease-in-out 0; }
+  /* line 17, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  [class^="x-link"]:hover, [class^="x-link"]:focus {
+    color: #0591ab; }
+@font-face {
+  font-family: "JosefinSansThin";
+  src: url("/fonts/JosefinSans-Thin.eot"), url("/fonts/JosefinSans-Thin.ttf") format("truetype"), url("/fonts/JosefinSans-Thin.woff") format("woff"), url("/fonts/JosefinSans-Thin.svg") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "JosefinSansLight";
+  src: url("/fonts/JosefinSans-Light.eot"), url("/fonts/JosefinSans-Light.ttf") format("truetype"), url("/fonts/JosefinSans-Light.woff") format("woff"), url("/fonts/JosefinSans-Light.svg") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "JosefinSansMedium";
+  src: url("/fonts/JosefinSans-Regular.eot"), url("/fonts/JosefinSans-Regular.ttf") format("truetype"), url("/fonts/JosefinSans-Regular.woff") format("woff"), url("/fonts/JosefinSans-Regular.svg") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "JosefinSansBold";
+  src: url("/fonts/JosefinSans-SemiBold.eot"), url("/fonts/JosefinSans-SemiBold.ttf") format("truetype"), url("/fonts/JosefinSans-SemiBold.woff") format("woff"), url("/fonts/JosefinSans-SemiBold.svg") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "FontAwesome";
+  src: url("/fonts/fontawesome-webfont.eot"), url("/fonts/fontawesome-webfont.ttf") format("truetype"), url("/fonts/fontawesome-webfont.woff") format("woff"), url("/fonts/fontawesome-webfont.svg") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+/* line 6, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+[class^="icon-"],
+[class*=" icon-"] {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased; }
+
+/* line 11, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  text-decoration: inherit;
+  display: inline-block;
+  speak: none; }
+
+/* line 17, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+.icon-download:before {
+  content: "\f01a"; }
+
+/* line 21, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+.icon-github:before {
+  content: "\f09b"; }
+
+/* line 25, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+.icon-github-alt:before {
+  content: "\f113"; }
+
+/* line 29, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/components/icons.scss */
+.icon-github-sign:before {
+  content: "\f092"; }
+/* line 5, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/accordion.scss */
+.x-demo-accordion-control {
+  color: #434345;
+  text-decoration: none;
+  -webkit-transition: color 0.2s ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition: color 0.2s ease-in-out 0;
+  -o-transition: color 0.2s ease-in-out 0;
+  transition: color 0.2s ease-in-out 0;
+  padding: 10px;
+  background-color: #0591ab;
+  color: whitesmoke;
+  width: 100%;
+  text-align: left; }
+  /* line 17, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  .x-demo-accordion-control:hover, .x-demo-accordion-control:focus {
+    color: #0591ab; }
+  /* line 14, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/accordion.scss */
+  .x-demo-accordion-control:hover, .x-demo-accordion-control:focus {
+    background-color: #07c9d4;
+    color: white; }
+
+/* line 22, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/accordion.scss */
+.x-demo-accordion-panel {
+  height: 0;
+  overflow: hidden;
+  -webkit-transition: height 0.2s ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition: height 0.2s ease-in-out 0;
+  -o-transition: height 0.2s ease-in-out 0;
+  transition: height 0.2s ease-in-out 0; }
+  /* line 27, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/accordion.scss */
+  .x-demo-accordion-panel.is-tab-active {
+    height: auto; }
+/* line 6, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/carousel.scss */
+.x-demo-carousel .xooie-carousel-content {
+  border: 1px solid #434345; }
+  /* line 9, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/carousel.scss */
+  .x-demo-carousel .xooie-carousel-content li {
+    height: 100px;
+    width: 100px;
+    background-color: red;
+    margin-right: 10px; }
+  /* line 16, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/carousel.scss */
+  .x-demo-carousel .xooie-carousel-content:last-child {
+    margin-right: 0; }
+/* line 21, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/carousel.scss */
+.x-demo-carousel .xooie-carousel-control {
+  position: absolute;
+  top: 50px; }
+  /* line 25, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/carousel.scss */
+  .x-demo-carousel .xooie-carousel-control.left {
+    left: 0; }
+  /* line 29, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/carousel.scss */
+  .x-demo-carousel .xooie-carousel-control.right {
+    right: 0; }
+/* line 5, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+.x-index-title {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-family: JosefinSansLight;
+  text-align: center;
+  font-size: 100px;
+  line-height: 100px;
+  margin: 150px 0 15px; }
+
+/* line 14, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+.x-index-subtitle {
+  font-family: JosefinSansLight;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  text-align: center;
+  font-size: 46px; }
+
+/* line 21, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+.x-index-buttons {
+  text-align: center;
+  padding: 10px 0 20px; }
+  /* line 25, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+  .x-index-buttons [class^="x-button"] {
+    margin-right: 10px; }
+  /* line 29, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+  .x-index-buttons:last-child {
+    margin-right: 0; }
+
+/* line 34, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+.x-version-button {
+  font-size: 14px;
+  line-height: 18px; }
+
+/* line 39, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+.x-gem-info {
+  text-align: center;
+  margin-top: 25px;
+  margin-bottom: 100px; }
+  /* line 44, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+  .x-gem-info [class^="x-link"] {
+    display: block; }
+
+/* line 50, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+.x-why .x-h2 {
+  text-align: center;
+  margin-left: 50px; }
+
+/* line 56, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+.x-why-list {
+  display: inline-block;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0;
+  width: 100%;
+  font-size: 0;
+  padding: 0 30px;
+  border-bottom: 1px solid #c6c6cc;
+  text-align: center; }
+  /* line 35, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  .x-why-list > li {
+    display: inline-block;
+    font-size: 14px; }
+  /* line 64, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+  .x-why-list li {
+    margin-right: 20px; }
+  /* line 68, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+  .x-why-list:last-child {
+    margin-right: 0; }
+
+/* line 73, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+.x-why-button {
+  color: #434345;
+  text-decoration: none;
+  -webkit-transition: color 0.2s ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition: color 0.2s ease-in-out 0;
+  -o-transition: color 0.2s ease-in-out 0;
+  transition: color 0.2s ease-in-out 0;
+  font-size: 24px;
+  padding: 10px 20px;
+  border: 1px solid #c6c6cc;
+  border-bottom: 0;
+  border-radius: 5px 5px 0 0; }
+  /* line 17, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  .x-why-button:hover, .x-why-button:focus {
+    color: #0591ab; }
+  /* line 81, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+  .x-why-button.is-tab-active {
+    color: #434345;
+    background-color: #07c9d4; }
+
+/* line 87, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+.x-why-panel {
+  display: none;
+  padding: 5px 50px 25px; }
+  /* line 91, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/index.scss */
+  .x-why-panel.is-tab-active {
+    display: block; }
+/* line 9, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+.x-demo-tablist {
+  display: inline-block;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0; }
+  /* line 35, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  .x-demo-tablist > li {
+    display: inline-block;
+    font-size: 14px; }
+  /* line 12, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+  .x-demo-tablist li {
+    margin-right: 10px; }
+    /* line 15, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+    .x-demo-tablist li:last-child {
+      margin-right: 0; }
+
+/* line 21, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+.x-demo-tab-control {
+  color: #434345;
+  text-decoration: none;
+  -webkit-transition: color 0.2s ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition: color 0.2s ease-in-out 0;
+  -o-transition: color 0.2s ease-in-out 0;
+  transition: color 0.2s ease-in-out 0; }
+  /* line 17, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  .x-demo-tab-control:hover, .x-demo-tab-control:focus {
+    color: #0591ab; }
+
+/* line 25, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+.x-demo-tabpanel {
+  padding: 0;
+  border: 1px solid #434345;
+  height: 0;
+  -webkit-transition: height 0.2s ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition: height 0.2s ease-in-out 0;
+  -o-transition: height 0.2s ease-in-out 0;
+  transition: height 0.2s ease-in-out 0;
+  overflow: hidden; }
+  /* line 32, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+  .x-demo-tabpanel.is-tab-active {
+    padding: 10px;
+    height: 100px; }
+/* line 5, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/layout/content.scss */
+.x-content {
+  padding: 0; }
+/* line 5, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/layout/footer.scss */
+.x-footer {
+  padding: 20px;
+  border-top: 1px solid #434345; }
+/* line 5, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/layout/nav.scss */
+.x-nav {
+  position: fixed;
+  overflow: auto;
+  bottom: 0;
+  top: 0;
+  border-right: 1px solid #434345;
+  color: #434345;
+  width: 150px;
+  margin-left: -150px; }
+
+/* line 16, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/layout/nav.scss */
+.x-nav-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid #c6c6cc; }
+  /* line 20, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/layout/nav.scss */
+  .x-nav-list:last-child {
+    border-bottom: 0; }
+
+/* line 25, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/layout/nav.scss */
+.x-nav-link {
+  color: #434345;
+  text-decoration: none;
+  -webkit-transition: color 0.2s ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition: color 0.2s ease-in-out 0;
+  -o-transition: color 0.2s ease-in-out 0;
+  transition: color 0.2s ease-in-out 0;
+  display: block;
+  padding: 10px; }
+  /* line 17, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  .x-nav-link:hover, .x-nav-link:focus {
+    color: #0591ab; }
+  /* line 30, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/layout/nav.scss */
+  .x-nav-link.main {
+    font-size: 24px; }
+  /* line 35, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/layout/nav.scss */
+  .x-nav-link:hover, .x-nav-link:focus {
+    background-color: #07c9d4;
+    color: white; }
+/*
+
+
+
+
+
+
+ */
