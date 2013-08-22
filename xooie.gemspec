@@ -3,7 +3,6 @@ require 'fileutils'
 
 FileUtils.mkdir_p 'vendor/assets/javascripts'
 
-FileUtils.cp 'xooie.js', 'vendor/assets/javascripts'
 FileUtils.cp_r 'xooie', 'vendor/assets/javascripts'
 
 json = File.read('package.json')
