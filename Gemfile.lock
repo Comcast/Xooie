@@ -17,16 +17,20 @@ GEM
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0.5.3)
     eventmachine (1.0.3)
+    eventmachine (1.0.3-java)
     execjs (1.4.0)
       multi_json (~> 1.0)
     ffi (1.9.0)
+    ffi (1.9.0-java)
     fssm (0.2.10)
     haml (4.0.3)
       tilt
     hike (1.2.3)
     http_parser.rb (0.5.3)
+    http_parser.rb (0.5.3-java)
     i18n (0.6.4)
     json (1.8.0)
+    json (1.8.0-java)
     kramdown (1.1.0)
     listen (1.2.2)
       rb-fsevent (>= 0.9.3)
@@ -97,6 +101,7 @@ GEM
       multi_json (~> 1.0, >= 1.0.2)
 
 PLATFORMS
+  java
   ruby
 
 DEPENDENCIES
