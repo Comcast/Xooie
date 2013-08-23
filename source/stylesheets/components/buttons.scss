@@ -21,6 +21,27 @@
     }
 }
 
+.x-button-small {
+    font-size: $small;
+
+    &[class^="icon-"],
+    &[class*="icon-"] {
+        padding-left: base(2) + $small;
+    }
+
+    &[class^="icon-"]:before,
+    &[class*=" icon-"]:before {
+        margin-left: -$small;
+        margin-top: 1px;
+    }
+
+
+    .x-sub-button {
+        font-size: $tiny;
+        line-height: $tiny;
+    }
+}
+
 .x-button-medium {
     font-size: $medium;
 
@@ -33,6 +54,11 @@
     &[class*=" icon-"]:before {
         margin-left: -$medium;
         margin-top: 2px;
+    }
+
+    .x-sub-button {
+        font-size: $tiny;
+        line-height: $small;
     }
 }
 
@@ -47,7 +73,13 @@
     &[class^="icon-"]:before,
     &[class*=" icon-"]:before {
         margin-left: -$large;
-        margin-top: 1px;
+        margin-top: 2px;
+    }
+
+
+    .x-sub-button {
+        font-size: $normal;
+        line-height: $medium;
     }
 }
 

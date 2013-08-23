@@ -31,11 +31,6 @@
     }
 }
 
-.x-version-button {
-    font-size: $normal;
-    line-height: $medium;
-}
-
 .x-gem-info {
     text-align: center;
     margin-top: base(5);
@@ -46,10 +41,15 @@
     }
 }
 
+.x-dependency-info {
+    text-align: center;
+    margin-top: base(5);
+    margin-bottom: base(10);
+}
+
 .x-why {
     .x-h2 {
         text-align: center;
-        margin-left: base(10);
     }
 }
 
