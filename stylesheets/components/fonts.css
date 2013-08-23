@@ -1,29 +1,29 @@
 @font-face {
   font-family: "JosefinSansThin";
-  src: url("../fonts/JosefinSans-Thin.eot"), url("../fonts/JosefinSans-Thin.ttf") format("truetype"), url("../fonts/JosefinSans-Thin.woff") format("woff"), url("../fonts/JosefinSans-Thin.svg") format("svg");
+  src: url("/fonts/JosefinSans-Thin.eot"), url("/fonts/JosefinSans-Thin.ttf") format("truetype"), url("/fonts/JosefinSans-Thin.woff") format("woff"), url("/fonts/JosefinSans-Thin.svg") format("svg");
   font-weight: normal;
   font-style: normal; }
 
 @font-face {
   font-family: "JosefinSansLight";
-  src: url("../fonts/JosefinSans-Light.eot"), url("../fonts/JosefinSans-Light.ttf") format("truetype"), url("../fonts/JosefinSans-Light.woff") format("woff"), url("../fonts/JosefinSans-Light.svg") format("svg");
+  src: url("/fonts/JosefinSans-Light.eot"), url("/fonts/JosefinSans-Light.ttf") format("truetype"), url("/fonts/JosefinSans-Light.woff") format("woff"), url("/fonts/JosefinSans-Light.svg") format("svg");
   font-weight: normal;
   font-style: normal; }
 
 @font-face {
   font-family: "JosefinSansMedium";
-  src: url("../fonts/JosefinSans-Regular.eot"), url("../fonts/JosefinSans-Regular.ttf") format("truetype"), url("../fonts/JosefinSans-Regular.woff") format("woff"), url("../fonts/JosefinSans-Regular.svg") format("svg");
+  src: url("/fonts/JosefinSans-Regular.eot"), url("/fonts/JosefinSans-Regular.ttf") format("truetype"), url("/fonts/JosefinSans-Regular.woff") format("woff"), url("/fonts/JosefinSans-Regular.svg") format("svg");
   font-weight: normal;
   font-style: normal; }
 
 @font-face {
   font-family: "JosefinSansBold";
-  src: url("../fonts/JosefinSans-SemiBold.eot"), url("../fonts/JosefinSans-SemiBold.ttf") format("truetype"), url("../fonts/JosefinSans-SemiBold.woff") format("woff"), url("../fonts/JosefinSans-SemiBold.svg") format("svg");
+  src: url("/fonts/JosefinSans-SemiBold.eot"), url("/fonts/JosefinSans-SemiBold.ttf") format("truetype"), url("/fonts/JosefinSans-SemiBold.woff") format("woff"), url("/fonts/JosefinSans-SemiBold.svg") format("svg");
   font-weight: normal;
   font-style: normal; }
 
 @font-face {
   font-family: "FontAwesome";
-  src: url("../fonts/fontawesome-webfont.eot"), url("../fonts/fontawesome-webfont.ttf") format("truetype"), url("../fonts/fontawesome-webfont.woff") format("woff"), url("../fonts/fontawesome-webfont.svg") format("svg");
+  src: url("/fonts/fontawesome-webfont.eot"), url("/fonts/fontawesome-webfont.ttf") format("truetype"), url("/fonts/fontawesome-webfont.woff") format("woff"), url("/fonts/fontawesome-webfont.svg") format("svg");
   font-weight: normal;
   font-style: normal; }

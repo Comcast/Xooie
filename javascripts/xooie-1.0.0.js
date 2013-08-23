@@ -1,3 +1,4 @@
+
 /*
 *   Copyright 2012 Comcast
 *
@@ -13,7 +14,54 @@
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/helpers",["jquery"],function(){var t={};return t.toAry=function(t){return"string"==typeof t?t.split(/\s+/):t instanceof Array?t:void 0},t.toInt=function(t){return parseInt(t,10)},t.isArray=Array.isArray||function(t){return"[object Array]"===Array.prototype.toString(t)},t.isObject=function(t){return"[object Object]"===Object.prototype.toString(t)},t.isUndefined=function(t){return void 0===t},t.isFunction=function(t){return"function"==typeof t},t}),/*
+
+/**
+ * class Xooie.helpers
+ *
+ * A collection of helper methods used by Xooie modules.
+ **/
+
+
+define('xooie/helpers', ['jquery'], function($){
+  var helpers = {};
+/**
+ * Xooie.helpers.toAry(str) -> Array
+ * - str (String | Array): The string to be converted to an array, or an array.
+ *
+ * Converts a string to an array, or returns the passed argument if it is already an array.  Used
+ * when parsing data attributes that can be either a space-delineated string or an array.
+ **/
+  helpers.toAry = function(str) {
+    if (typeof str === 'string') {
+      return str.split(/\s+/);
+    } else if (str instanceof Array) {
+      return str;
+    }
+  };
+
+  helpers.toInt = function(int) {
+    return parseInt(int, 10);
+  };
+
+  helpers.isArray = Array.isArray || function(ary) {
+    return Array.prototype.toString(ary) === '[object Array]';
+  };
+
+  helpers.isObject = function(obj) {
+    return Object.prototype.toString(obj) === '[object Object]';
+  };
+
+  helpers.isUndefined = function(obj) {
+    return obj === void 0;
+  };
+
+  helpers.isFunction = function(func) {
+    return typeof func === 'function';
+  };
+
+  return helpers;
+});
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +76,106 @@ define("xooie/helpers",["jquery"],function(){var t={};return t.toAry=function(t)
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/stylesheet",["jquery"],function(t){var e=function(e){var n;if(this.element=t("style[id="+e+"]"),this.element.length<=0&&(this.element=t(['<style id="'+e+'">',"/* This is a dynamically generated stylesheet: "+e+" */","</style>"].join("")),this.element.appendTo(t("head"))),document.styleSheets)for(n=0;n<document.styleSheets.length;n+=1)document.styleSheets[n].ownerNode.getAttribute("id")===e&&(this._index=n)};return e.prototype.get=function(){return document.styleSheets[this._index]},e.prototype.getRule=function(t){t=t.toLowerCase();var e,n;for(n=this.get().cssRules||this.get().rules,e=0;e<n.length;e+=1)if(n[e].selectorText.toLowerCase()===t)return n[e];return!1},e.prototype.addRule=function(t,e){var n,i,o=this.getRule(t),s="";if(!o){for(i in e)s+=i+": "+e[i]+";";this.get().insertRule?(n=this.get().cssRules.length,this.get().insertRule(t+" {"+s+"}",n),o=this.get().cssRules[n]):(n=this.get().rules.length,this.get().addRule(t,s,n),o=this.get().rules[n])}return o},e.prototype.deleteRule=function(t){t=t.toLowerCase();var e,n;for(n=this.get().cssRules||this.get().rules,e=0;e<n.length;e+=1)if(n[e].selectorText.toLowerCase()===t)return this.get().deleteRule?this.get().deleteRule(e):this.get().removeRule(e),!0;return!1},e});/*
+
+define('xooie/stylesheet', ['jquery'], function($) {
+    var Stylesheet = function(name){
+        var i, title;
+
+        //check to see if a stylesheet already exists with this name
+        this.element = $('style[id=' + name + ']');
+
+        if (this.element.length <= 0) {
+            //if it does, use it, else create a new one
+            this.element = $(['<style id="' + name + '">',
+                                '/* This is a dynamically generated stylesheet: ' + name + ' */',
+                            '</style>'].join(''));
+
+            this.element.appendTo($('head'));
+        }
+
+        if (document.styleSheets) {
+            for (i = 0; i < document.styleSheets.length; i += 1){
+                if (document.styleSheets[i].ownerNode.getAttribute('id') === name) {
+                    this._index = i;
+                }
+            }
+        }
+    };
+
+    Stylesheet.prototype.get = function(){
+        return document.styleSheets[this._index];
+    };
+
+    Stylesheet.prototype.getRule = function(ruleName){
+        ruleName = ruleName.toLowerCase();
+
+        var i, rules;
+
+        //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
+        rules = this.get().cssRules || this.get().rules;
+
+        for (i = 0; i < rules.length; i += 1){
+            if (rules[i].selectorText.toLowerCase() === ruleName) {
+                return rules[i];
+            }
+        }
+
+        return false;
+    };
+
+    Stylesheet.prototype.addRule = function(ruleName, properties){
+        var rule = this.getRule(ruleName), index, prop, propString = '';
+
+        if (!rule){
+            for (prop in properties) {
+                propString += prop + ': ' + properties[prop] + ';';
+            }
+
+            if (this.get().insertRule) {
+                //This is the W3C-preferred method
+                index = this.get().cssRules.length;
+                this.get().insertRule(ruleName + ' {' + propString + '}', index);
+                rule = this.get().cssRules[index];
+            } else {
+                //support for IE < 9
+                index = this.get().rules.length;
+                this.get().addRule(ruleName, propString, index);
+                rule = this.get().rules[index];
+            }
+        }
+
+        return rule;
+    };
+
+    Stylesheet.prototype.deleteRule = function(ruleName){
+        ruleName = ruleName.toLowerCase();
+
+        var i, rules;
+
+        //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
+        rules = this.get().cssRules || this.get().rules;
+
+        for (i = 0; i < rules.length; i += 1){
+            if (rules[i].selectorText.toLowerCase() === ruleName) {
+                if (this.get().deleteRule) {
+                    //this is the W3C-preferred method
+                    this.get().deleteRule(i);
+                } else {
+                    //support for IE < 9
+                    this.get().removeRule(i);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    return Stylesheet;
+
+});
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +190,666 @@ define("xooie/stylesheet",["jquery"],function(t){var e=function(e){var n;if(this
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-var $X,Xooie;$X=Xooie=function(t){function e(t,e){var n;for(n in e)e.hasOwnProperty(n)&&(t[n]=e[n])}function n(){"undefined"!=typeof Xooie.cleanup&&Xooie.cleanup()}var i={widgets:{},addons:{}},o=function(){return!1},s=null;return o.config=function(t){var o;for(o in t)t.hasOwnProperty(o)&&("widgets"===o||"addons"==o?e(i[o],t[o]):i[o]=t[o]);"undefined"!=typeof t.cleanupInterval&&(s=clearInterval(s),i.cleanupInterval>0&&(s=setInterval(n,i.cleanupInterval)))},o._mapName=function(t,e){return"undefined"==typeof i[e][t]?[i.root,"/",e,"/",t].join(""):i[e][t]},o.config({root:"xooie",cleanupInterval:0}),t&&o.config(t),o}(Xooie),define("xooie/xooie",["jquery","xooie/helpers","xooie/stylesheet"],function(t,e,n){var i=Xooie.config,o=Xooie._mapName,s="[data-widget-type]";return widgetDataAttr="widgetType",addonDataAttr="addons",$X=Xooie=function(n){var i,o,r,a,d,l,u;for(n=t(n),i=n.find(s),n.is(s)&&(i=i.add(n)),r=[],l=0;l<i.length;l+=1){for(a=t(i[l]),o=e.toAry(a.data(widgetDataAttr)),u=0;u<o.length;u+=1)d=$X._mapName(o[u],"widgets"),-1===r.indexOf(d)&&r.push(d);for(o=e.toAry(a.data(addonDataAttr))||[],u=0;u<o.length;u+=1)d=$X._mapName(o[u],"addons"),-1===r.indexOf(d)&&r.push(d)}require(r,function(){var n,o,s,a,d,l,u,h,c;for(u=0;u<i.length;u+=1)for(s=t(i[u]),n=e.toAry(s.data(widgetDataAttr)),o=e.toAry(s.data(addonDataAttr))||[],h=0;h<n.length;h+=1){for(l=r.indexOf($X._mapName(n[h],"widgets")),d=arguments[l],a=[],c=0;c<o.length;c+=1)l=r.indexOf($X._mapName(o[c],"addons")),a.push(arguments[l]);new d(s,a)}})},Xooie.config=i,Xooie._mapName=o,Xooie._stylesheet=new n("Xooie"),Xooie._styleRules={},Xooie._instanceCache=[],Xooie._instanceIndex=0,Xooie.cleanup=function(){var t,e;for(t=0;t<$X._instanceCache.length;t++)e=$X._instanceCache[t],e.root()&&0===e.root().parents("body").length&&(e.cleanup(),delete $X._instanceCache[t])},Xooie}),require(["jquery","xooie/xooie"],function(t,e){t(document).ready(function(){e(t(this))})}),define("xooie/shared",["jquery"],function(t){function e(t){return{getter:"_get_"+t,setter:"_set_"+t,processor:"_process_"+t,validator:"_validate_"+t,defaultValue:"_default_value_"+t,value:"_"+t}}function n(t,n){var i=e(t);"function"!=typeof n[t]&&(n._definedProps.push(t),n[t]=function(t){return"undefined"==typeof t?this[i.getter]():this[i.setter](t)})}var i={defineReadOnly:function(t,i,o){var s=e(i);n(i,t.prototype),t.prototype[s.defaultValue]=o,"function"!=typeof t.prototype[s.getter]&&(t.prototype[s.getter]=function(){var t="undefined"!=typeof this[s.value]?this[s.value]:this[s.defaultValue];return"function"==typeof this[s.processor]?this[s.processor](t):t})},defineWriteOnly:function(t,i){var o=e(i);n(i,t.prototype),"function"!=typeof t.prototype[o.setter]&&(t.prototype[o.setter]=function(t){("function"!=typeof this[o.validator]||this[o.validator](i))&&(this[o.value]=t)})},extend:function(e,n){var i=function(){return function(){n.apply(this,arguments),e.apply(this,arguments),this._extendCount-=1}}();return t.extend(!0,i,n),t.extend(!0,i.prototype,n.prototype),i.prototype._extendCount=null===i.prototype._extendCount?1:i.prototype._extendCount+=1,i},get:function(t,n){var i=e(n);return t[i.getter]()},set:function(t,n,i){var o=e(n);"function"==typeof t[o.setter]&&t[o.setter](i)}};return i}),define("xooie/keyboard_navigation",["jquery","xooie/helpers"],function(t,e){function n(n,i){var o,s,r,a,d,l=[];return s={unindexed:["[data-widget-type] a[href]:visible:not(:disabled):not([tabindex])","[data-widget-type] button:visible:not(:disabled):not([tabindex])","[data-widget-type] input:visible:not(:disabled):not([tabindex])","[data-widget-type] select:visible:not(:disabled):not([tabindex])","[data-widget-type] textarea:visible:not(:disabled):not([tabindex])","[data-widget-type] [tabindex=0]:visible:not(:disabled)"].join(","),indexed:function(t){return t>0?"[data-widget-type] [tabindex="+t+"]:visible:not(:disabled)":void 0},allIndexed:"[data-widget-type] [tabindex]:visible:not(:disabled)"},n=t(n),!n.is(s.unindexed)&&!n.is(s.allIndexed)&&(t(s.allIndexed).each(function(){var n=e.toInt(t(this).attr("tabindex"));-1===l.indexOf(n)&&n>0&&l.push(n)}),l.length>0?(l.sort(function(t,e){return t-e}),d=t(s.indexed(l[0])).first()):d=t(s.unindexed).first(),d.length>0)?(d.focus(),void 0):(r=e.toInt(n.attr("tabindex")),o=r?s.indexed(r):s.unindexed,a=n.index(o),a+i>=0&&(d=t(o).eq(a+i),d.length>0)?(d.focus(),void 0):((1!==i||r)&&(1!==i||isNaN(r)?-1===i&&isNaN(r)?(t(s.allIndexed).each(function(){var n=e.toInt(t(this).attr("tabindex"));-1===l.indexOf(n)&&l.push(n)}),l.length>0&&(l.sort(function(t,e){return e-t}),r=l[0],d=t(s.indexed(r)).last())):-1===i&&!isNaN(r)&&r>0&&(t(s.allIndexed).each(function(){var n=e.toInt(t(this).attr("tabindex"));r>n&&-1===l.indexOf(n)&&n>0&&l.push(n)}),l.length>0&&(l.sort(function(t,e){return t-e}),r=l[0],d=t(s.indexed(r)).last())):(t(s.allIndexed).each(function(){var n=e.toInt(t(this).attr("tabindex"));n>r&&-1===l.indexOf(n)&&n>0&&l.push(n)}),l.length>0?(l.sort(function(t,e){return t-e}),r=l[0],d=t(s.indexed(r)).first()):d=t(s.unindexed).first()),e.isUndefined(d)||d.focus()),void 0))}var i,o;o={37:function(e){n(t(e.target),-1),e.preventDefault()},38:function(){},39:function(e){n(t(e.target),1),e.preventDefault()},40:function(){}};var s;return i=function(){return s?s:(t(document).on("keyup",function(t){e.isFunction(o[t.which])&&o[t.which](t)}),s=this,void 0)}}),/*
+
+var $X, Xooie;
+
+/** alias of: $X
+ *  Xooie
+ *
+ *  Xooie is a JavaScript UI widget library.
+ **/
+
+/**
+ * $X(element)
+ * - element (Element | String):  A jQuery collection or string representing the DOM element to be
+ * instantiated as a Xooie widget.
+ *
+ * Traverses the DOM, starting from the element passed to the method, and instantiates a Xooie
+ * widget for every element that has a data-widget-type attribute.
+ **/
+
+$X = Xooie = (function(static_config) {
+    var config = {
+            widgets: {},
+            addons: {}
+        },
+        obj = function() {
+            return false;
+        },
+        gcTimer = null;
+
+    function copyObj(dst, src) {
+        var name;
+
+        for (name in src) {
+            if (src.hasOwnProperty(name)) {
+                dst[name] = src[name];
+            }
+        }
+    }
+
+    function gcCallback() {
+        if (typeof Xooie.cleanup !== 'undefined') {
+            Xooie.cleanup();
+        }
+    }
+
+/**
+ * $X.config(options)
+ * - options (Object): An object that describes the configuration options for Xooie.
+ *
+ * Defines the url strings for Xooie modules that will be used to require said modules.
+ *
+ * ##### Options
+ *
+ * - **root** (String): The location of all Xooie files.
+ * Default: `xooie`.
+ * - **widgets** (Object): Defines the location of widgets.  By default, Xooie will look for widgets in the
+ * '/widgets' directory, relative to the `{root}`.
+ * - **addons** (Object): Defines the location of addons.  By default, Xooie will look for addons in the
+ * '/addons' directory, relative to the `{root}`.
+ * - **cleanupInterval** (Integer): Defines the interval at which Xooie checks for instantiated widgets that are
+ * no longer active in the DOM.  A value of '0' means no cleanup occurs.
+ * Default: `0`.
+ **/
+
+    obj.config = function(options) {
+        var name;
+
+        for (name in options) {
+            if (options.hasOwnProperty(name)) {
+                if (name === 'widgets' || name == 'addons') {
+                    copyObj(config[name], options[name]);
+                } else {
+                    config[name] = options[name];
+                }
+            }
+        }
+
+        if (typeof options.cleanupInterval !== 'undefined') {
+            gcTimer = clearInterval(gcTimer);
+
+            if (config.cleanupInterval > 0) {
+                gcTimer = setInterval(gcCallback, config.cleanupInterval);
+            }
+        }
+    };
+
+/** internal
+ * $X._mapName(name, type) -> String
+ * - name (String): The name of the module, as determeined by the `data-widget-type` or `data-addons` properties.
+ * - type (String): The type of module.  Can be either `'widget'` or `'addon'`
+ *
+ * Maps the name of the widget or addon to the correct url string where the module file is located.
+ **/
+
+    obj._mapName = function(name, type) {
+        if (typeof config[type][name] === 'undefined') {
+            return [config.root, '/', type, '/', name].join('');
+        } else {
+            return config[type][name];
+        }
+    };
+
+    obj.config({
+        root: 'xooie',
+        cleanupInterval: 0
+    });
+
+    if (static_config) {
+        obj.config(static_config);
+    }
+
+    return obj;
+}(Xooie));
+
+define('xooie/xooie', ['jquery', 'xooie/helpers', 'xooie/stylesheet'], function($, helpers, Stylesheet){
+    var config = Xooie.config,
+        _mapName = Xooie._mapName,
+        widgetSelector = '[data-widget-type]';
+        widgetDataAttr = 'widgetType';
+        addonDataAttr = 'addons';
+
+    $X = Xooie = function(element){
+        var nodes, moduleNames, moduleUrls,
+            node, url,
+            i, j;
+
+        element = $(element);
+
+        // Find all elements labeled as widgets:
+        nodes = element.find(widgetSelector);
+
+        // If the element is also tagged, add it to the collection:
+        if (element.is(widgetSelector)){
+            nodes = nodes.add(element);
+        }
+
+        // This array will be the list of unique modules to load:
+        moduleUrls = [];
+
+        // Iterate through each item in the collection:
+        for(i = 0; i < nodes.length; i+=1) {
+            node = $(nodes[i]);
+
+            // Add all of the widget types to the list of modules we need:
+            moduleNames = helpers.toAry(node.data(widgetDataAttr));
+
+            // For each widget we check to see if the url is already in our
+            // list of urls to require:
+            for (j = 0; j < moduleNames.length; j+=1) {
+                url = $X._mapName(moduleNames[j], 'widgets');
+
+                if (moduleUrls.indexOf(url) === -1) {
+                    moduleUrls.push(url);
+                }
+            }
+
+            // Do the same with each addon name:
+            moduleNames = helpers.toAry(node.data(addonDataAttr)) || [];
+
+            for (j = 0; j < moduleNames.length; j+=1) {
+                url = $X._mapName(moduleNames[j], 'addons');
+
+                if (moduleUrls.indexOf(url) === -1) {
+                    moduleUrls.push(url);
+                }
+            }
+        }
+
+        // Now that we have a list of urls to load, let's load them:
+        require(moduleUrls, function(){
+            var widgets, addons, node,
+                addonMods, widgetMod, argIndex,
+                i, j, k;
+
+            // We need to iterate through our collection of nodes again:
+            for (i = 0; i < nodes.length; i+=1) {
+                node = $(nodes[i]);
+
+                // This time, we're keeping track of our addons and widges separately:
+                widgets = helpers.toAry(node.data(widgetDataAttr));
+                addons = helpers.toAry(node.data(addonDataAttr)) || [];
+
+                // Iterate through each widget type:
+                for (j = 0; j < widgets.length; j+=1) {
+
+                    // Get the index of this module from the moduleUrls:
+                    argIndex = moduleUrls.indexOf($X._mapName(widgets[j], 'widgets'));
+
+                    //Get the widget that we'll be instantiating:
+                    widgetMod = arguments[argIndex];
+
+                    addonMods = [];
+
+                    // Now get each addon that we'll instantiate with the widget:
+                    for (k = 0; k < addons.length; k+=1) {
+                        // Get the index of the addon module from moduleUrls:
+                        argIndex = moduleUrls.indexOf($X._mapName(addons[k], 'addons'));
+
+                        addonMods.push(arguments[argIndex]);
+                    }
+
+                    // Instantiate the new instance using the argIndex to find the right module:
+                    new widgetMod(node, addonMods);
+                }
+            }
+        });
+    };
+
+    Xooie.config = config;
+    Xooie._mapName = _mapName;
+
+/** internal, read-only
+ * $X._stylesheet -> Object
+ *
+ * An instance of the [[Stylesheet]] class used to manipluate a dynamically created Xooie stylesheet
+ **/
+    Xooie._stylesheet = new Stylesheet('Xooie');
+
+/** internal
+ * $X._styleRules -> Object
+ *
+ * A cache of css rules defined by the [[Xooie.Widget.createStyleRule]] method.
+ **/
+    Xooie._styleRules = {};
+
+/** internal
+ * $X._instanceCache -> Array
+ *
+ * A collection of currently instantiated widgets.
+ **/
+    Xooie._instanceCache = [];
+
+/** internal
+ * $X._instanceIndex -> Integer
+ *
+ * Tracks the next available instance index in the cache.  This value also serves as the id of the
+ * next instantiated widget.
+ **/
+    Xooie._instanceIndex = 0;
+    
+/**
+ * $X.cleanup()
+ *
+ * Checks all instantiated widgets to ensure that the root element is still in the DOM.  If the
+ * root element is no longer in the DOM, the module is garbage collected.
+ **/
+
+    Xooie.cleanup = function() {
+        var i, instance;
+
+        for (i = 0; i < $X._instanceCache.length; i++) {
+            instance = $X._instanceCache[i];
+
+            if (instance.root() && instance.root().parents('body').length === 0) {
+                instance.cleanup();
+                delete $X._instanceCache[i];
+            }
+        }
+    };
+
+    return Xooie;
+});
+
+require(['jquery', 'xooie/xooie'], function($, $X){
+    $(document).ready(function() {
+        $X($(this));
+    });
+});
+
+/**
+ * class Xooie.shared
+ *
+ * A module that contains functionality that is used both by [[Xooie.Widget]] and [[Xooie.Addon]]
+ * This module exists to abstract common functionality so that it can be maintained in one place.
+ * It is not intended to be used independently.
+ **/
+define('xooie/shared', ['jquery'], function($){
+
+/** internal
+ * Xooie.shared.propertyDetails(name) -> Object
+ * - name (String): The name of the property
+ *
+ * Generates a hash of attributes that will be used in setting and getting the property.
+ *
+ * ##### Return values
+ *
+ * - **getter** (String): The name of the internal getter method for this property.
+ * `_get_name`
+ * - **setter** (String): The name of the internal setter method for this property.
+ * `_set_name`
+ * - **processor** (String): The name of the internal processor method for this property.
+ * `_process_name`
+ * - **validator** (String): The name of the internal validator method for this property.
+ * `_validate_name`
+ * **default** (String): The name of the internally stored default value for this property.
+ * `_default_name`
+ * - **value** (String): The name of the internally stored value for this property.
+ * `_name`
+ **/
+  function propertyDetails (name) {
+    return {
+      getter: '_get_' + name,
+      setter: '_set_' + name,
+      processor: '_process_' + name,
+      validator: '_validate_' + name,
+      defaultValue: '_default_value_' + name,
+      value: '_' + name
+    };
+  }
+
+/** internal
+ * Xooie.shared.propertyDispatcher(name, prototype)
+ * - name (String): The name of the property
+ * - prototype (Object): The prototype of the [[Xooie.Widget]] or [[Xooie.Addon]] for which the property is being set.
+ *
+ * Gets the [[Xooie.shared.propertyDetails]] for the property, adds the `name` to the list of [[Xooie.Widget#_definedProps]]
+ * (or [[Xooie.Addon#_definedProps]]).  Adds a method called `name` to the prototype that allows this property to be set or
+ * retrieved.
+ **/
+  function propertyDispatcher (name, prototype) {
+    var prop = propertyDetails(name);
+
+    if (typeof prototype[name] !== 'function') {
+      prototype._definedProps.push(name);
+
+      prototype[name] = function(value) {
+        if (typeof value === 'undefined') {
+          return this[prop.getter]();
+        } else {
+          return this[prop.setter](value);
+        }
+      };
+    }
+  }
+
+  var shared = {
+/**
+ * Xooie.shared.defineReadOnly(module, name[, defaultValue])
+ * - module (Widget | Addon): The module on which this property will be defined.
+ * - name (String): The name of the property to define as a read-only property.
+ * - defaultValue (Object): An optional default value.
+ *
+ * Defines a read-only property that can be accessed either by [[Xooie.Widget#get]]/[[Xooie.Addon#get]] or
+ * calling the `{{name}}` method on the instance of the module.
+ **/
+    defineReadOnly: function(module, name, defaultValue){
+      var prop = propertyDetails(name);
+
+      propertyDispatcher(name, module.prototype);
+
+      //The default value is reset each time this method is called;
+      module.prototype[prop.defaultValue] = defaultValue;
+
+      if (typeof module.prototype[prop.getter] !== 'function') {
+        module.prototype[prop.getter] = function() {
+          var value = typeof this[prop.value] !== 'undefined' ? this[prop.value] : this[prop.defaultValue];
+
+          if (typeof this[prop.processor] === 'function') {
+            return this[prop.processor](value);
+          }
+
+          return value;
+        };
+      }
+    },
+/**
+ * Xooie.shared.defineWriteOnly(module, name)
+ * - module (Widget | Addon): The module on which this property will be defined.
+ * - name (String): The name of the property to define as a write-only property
+ *
+ * Defines a write-only property that can be set using [[Xooie.Widget#set]]/[[Xooie.Addon#set]] or by passing
+ * a value to the `{{name}}` method on the instance of the module.
+ **/
+    defineWriteOnly: function(module, name){
+      var prop = propertyDetails(name);
+
+      propertyDispatcher(name, module.prototype);
+
+      if (typeof module.prototype[prop.setter] !== 'function') {
+        module.prototype[prop.setter] = function(value){
+          if (typeof this[prop.validator] !== 'function' || this[prop.validator](name)) {
+            this[prop.value] = value;
+          }
+        };
+      }
+    },
+/**
+ * Xooie.shared.extend(constr, _super) -> Widget | Addon
+ * - constr (Function): The constructor for the new [[Xooie.Widget]] or [[Xooie.Addon]] class.
+ * - _super (Widget | Addon): The module which is to be extended
+ *
+ * Creates a new Xooie widget/addon class that inherits all properties from the extended class.
+ * Constructors for the class are called in order from the top-level constructor to the
+ * base constructor.
+ **/
+    extend: function(constr, module){
+      var newModule = (function(){
+        return function Child() {
+          module.apply(this, arguments);
+          constr.apply(this, arguments);
+          this._extendCount -= 1;
+        };
+      })();
+      
+
+      $.extend(true, newModule, module);
+      $.extend(true, newModule.prototype, module.prototype);
+
+      newModule.prototype._extendCount = newModule.prototype._extendCount === null ? 1 : newModule.prototype._extendCount += 1;
+
+      return newModule;
+    },
+/**
+ * Xooie.shared.get(instance, name) -> object
+ * - instance (Widget | Addon): The instance from which the property is to be retrieved.
+ * - name (String): The name of the property to be retrieved.
+ *
+ * Retrieves the value of the property.  Returns `undefined` if the property has not been defined.
+ **/
+    get: function(instance, name){
+      var prop = propertyDetails(name);
+
+      return instance[prop.getter]();
+    },
+/**
+ * Xooie.shared.set(instance, name, value)
+ * - instance (Widget | Addon): The instance where the property is being set.
+ * - name (String): The name of the property to be set.
+ * - value: The value of the property to be set.
+ *
+ * Sets a property, so long as that property has been defined.
+ **/
+    set: function(instance, name, value){
+      var prop = propertyDetails(name);
+
+      if (typeof instance[prop.setter] === 'function') {
+        instance[prop.setter](value);
+      }
+    }
+
+  };
+
+  return shared;
+});
+define('xooie/keyboard_navigation', ['jquery', 'xooie/helpers'], function($, helpers){
+  var selectors, keyboardNavigation, keybindings;
+
+
+  keybindings = {
+    37: function(event) {
+      moveFocus($(event.target), -1);
+
+      event.preventDefault();
+    },
+
+    38: function() {
+
+    },
+
+    39: function(event) {
+      moveFocus($(event.target), 1);
+
+      event.preventDefault();
+    },
+
+    40: function() {
+
+    }
+  };
+
+/** internal
+ * Xooie.Widget._moveFocus(direction)
+ * - direction (Integer): Determines whether or not to increment or decrement the index.  Can be 1 or -1.
+ *
+ * Moves focus to either the next or previous focusable item, if available.  Focus order follows the
+ * tab order of the page (items without tabindex or tabindex=0 will be focused before tabindex=1).  Focusable
+ * items with a tabindex=-1 will not be focused.
+ **/
+  function moveFocus(current, direction) {
+    // TODO: Clean this up. It's a mess
+    // TODO: Write tests.
+    // TODO: Add detection of new contexts
+    // TODO: Add recollection of last focused item
+
+    var selector, selectors, tabindex, index, target;
+
+    var tabIndicies= [];
+
+    selectors = {
+      unindexed: ['[data-widget-type] a[href]:visible:not(:disabled):not([tabindex])',
+        '[data-widget-type] button:visible:not(:disabled):not([tabindex])',
+        '[data-widget-type] input:visible:not(:disabled):not([tabindex])',
+        '[data-widget-type] select:visible:not(:disabled):not([tabindex])',
+        '[data-widget-type] textarea:visible:not(:disabled):not([tabindex])',
+        '[data-widget-type] [tabindex=0]:visible:not(:disabled)'].join(','),
+      indexed: function(t) {
+        if (t > 0) {
+          return '[data-widget-type] [tabindex=' + t + ']:visible:not(:disabled)';
+        }
+      },
+      allIndexed: '[data-widget-type] [tabindex]:visible:not(:disabled)'
+    };
+
+    // jquery select the current item
+    current = $(current);
+
+    // we may not be focused on anything.  If that's the case, focus on the first focusable item
+    if (!current.is(selectors.unindexed) && !current.is(selectors.allIndexed)) {
+      // get the lowest tabindex
+      $(selectors.allIndexed).each(function(){
+        var i = helpers.toInt($(this).attr('tabindex'));
+
+        if (tabIndicies.indexOf(i) === -1 && i > 0) {
+          tabIndicies.push(i);
+        }
+      });
+
+      if (tabIndicies.length > 0) {
+        tabIndicies.sort(function(a,b) { return a-b; });
+      
+        target = $(selectors.indexed(tabIndicies[0])).first();
+      } else {
+        target = $(selectors.unindexed).first();
+      }
+
+      if (target.length > 0) {
+        target.focus();
+
+        return;
+      }
+    }
+
+    // get the current tabindex
+    tabindex = helpers.toInt(current.attr('tabindex'));
+
+    // check if tabindex is a number and not 0...
+    if (!tabindex) {
+      // if it is not, assume we're on an element that has no tab index and select other such elements
+      selector = selectors.unindexed;
+    } else {
+      // otherwise, select all items that are of the same tabindex
+      selector = selectors.indexed(tabindex);
+    }
+
+    // find the index of the current item
+    index = current.index(selector);
+
+    if (index + direction >= 0) {
+      // get the next/previous item
+      target = $(selector).eq(index + direction);
+
+      // Check to see if we have a valid target...
+      if (target.length > 0) {
+        // if it is, focus the target and return
+        target.focus();
+
+        return;
+      }
+    }
+
+    // if it is not, then we have several possibilities:
+    
+    // If the direction is 1 and tabindex is not a number or 0, then we are at the end of the tab order.  Do nothing.
+    if (direction === 1 && !tabindex) {
+      return;
+    // If the direction is 1 and the tabindex is a number, then we need to check for the presence of the next tabindex
+    } else if (direction === 1 && !isNaN(tabindex)) {
+      // Loop through all elements with a tab index
+      $(selectors.allIndexed).each(function() {
+        // Build a collection of all tab indicies greater than the current tab index:
+        var i = helpers.toInt($(this).attr('tabindex'));
+
+        if (i > tabindex && tabIndicies.indexOf(i) === -1 && i > 0) {
+          tabIndicies.push(i);
+        }
+      });
+
+      // If there are tab indicies that are greater than the current one...
+      if (tabIndicies.length > 0) {
+        // sort our tab indicies ascending
+        tabIndicies.sort(function(a, b) { return a-b; });
+
+        // we now have our new tab index
+        tabindex = tabIndicies[0];
+
+        // Get the first item of the new tab index
+        target = $(selectors.indexed(tabindex)).first();
+      } else {
+        // Otherwise, select the first unindexed item
+        target = $(selectors.unindexed).first();
+      }
+      
+    } else if (direction === -1 && isNaN(tabindex))  {
+      // In this case, we are at the first non-indexed focusable item.  We need to find the last indexed item.
+      // Loop through all elements with a tab index
+      $(selectors.allIndexed).each(function() {
+        var i = helpers.toInt($(this).attr('tabindex'));
+        // Build a collection of all tab indicies
+        if (tabIndicies.indexOf(i) === -1) {
+          tabIndicies.push(i);
+        }
+      });
+
+      if (tabIndicies.length > 0) {
+        // sort our tab indicies descending
+        tabIndicies.sort(function(a, b) { return b-a; });
+
+        // we now have our new tab index
+        tabindex = tabIndicies[0];
+
+        // Select the last indexed item
+        target = $(selectors.indexed(tabindex)).last();
+      }
+    } else if (direction === -1 && !isNaN(tabindex) && tabindex > 0) {
+      $(selectors.allIndexed).each(function(){
+        var i = helpers.toInt($(this).attr('tabindex'));
+
+        if (i < tabindex && tabIndicies.indexOf(i) === -1 && i > 0) {
+          tabIndicies.push(i);
+        }
+      });
+
+      if (tabIndicies.length > 0) {
+        // sort our tab indicies asceding
+        tabIndicies.sort(function(a, b) { return a-b; });
+
+        // we now have our new tab index
+        tabindex = tabIndicies[0];
+
+        // Select the last indexed item
+        target = $(selectors.indexed(tabindex)).last();
+      }
+    }
+
+    if (!helpers.isUndefined(target)) {
+      // assuming we have a target, focus it.
+      target.focus();
+    }
+    
+  }
+
+  var instantiated;
+
+  keyboardNavigation = function(){
+    if (instantiated) {
+      return instantiated;
+    }
+
+    $(document).on('keyup', function(event) {
+      if (helpers.isFunction(keybindings[event.which])) {
+        keybindings[event.which](event);
+      }
+    });
+
+    instantiated = this;
+  };
+
+  return keyboardNavigation;
+
+});
+/*
 * Copyright 2012 Comcast
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,7 +864,637 @@ var $X,Xooie;$X=Xooie=function(t){function e(t,e){var n;for(n in e)e.hasOwnPrope
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-define("xooie/widgets/base",["jquery","xooie/xooie","xooie/helpers","xooie/shared","xooie/keyboard_navigation"],function(t,e,n,i){function o(t){return{processor:"_process_role_"+t,renderer:"_render_role_"+t,getter:"_get_role_"+t,pluralName:t+"s",selector:"[data-x-role="+t+"]"}}function s(t,e){var i=o(t);n.isUndefined(e[i.pluralName])&&(e._definedRoles.push(t),e[i.pluralName]=function(){return this[i.getter]()})}function r(t){if("undefined"!=typeof t){var n=e._instanceIndex;return e._instanceIndex+=1,"undefined"==typeof e._instanceCache[n]?(e._instanceCache[n]=t,n):r(t)}}var a;return t.event.special["xooie-init"]={add:function(e){var n=t(this).data("xooieInstance");if("undefined"!=typeof n){var i=t.Event("xooie-init");i.namespace=e.namespace,i.data=e.data,e.handler.call(this,i)}}},a=function(n,i){var o=this;if(n=t(n),this._setData(n.data()),n.data("xooieInstance")){if("undefined"!=typeof e._instanceCache[n.data("xooieInstance")])return n.trigger(this.get("refreshEvent")),e._instanceCache[n.data("xooieInstance")];this.cleanup()}n.on(this.get("initEvent")+" "+this.get("refreshEvent"),function(){o._applyRoles()});var s=r(this);this.set("id",s),this.set("root",n),n.addClass(this.get("className")).addClass(this.get("instanceClass"));var a=function(){var t;if(!o._extendCount||o._extendCount<=0){if("undefined"!=typeof i)for(t=0;t<i.length;t+=1)new i[t](o);n.attr("data-xooie-instance",s),n.trigger(o.get("initEvent")),o._extendCount=null}else setTimeout(a,0)};this._extendCount>0?setTimeout(a,0):a()},a._renderMethods={micro_template:function(e,n){return"undefined"!=typeof e.micro_render?t(e.micro_render(n)):!1},mustache:function(e,n){return"undefined"!=typeof Mustache&&"undefined"!=typeof Mustache.render?t(Mustache.render(e.html(),n)):!1},jsrender:function(e,n){return"undefined"!=typeof e.render?t(e.render(n)):!1},underscore:function(e,n){return"undefined"!=typeof _&&"undefined"!=typeof _.template?t(_.template(e.html())(n).trim()):!1}},a.defineWriteOnly=function(t){i.defineWriteOnly(this,t)},a.defineReadOnly=function(t,e){i.defineReadOnly(this,t,e)},a.define=function(t,e){this.defineReadOnly(t,e),this.defineWriteOnly(t)},a.defineRole=function(t){var e=o(t);s(t,this.prototype),n.isFunction(this.prototype[e.getter])||(this.prototype[e.getter]=function(){return this.root().find(e.selector)})},a.extend=function(t){return i.extend(t,this)},a.createStyleRule=function(t,n){return"undefined"!=typeof e._stylesheet.addRule?e._stylesheet.addRule(t,n):void 0},a.getStyleRule=function(t){return e._styleRules.hasOwnProperty(t)?e._styleRules[t]:e._stylesheet.getRule(t)},a.prototype._definedProps=[],a.prototype._definedRoles=[],a.prototype._extendCount=null,a.define("id"),a.define("root"),a.define("namespace",""),a.define("templateLanguage","micro_template"),a.defineReadOnly("addons"),a.defineReadOnly("refreshEvent","xooie-refresh"),a.defineReadOnly("initEvent","xooie-init"),a.defineReadOnly("className","is-instantiated"),a.defineReadOnly("instanceClass"),a.prototype._setData=function(t){var e;for(e=0;e<this._definedProps.length;e+=1)"undefined"!=typeof t[this._definedProps[e]]&&this.set(this._definedProps[e],t[this._definedProps[e]])},a.prototype.get=function(t){return i.get(this,t)},a.prototype.set=function(t,e){return i.set(this,t,e)},a.prototype.cleanup=function(){var t;for(t in this.addons())this.addons().hasOwnProperty(t)&&this.addons()[t].cleanup();this.root().removeClass(this.className()),this.root().removeClass(this.instanceClass()),this.root().attr("data-xooie-instance",!1)},a.prototype.render=function(e,n){var i=e.data("templateLanguage")||this.templateLanguage(),o=a._renderMethods[i](e,n);return o===!1?t("<span>Error rendering template</span>"):o},a.prototype._getRoleId=function(t,e){return"x-"+this.id()+"-"+t+"-"+e},a.prototype._applyRoles=function(){var e,i,s,r;for(e=0;e<this._definedRoles.length;e+=1){if(s=o(this._definedRoles[e]),r=this[s.getter](),0===r.length&&n.isFunction(this[s.renderer])&&(r=this[s.renderer]()),n.isUndefined(r))return;for(i=0;i<r.length;i+=1)t(r[i]).attr("id",this._getRoleId(this._definedRoles[e],i));n.isFunction(this[s.processor])&&this[s.processor](r)}},a.prototype._process_addons=function(t){return"undefined"==typeof t&&(t=this._addons={}),t},a.prototype._process_refreshEvent=function(t){return""===this.namespace()?t:t+"."+this.namespace()},a.prototype._process_initEvent=function(t){return""===this.namespace()?t:t+"."+this.namespace()},a.prototype._process_className=function(t){return""===this.namespace()?t:t+"-"+this.namespace()},a.prototype._process_instanceClass=function(){return""===this.namespace()?"widget-"+this.id():this.namespace()+"-"+this.id()},a}),/*
+
+/**
+ * class Xooie.Widget
+ *
+ * The base xooie widget.  This widget contains all common functionality for Xooie widgets but does not provide
+ * specific functionality.
+ **/
+
+define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/shared', 'xooie/keyboard_navigation'], function($, $X, helpers, shared, keyboardNavigation) {
+
+  var Widget;
+
+/**
+ * Xooie.Widget@xooie-init(event)
+ * - event (Event): A jQuery event object
+ *
+ * A jQuery special event triggered when the widget is successfully initialized.  Triggers on the `root` element
+ * of the widget.  This event will fire if bound after the widget is instantiated.
+ **/
+
+  $.event.special['xooie-init'] = {
+    add: function(handleObj) {
+      var id = $(this).data('xooieInstance');
+      if (typeof id !== 'undefined') {
+        var event = $.Event('xooie-init');
+        event.namespace = handleObj.namespace;
+        event.data = handleObj.data;
+
+        handleObj.handler.call(this, event);
+      }
+    }
+  };
+
+/**
+ * Xooie.Widget@xooie-refresh(event)
+ * - event (Event): A jQuery event object
+ *
+ * A jQuery special event triggered when the widget is refreshed.  Refresh events occur when the `root` element
+ * is passed to [[$X]].  Triggers on the `root` element of the widget.
+ **/
+
+/** internal
+ * Xooie.Widget.roleDetails(name) -> Object
+ *
+ * TODO: Test and document.
+ **/
+  function roleDetails (name) {
+    return {
+      processor: '_process_role_' + name,
+      renderer: '_render_role_' + name,
+      getter: '_get_role_' + name,
+      pluralName: name + 's',
+      selector: '[data-x-role=' + name + ']'
+    };
+  }
+
+/** internal
+ * Xooie.Widget.roleDispatcher(name, prototype)
+ *
+ * TODO: Test and document.
+ **/
+  function roleDispatcher(name, prototype) {
+    var role = roleDetails(name);
+
+    if (helpers.isUndefined(prototype[role.pluralName])) {
+      prototype._definedRoles.push(name);
+
+      prototype[role.pluralName] = function() {
+        return this[role.getter]();
+      };
+    }
+  }
+
+/** internal
+ * Xooie.Widget.cacheInstance(instance) -> Integer
+ * - instance (Widget): An instance of a Xooie widget to be cached
+ *
+ * Recursively checks for the next available index in [[$X._instanceCache]] using [[$X._instanceIndex]]
+ * as a reference point.  Returns the index.
+ **/
+  function cacheInstance (instance) {
+    if (typeof instance !== 'undefined') {
+      var index = $X._instanceIndex;
+
+      $X._instanceIndex += 1;
+
+      if (typeof $X._instanceCache[index] === 'undefined') {
+        $X._instanceCache[index] = instance;
+
+        return index;
+      } else {
+        return cacheInstance(instance);
+      }
+    }
+  }
+
+/**
+ * new Xooie.Widget(element[, addons])
+ * - element (Element | String): A jQuery-selected element or string selector for the root element of this widget
+ * - addons (Array): An optional collection of [[Xooie.Addon]] classes to be instantiated with this widget
+ *
+ * Instantiates a new Xooie widget, or returns an existing widget if it is already associated with the element passed.
+ * Any addons passed into the constructor will be instantiated and added to the [[Xooie.Widget#addons]] collection.
+ **/
+  Widget = function(element, addons) {
+    var self = this;
+
+    element = $(element);
+
+    //set the default options
+    this._setData(element.data());
+
+    //do instance tracking
+    if (element.data('xooieInstance')) {
+      if (typeof $X._instanceCache[element.data('xooieInstance')] !== 'undefined'){
+        element.trigger(this.get('refreshEvent'));
+        return $X._instanceCache[element.data('xooieInstance')];
+      } else {
+        this.cleanup();
+      }
+    }
+
+    element.on(this.get('initEvent') + ' ' + this.get('refreshEvent'), function(){
+      self._applyRoles();
+    });
+
+    var id = cacheInstance(this);
+
+    this.set('id', id);
+
+    this.set('root', element);
+
+    element.addClass(this.get('className'))
+           .addClass(this.get('instanceClass'));
+
+    var initCheck = function(){
+      var i;
+
+      if (!self._extendCount || self._extendCount <= 0) {
+
+        if (typeof addons !== 'undefined') {
+          for (i = 0; i < addons.length; i+=1) {
+            new addons[i](self);
+          }
+        }
+        
+        element.attr('data-xooie-instance', id);
+
+        element.trigger(self.get('initEvent'));
+        self._extendCount = null;
+      } else {
+        setTimeout(initCheck, 0);
+      }
+    };
+
+    if (this._extendCount > 0) {
+      setTimeout(initCheck, 0);
+    } else {
+      initCheck();
+    }
+
+    // new keyboardNavigation();
+  };
+
+/** internal
+ * Xooie.Widget._renderMethods -> Object
+ *
+ * A dispatch table of all supported template render methods.
+ *
+ * ##### Supported Frameworks
+ *
+ * - **mustache**: [http://mustache.github.io/]
+ * - **jsrender**: [https://github.com/BorisMoore/jsrender]
+ * - **underscore**: [http://underscorejs.org/]
+ **/
+  Widget._renderMethods = {
+    //TODO: make this a default template
+    'micro_template': function(template, view) {
+      if (typeof template.micro_render !== 'undefined') {
+        return $(template.micro_render(view));
+      } else {
+        return false;
+      }
+    },
+
+    'mustache': function(template, view) {
+      if (typeof Mustache !== 'undefined' && typeof Mustache.render !== 'undefined') {
+        return $(Mustache.render(template.html(), view));
+      } else {
+        return false;
+      }
+    },
+
+    'jsrender': function(template, view) {
+      if (typeof template.render !== 'undefined') {
+        return $(template.render(view));
+      } else {
+        return false;
+      }
+    },
+
+    'underscore': function(template, view) {
+      if (typeof _ !== 'undefined' && typeof _.template !== 'undefined') {
+        return $(_.template(template.html())(view).trim());
+      } else {
+        return false;
+      }
+    }
+  };
+
+//CLASS METHODS
+
+/**
+ * Xooie.Widget.defineWriteOnly(name)
+ * - name (String): The name of the property to define as a write-only property
+ *
+ * See [[Xooie.shared.defineWriteOnly]].
+ **/
+  Widget.defineWriteOnly = function(name) {
+    shared.defineWriteOnly(this, name);
+  };
+
+/**
+ * Xooie.Widget.defineReadOnly(name[, defaultValue])
+ * - name (String): The name of the property to define as a read-only property.
+ * - defaultValue (Object): An optional default value.
+ *
+ * See [[Xooie.shared.defineReadOnly]].
+ **/
+  Widget.defineReadOnly = function(name, defaultValue){
+    shared.defineReadOnly(this, name, defaultValue);
+  };
+
+/**
+ * Xooie.Widget.define(name[, defaultValue])
+ * - name (String): The name of the property to define.
+ * - defaultValue: An optional default value.
+ *
+ * A method that defines a property as both readable and writable.  In reality it calls both [[Xooie.Widget.defineReadOnly]]
+ * and [[Xooie.Widget.defineWriteOnly]].
+ **/
+  Widget.define = function(name, defaultValue){
+    this.defineReadOnly(name, defaultValue);
+    this.defineWriteOnly(name);
+  };
+
+/**
+ * Xooie.Widget.defineRole(name)
+ *
+ * TODO: This needs tests and documentation
+ **/
+  Widget.defineRole = function(name) {
+    var role = roleDetails(name);
+
+    roleDispatcher(name, this.prototype);
+
+    if (!helpers.isFunction(this.prototype[role.getter])) {
+      this.prototype[role.getter] = function() {
+        return this.root().find(role.selector);
+      };
+    }
+  };
+
+/**
+ * Xooie.Widget.extend(constr) -> Widget
+ * - constr (Function): The constructor for the new [[Xooie.Widget]] class.
+ *
+ * See [[Xooie.shared.extend]].
+ **/
+  Widget.extend = function(constr){
+    return shared.extend(constr, this);
+  };
+
+/**
+ * Xooie.Widget.createStyleRule(selector, properties) -> cssRule | undefined
+ * - selector (String): The selector used to identify the rule.
+ * - properties (Object): A hash of key/value pairs of css properties and values.
+ *
+ * Creates a new css rule in the Xooie stylesheet.  If the rule exists, it will overwrite said rule.
+ **/
+ // TODO: update so that if the rule exists the properties are added to the rule
+  Widget.createStyleRule = function(selector, properties) {
+    if (typeof $X._stylesheet.addRule !== 'undefined') {
+      return $X._stylesheet.addRule(selector, properties);
+    }
+  };
+
+/**
+ * Xooie.Widget.getStyleRule(selector) -> cssRule | undefined
+ * - selector (String): The selector used to identify the rule.
+ *
+ * Retrieves the css rule from the Xooie stylesheet using the provided `selector`.  If the rule is not
+ * present in [[$X._styleRules]] then the method will check in [[$X._stylesheet]].
+ **/
+  Widget.getStyleRule = function(selector) {
+    if ($X._styleRules.hasOwnProperty(selector)) {
+      return $X._styleRules[selector];
+    } else {
+      return $X._stylesheet.getRule(selector);
+    }
+  };
+
+/** internal
+ * Xooie.Widget#_definedProps -> Array
+ *
+ * A collection of properties that have been defined for this class instance.
+ **/
+  Widget.prototype._definedProps = [];
+
+/** internal
+ * Xooie.Widget#_definedRoles -> Array
+ *
+ * A collection of roles that have been defined for this class instance.
+ **/
+  Widget.prototype._definedRoles = [];
+
+/** internal, read-only
+ * Xooie.Widget#_extendCount -> Integer | null
+ *
+ * Tracks the number of constructors that need to be called.
+ **/
+  Widget.prototype._extendCount = null;
+
+//PROPERTY DEFINITIONS
+
+/** internal
+ * Xooie.Widget#_id -> Integer
+ *
+ * The id of this widget.  This value is used to keep track of the instance.
+ **/
+/**
+ * Xooie.Widget#id([value]) -> Integer
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Widget#_id]].  Returns the current value of
+ * [[Xooie.Widget#_id]] if no value is passed or sets the value.
+ **/
+  Widget.define('id');
+
+/** internal
+ * Xooie.Widget#_root -> Element
+ *
+ * The root DOM element associated with this widget.  This is a jQuery-selected element.
+ **/
+/**
+ * Xooie.Widget#root([value]) -> Element
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Widget#_root]].  Returns the current value of
+ * [[Xooie.Widget#_root]] if no value is passed or sets the value.
+ **/
+  Widget.define('root');
+
+/** internal
+ * Xooie.Widget#_namespace -> String
+ *
+ * The namespace of the widget.  This value is used for determining the value of [[Xooie.Widget#className]],
+ * [[Xooie.Widget#refreshEvent]], [[Xooie.Widget#initEvent]], and [[Xooie.Widget#instanceClass]].
+ **/
+/**
+ * Xooie.Widget#namespace([value]) -> String
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Widget#_namespace]].  Returns the current value of
+ * [[Xooie.Widget#_namespace]] if no value is passed or sets the value.
+ **/
+  Widget.define('namespace', '');
+
+/** internal
+ * Xooie.Widget#_templateLanguage -> String
+ *
+ * Determines the template framework to use.
+ * Default: `micro_template`.
+ **/
+/**
+ * Xooie.Widget#templateLanguage([value]) -> String
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Widget#_templateLanguage]].  Returns the current value of
+ * [[Xooie.Widget#_templateLanguage]] if no value is passed or sets the value.
+ **/
+  Widget.define('templateLanguage', 'micro_template');
+
+/** internal, read-only
+ * Xooie.Widget#_addons -> Object
+ *
+ * A collection of addons instantiated addons associated with this widget.
+ * Default: `{}`.
+ **/
+/** read-only
+ * Xooie.Widget#addons([value]) -> Object
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Widget#_addons]].  Returns the current value of
+ * [[Xooie.Widget#_addons]] if no value is passed or sets the value.
+ **/
+  Widget.defineReadOnly('addons');
+
+/** internal, read-only
+ * Xooie.Widget#_refreshEvent -> String
+ *
+ * The name of the event that is triggered when the module is refreshed.  Refresh events are triggered
+ * when the root element of this widget is passed to [[$X]].
+ * Default: `xooie-refresh`.
+ **/
+/** read-only
+ * Xooie.Widget#refreshEvent() -> String
+ *
+ * The method for getting [[Xooie.Widget#_refreshEvent]].
+ **/
+  Widget.defineReadOnly('refreshEvent', 'xooie-refresh');
+
+/** internal, read-only
+ * Xooie.Widget#_initEvent -> String
+ *
+ * The name of the event that is triggered when the module is initialized.  The initialization event
+ * is not triggered until all addons have been instantiated.
+ * Default: `xooie-init`.
+ **/
+/** read-only
+ * Xooie.Widget#initEvent() -> String
+ *
+ * The method for getting [[Xooie.Widget#_initEvent]].
+ **/
+  Widget.defineReadOnly('initEvent', 'xooie-init');
+
+/** internal, read-only
+ * Xooie.Widget#_className -> String
+ *
+ * The string class name that is applied to the root element of this widget when it is instantiated.
+ * Default: `is-instantiated`.
+ **/
+/** read-only
+ * Xooie.Widget#className() -> String
+ *
+ * The method for getting [[Xooie.Widget#_className]].
+ **/
+  Widget.defineReadOnly('className', 'is-instantiated');
+
+/** internal, read-only
+ * Xooie.Widget#_instanceClass -> String
+ *
+ * A class that is generated and applied to the root element of the widget.
+ * Default: `{{namespace}}-{{id}}`
+ **/
+/** read-only
+ * Xooie.Widget#instanceClass() -> String
+ *
+ * The method for getting [[Xooie.Widget#_instanceClass]].
+ **/
+  Widget.defineReadOnly('instanceClass');
+
+
+//PROTOTYPE DEFINITIONS
+
+/** internal
+ * Xooie.widget#_setData(data)
+ * - data (Object): A collection of key/value pairs.
+ *
+ * Sets the properties to the values specified, as long as the property has been defined.
+ **/
+  Widget.prototype._setData = function(data) {
+    var i;
+
+    for (i = 0; i < this._definedProps.length; i+=1) {
+      if (typeof data[this._definedProps[i]] !== 'undefined') {
+        this.set(this._definedProps[i], data[this._definedProps[i]]);
+      }
+    }
+  };
+
+/**
+ * Xooie.Widget#get(name) -> object
+ * - name (String): The name of the property to be retrieved.
+ *
+ * See [[Xooie.shared.get]].
+ **/
+  Widget.prototype.get = function(name) {
+    return shared.get(this, name);
+  };
+
+/**
+ * Xooie.Widget#set(name, value)
+ * - name (String): The name of the property to be set.
+ * - value: The value of the property to be set.
+ *
+ * See [[Xooie.shared.set]].
+ **/
+  Widget.prototype.set = function(name, value) {
+    return shared.set(this, name, value);
+  };
+
+/**
+ * Xooie.Widget#cleanup()
+ *
+ * Removes the `className` and `instanceClass` classes and `data-xooie-instance` attribute from the root element.
+ * Calls [[Xooie.Addon.cleanup]] for each addon.  This will permit the instance to be garbage collected.
+ **/
+  Widget.prototype.cleanup = function() {
+    var name;
+
+    for (name in this.addons()) {
+      if (this.addons().hasOwnProperty(name)) {
+        this.addons()[name].cleanup();
+      }
+    }
+
+    this.root().removeClass(this.className());
+    this.root().removeClass(this.instanceClass());
+    this.root().attr('data-xooie-instance', false);
+  };
+
+/**
+ * Xooie.Widget#render(template, view) -> Element
+ * - template (Element): A jQuery-selected script element that contains the template to be rendered.
+ * - view (Object): The data to be passed to the template when it is rendered.
+ *
+ * Renders the template with the provided data by calling the method in [[Xooie.Widget.renderMethods]] based on the
+ * template language specified.  Returns `$('<span>Error rendering template</span>')` when an error occurs
+ **/
+  Widget.prototype.render = function(template, view) {
+    var language = template.data('templateLanguage') || this.templateLanguage(),
+      result = Widget._renderMethods[language](template, view);
+
+    if (result === false) {
+      return $('<span>Error rendering template</span>');
+    } else {
+      return result;
+    }
+  };
+
+/** internal
+ * Xooie.Widget#_getRoleId(role, index) -> String
+ * - role (String): The name of the role for which this id is being generated.
+ * - index (Integer): The index at which the particular element exists in the read order.
+ *
+ * Generates an id string to be applied to an element of the specified role.  The format of
+ * this id string is `x-[[Xooie.Widget#id]]-{role}-{index}`.
+ **/
+  Widget.prototype._getRoleId = function(role, index) {
+    return 'x-' + this.id() + '-' + role + '-' + index;
+  };
+
+/** internal
+ * Xooie.Widget#_applyRoles()
+ *
+ * TODO: Test and document.
+ **/
+  Widget.prototype._applyRoles = function() {
+    var i, j, role, elements;
+
+    for (i=0; i < this._definedRoles.length; i+=1) {
+      role = roleDetails(this._definedRoles[i]);
+      elements = this[role.getter]();
+      
+      if (elements.length === 0 && helpers.isFunction(this[role.renderer])) {
+        elements = this[role.renderer]();
+      }
+
+      if (helpers.isUndefined(elements)) {
+        return;
+      }
+
+      for (j=0; j < elements.length; j+=1) {
+        $(elements[j]).attr('id', this._getRoleId(this._definedRoles[i], j));
+      }
+
+      if (helpers.isFunction(this[role.processor])) {
+        this[role.processor](elements);
+      }
+    }
+  };
+
+/** internal
+ * Xooie.Widget#_process_addons(addons) -> Object
+ * - addons (Object): The collection of instantiated addons for this widget
+ *
+ * Checks to see if the addons object has been defined.  We can't define objects as
+ * 'default' values for properties since the object will be the same for each instance.
+ **/
+  Widget.prototype._process_addons = function(addons){
+    if (typeof addons === 'undefined'){
+      addons = this._addons = {};
+    }
+
+    return addons;
+  };
+
+/** internal
+ * Xooie.Widget#_process_refreshEvent(refreshEvent) -> String
+ * - refreshEvent (String): The unmodified refreshEvent string.
+ *
+ * Adds the [[Xooie.Widget#namespace]] to the `refreshEvent`
+ **/
+  Widget.prototype._process_refreshEvent = function(refreshEvent){
+    return this.namespace() === '' ? refreshEvent : refreshEvent + '.' + this.namespace();
+  };
+
+/** internal
+ * Xooie.Widget#_process_initEvent(initEvent) -> String
+ * - initEvent (String): The unmodified initEvent string.
+ *
+ * Adds the [[Xooie.Widget#namespace]] to the `initEvent`
+ **/
+  Widget.prototype._process_initEvent = function(initEvent){
+    return this.namespace() === '' ? initEvent : initEvent + '.' + this.namespace();
+  };
+
+/** internal
+ * Xooie.Widget#_process_className(className) -> String
+ * - className (String): The unmodified className string.
+ *
+ * Adds the [[Xooie.Widget#namespace]] to the `className`
+ **/
+  Widget.prototype._process_className = function(className) {
+    return this.namespace() === '' ? className : className + '-' + this.namespace();
+  };
+
+/** internal
+ * Xooie.Widget#_process_instanceClass() -> String
+ *
+ * Creates an instanceClass string from the [[Xooie.Widget#namespace]] and [[Xooie.Widget#id]].
+ **/
+  Widget.prototype._process_instanceClass = function() {
+    return this.namespace() === '' ? 'widget-' + this.id() : this.namespace() + '-' + this.id();
+  };
+
+  return Widget;
+});
+
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,7 +1509,75 @@ define("xooie/widgets/base",["jquery","xooie/xooie","xooie/helpers","xooie/share
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/event_handler",["jquery","xooie/helpers"],function(t,e){function n(t,e){return"undefined"==typeof e?t:t+"."+e}var i=function(t){this.namespace=t,this.handlers={},this._callbacks={}};return i.prototype.add=function(i,o){var s,r,a=this;if(e.isObject(i)&&e.isUndefined(o))for(r in i)e.isFunction(i[r])&&this.add(r,i[r]);else s=n(i,this.namespace),e.isUndefined(this.handlers[s])&&(this.handlers[s]=function(t){a.fire(t,this,arguments)}),e.isUndefined(this._callbacks[i])&&(this._callbacks[i]=t.Callbacks("unique")),this._callbacks[i].add(o)},i.prototype.clear=function(t){delete this.handlers[n(t,this.namespace)],e.isUndefined(this._callbacks[t])||this._callbacks[t].empty()},i.prototype.fire=function(t,n,i){t.namespace&&t.namespace!==this.namespace||e.isUndefined(this._callbacks[t.type])||this._callbacks[t.type].fireWith(n,i)},i}),/*
+
+define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) {
+
+  var EventHandler = function(namespace) {
+    this.namespace = namespace;
+
+    this.handlers = {};
+
+    this._callbacks = {};
+  };
+
+  function format(type, namespace) {
+    if (typeof namespace === 'undefined') {
+      return type;
+    } else {
+      return type + '.' + namespace;
+    }
+  }
+
+  EventHandler.prototype.add = function(type, method) {
+    var self = this,
+        formattedType, t;
+
+    if (helpers.isObject(type) && helpers.isUndefined(method)) {
+      for(t in type) {
+        if (helpers.isFunction(type[t])) {
+          this.add(t, type[t]);
+        }
+      }
+
+      return;
+    }
+
+    formattedType = format(type, this.namespace);
+
+    if (helpers.isUndefined(this.handlers[formattedType])) {
+      this.handlers[formattedType] = function(e) {
+        self.fire(e, this, arguments);
+      };
+    }
+
+    if (helpers.isUndefined(this._callbacks[type])) {
+      this._callbacks[type] = $.Callbacks('unique');
+    }
+
+    this._callbacks[type].add(method);
+  };
+
+  EventHandler.prototype.clear = function(type) {
+    delete(this.handlers[format(type, this.namespace)]);
+
+    if (!helpers.isUndefined(this._callbacks[type])) {
+      this._callbacks[type].empty();
+    }
+  };
+
+  EventHandler.prototype.fire = function(event, context, args) {
+    if (event.namespace && event.namespace !== this.namespace) {
+      return;
+    }
+
+    if (!helpers.isUndefined(this._callbacks[event.type])) {
+      this._callbacks[event.type].fireWith(context, args);
+    }
+  };
+
+  return EventHandler;
+});
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -88,7 +1592,761 @@ define("xooie/event_handler",["jquery","xooie/helpers"],function(t,e){function n
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/widgets/carousel",["jquery","xooie/helpers","xooie/widgets/base","xooie/event_handler"],function(t,e,n,i){function o(t){t=t.toLowerCase();var e=t.match(/^control:(left|right|goto)\s(\d+)(?:st|nd|rd|th)?\s(.*)$/);return null===e&&(e=t.match(/^control:(left|right)()\s(continuous)$/)),null!==e?e.slice(1):void 0}var s,r;return r={resize:null},t(window).on("resize",function(){null!==r.resize&&(clearTimeout(r.resize),r.resize=null),s._cache.length>0&&(r.resize=setTimeout(function(){s._cache.trigger(s.prototype.resizeEvent())},100))}),s=n.extend(function(){function n(t,e){clearInterval(a._timers.continuous),a._timers.continuous=setInterval(function(e){t.is(":disabled")&&(a._timers.continuous=clearInterval(a._timers.continuous)),a.scrollTo(a.wrappers().scrollLeft()+5*e)},0,["right"===e?1:-1])}function r(){a._timers.scroll=clearTimeout(a._timers.scroll),a.updateLimits()}var a=this;this._timers={scroll:0,continuous:0},this._positioners={item:function(t,n){var i,o,s;i=this.items(),n=e.toInt(n),isNaN(n)||("goto"===t&&1>n&&n<=i.length?o=Math.round(i.eq(n-1).position().left):(s=this.currentItem("right"===t),t="left"===t?-1:1,s=Math.max(0,Math.min(i.length-1,s+t*n)),o=this.wrappers().scrollLeft()+Math.round(i.eq(s).position().left)),this.scrollTo(o))},items:function(){return this._positioners.item.apply(this,arguments)},pixel:function(t,n){var i;n=e.toInt(n),isNaN(n)||("goto"===t&&n>=0?i=n:(t="left"===t?-1:1,i=this.wrappers().scrollLeft()+t*n),this.scrollTo(i))},pixels:function(){return this._positioners.pixel.apply(this,arguments)},px:function(){return this._positioners.pixel.apply(this,arguments)}},this._controlEvents=new i(this.namespace()),this._controlEvents.add({keydown:function(e){var i,s;-1!==[13,32].indexOf(e.which)&&(i=t(this),s=o(i.attr("data-x-role")),"continuous"!==s[2]||i.is(":disabled")||(n(i,s[0]),e.preventDefault()))},mousedown:function(e){var i,s;i=t(this),s=o(i.attr("data-x-role")),"continuous"!==s[2]||i.is(":disabled")||(n(i,s[0]),e.preventDefault())},keyup:function(n){if(a._timers.continuous=clearInterval(a._timers.continuous),!t(this).is(":disabled")&&-1!==[13,32].indexOf(n.which)){var i=o(t(this).attr("data-x-role"));e.isFunction(a._positioners[i[2]])&&a._positioners[i[2]].apply(a,i),n.preventDefault()}},mouseup:function(n){if(a._timers.continuous=clearInterval(a._timers.continuous),!t(this).is(":disabled")){var i=o(t(this).attr("data-x-role"));e.isFunction(a._positioners[i[2]])&&a._positioners[i[2]].apply(a,i),n.preventDefault()}},mouseleave:function(){a._timers.continuous=clearInterval(a._timers.continuous)},blur:function(){a._timers.continuous=clearInterval(a._timers.continuous)}}),this._wrapperEvents=new i(this.namespace()),this._wrapperEvents.add("scroll",function(){a._timers.scroll?a._timers.scroll=clearTimeout(a._timers.scroll):(a.root().removeClass(a.leftClass()+" "+a.rightClass()),a.controls().prop("disabled",!1)),a._timers.scroll=setTimeout(r,250)}),this.cropStyle(s.createStyleRule("."+this.instanceClass()+" ."+this.cropClass()+", ."+this.instanceClass()+"."+this.cropClass())),s._cache=s._cache.add(this.root()),this.root().on([this.get("initEvent"),this.get("refreshEvent"),this.get("resizeEvent")].join(" "),function(){a.updateDimensions()})}),s._cache=t(),s.define("namespace","carousel"),s.define("isScrolling",!1),s.define("visibleThreshold",.5),s.define("cropStyle"),s.defineReadOnly("resizeEvent","xooie-carousel-resize"),s.defineReadOnly("wrapperClass","xooie-carousel-wrapper"),s.defineReadOnly("cropClass","xooie-carousel-crop"),s.defineReadOnly("contentClass","xooie-carousel-content"),s.defineReadOnly("controlClass","xooie-carousel-control"),s.defineReadOnly("leftClass","is-left-limit"),s.defineReadOnly("rightClass","is-right-limit"),s.defineRole("wrapper"),s.defineRole("content"),s.defineRole("item"),s.defineRole("control"),s.createStyleRule("."+s.prototype.wrapperClass(),{position:"relative","overflow-x":"scroll","overflow-y":"hidden"}),s.createStyleRule("."+s.prototype.cropClass(),{"overflow-y":"hidden"}),s.createStyleRule("."+s.prototype.contentClass(),{display:"table-cell","white-space":"nowrap","font-size":"0px",transition:"left 0.5s"}),s.createStyleRule("ul."+s.prototype.contentClass(),{"list-style":"none",padding:0,margin:0}),s.createStyleRule("."+s.prototype.contentClass()+" > *",{display:"inline-block",zoom:"1","*display":"inline","font-size":"1em"}),s.createStyleRule("."+s.prototype.leftClass()+"."+s.prototype.rightClass()+' [data-x-role^="control:left"]'+", ."+s.prototype.leftClass()+"."+s.prototype.rightClass()+' [data-x-role^="control:right"]',{display:"none"}),s.prototype.currentItem=function(t){var e,n,i,o,s;if(e=this.contents(),n=this.items(),t){for(i=e.outerWidth(!0)+e.position().left,s=n.length-1;s>0;s-=1)if(o=n.eq(s).outerWidth(!0),i-=o,s>0&&i<=this.visibleThreshold()*o)return s;return 0}for(i=e.position().left,s=0;s<n.length-1;s++){if(o=n.eq(s).outerWidth(!0),i+this.visibleThreshold()*o>=0)return s;i+=o}return n.length-1},s.prototype.isLeft=function(){return 0===this.wrappers().scrollLeft()},s.prototype.isRight=function(){var t,n;try{if(t=this.items().filter(":visible:last"),n=t.position(),n&&!e.isUndefined(n.left))return Math.floor(n.left)+t.outerWidth(!0)<=this.wrappers().innerWidth()}catch(i){return!1}return!1},s.prototype.updateDimensions=function(){var e=0;this.items().each(function(){e=Math.max(e,t(this).outerHeight(!0))}),this.cropStyle().style.height=e+"px",this.updateLimits()},s.prototype.updateLimits=function(){var t=this.isLeft(),e=this.isRight();this.root().toggleClass(this.leftClass(),t),this.controls().filter('[data-x-role^="control:left"]').prop("disabled",t),this.root().toggleClass(this.rightClass(),e),this.controls().filter('[data-x-role^="control:right"]').prop("disabled",e)},s.prototype.scrollTo=function(t,n){var i=this;t=Math.floor(t),this.isScrolling&&this.wrappers().stop(!0,!0),this.isScrolling=!0,this.wrappers().animate({scrollLeft:t},200,function(){i.isScrolling=!1,e.isFunction(n)&&n()})},s.prototype._process_role_content=function(t){return t.addClass(this.contentClass()),t.is("ul,ol")||t.attr("role","list"),t},s.prototype._render_role_wrapper=function(){var e=t('<div data-x-role="wrapper" />');return this.contents().wrap(e),this.contents().parent()},s.prototype._process_role_wrapper=function(t){return t.addClass(this.wrapperClass()).on(this._wrapperEvents.handlers).parent().addClass(this.cropClass()),t},s.prototype._get_role_item=function(){return this.contents().children()},s.prototype._get_role_control=function(){return this.root().find('[data-x-role^="control"]')},s.prototype._process_role_control=function(t){return t.on(this._controlEvents.handlers),t.attr("aria-hidden",!0).addClass(this.controlClass()),t},s.prototype._process_resizeEvent=function(t){return""===this.namespace()?t:t+"."+this.namespace()},s}),/*
+
+/**
+ * class Xooie.Carousel < Xooie.Widget
+ *
+ * A widget that allows users to horizontally scroll through a collection of elements.  Carousels are
+ * commonly used to display a large amount of images or links in a small amount of space.  The user can
+ * view more items by clicking the directional controls to scroll the content forward or backward.  If
+ * the device recognizes swipe gestues (e.g. mobile or Mac OS) then swiping will also allow the user to
+ * scroll content.
+ * Keyboard-only users will also be able to navigate from item to item using the tab, left or right keys.
+ * Screen reader users will percieve the carousel as a [list](http://www.w3.org/TR/wai-aria/roles#list) of items.
+ * For most devices, the native scrollbar is hidden in favor of the directional controls and native scrolling.
+ **/
+define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'xooie/event_handler'], function($, helpers, Base, EventHandler) {
+  var Carousel, timers;
+
+/**
+ * Xooie.Carousel@xooie-carousel-resize(event)
+ * - event (Event): A jQuery event object
+ *
+ * A jQuery special event triggered to indicate that the carousel instance should be resized.  This
+ * by default is triggered when the window is resized.
+ **/
+
+  timers = {
+    resize: null
+  };
+
+  $(window).on('resize', function() {
+    if (timers.resize !== null) {
+      clearTimeout(timers.resize);
+      timers.resize = null;
+    }
+    if (Carousel._cache.length > 0) {
+      // TODO: make this delay adjustable
+      timers.resize = setTimeout(function() {
+        Carousel._cache.trigger(Carousel.prototype.resizeEvent());
+      }, 100);
+    }
+  });
+
+/** internal
+ * Xooie.Carousel.parseCtrlStr(ctrlStr) -> Array | undefined
+ *
+ * Checks the data-x-role value of a control and matches it against expected patterns to determine
+ * the control commands, if any.
+ * Returns an array: [Direction, Amount, Mode].
+ * For example, control:right 1 item -> [right, 1, item], whereas control:right continuous returns
+ * [right, undefined, continuous].
+ **/
+  function parseCtrlStr(ctrlStr) {
+    ctrlStr = ctrlStr.toLowerCase();
+
+    var ptrnMatch = ctrlStr.match(/^control:(left|right|goto)\s(\d+)(?:st|nd|rd|th)?\s(.*)$/);
+    
+    if(ptrnMatch === null) {
+      ptrnMatch = ctrlStr.match(/^control:(left|right)()\s(continuous)$/);
+    }
+
+    if (ptrnMatch !== null) {
+      return ptrnMatch.slice(1);
+    }
+  }
+
+/**
+ * new Xooie.Carousel(element[, addons])
+ * - element (Element | String): A jQuery-selected element or string selector for the root element of this widget
+ * - addons (Array): An optional collection of [[Xooie.Addon]] classes to be instantiated with this widget
+ *
+ * Instantiates a new instance of a [[Xooie.Carousel]] widget.  Defines [[Xooie.Carousel#_timers]],
+ * [[Xooie.Carousel#_controlEvents]], [[Xooie.Carousel#_wrapperEvents]], and [[Xooie.Carousel#cropStyle]].
+ * Events are bound to the [[Xooie.Widget#root]] to call [[Xooie.Carousel#updateDimensions]] on [[Xooie.Widget@xooie-init]],
+ * [[Xooie.Widget@xooie-refresh]] and [[Xooie.Carousel@xooie-carousel-resize]].
+ * Carousel instances are tracked in the [[Xooie.Carousel._cache]] collection.
+ **/
+  Carousel = Base.extend(function() {
+    var self = this;
+
+/** internal
+ * Xooie.Carousel#_timers -> Object
+ *
+ * A hash of all timers currently active.  If no timer is active for a particular type then the value is
+ * set to undefined.
+ *
+ * ##### Timers
+ * - **scroll** (Integer | undefined): Active while the content is being scrolled.  Prevents post-scroll functionality
+ * from triggering until the carousel has completely finished scrolling.
+ * - **continuous** (Integer | undefined): Active while the user is continuously scrolling using a [[Xooie.Carousel#controls]].
+ **/
+    this._timers = {
+      scroll: 0,
+      continuous: 0
+    };
+
+/** internal
+ * Xooie.Carousel#_positioners -> Object
+ *
+ * A dispatch table containing the various methods for scrolling the carousel content.
+ *
+ * ##### Positioners
+ * - **item**(direction, quantity): Calls [[Xooie.Carousel#scrollTo]] with the position of the item designated by the quantity.
+ * - **items**(direction, quantity): alias of **item**
+ * - **pixel**(direction, quantity): Calls [[Xooie.Carousel#scrollTo]] with the pixel position designated by quantity.
+ * - **pixels**(direction, quantity): alias of **pixel**
+ * - **px**(direction, quantity): alias of **pixel**
+ **/
+    this._positioners = {
+
+      item: function(direction, quantity) {
+        var items, pos, i;
+
+        items = this.items();
+
+        quantity = helpers.toInt(quantity);
+
+        if (isNaN(quantity)) {
+          return;
+        }
+
+        if (direction === 'goto' && quantity < 1 && quantity <= items.length) {
+          pos = Math.round(items.eq(quantity - 1).position().left);
+        } else {
+          i = this.currentItem(direction === 'right');
+
+          direction = direction === 'left' ? -1 : 1;
+
+          i = Math.max(0, Math.min(items.length - 1, i + (direction * quantity)));
+
+          pos = this.wrappers().scrollLeft() + Math.round(items.eq(i).position().left);
+        }
+
+        this.scrollTo(pos);
+      },
+
+      items: function() {
+        return this._positioners.item.apply(this, arguments);
+      },
+
+      pixel: function(direction, quantity) {
+        var pos;
+
+        quantity = helpers.toInt(quantity);
+
+        if (isNaN(quantity)) {
+          return;
+        }
+
+        if (direction === 'goto' && quantity >= 0) {
+          pos = quantity;
+        } else {
+          direction = direction === 'left' ? -1 : 1;
+
+          pos = this.wrappers().scrollLeft() + (direction * quantity);
+        }
+
+        this.scrollTo(pos);
+      },
+
+      pixels: function() {
+        return this._positioners.pixel.apply(this, arguments);
+      },
+
+      px: function() {
+        return this._positioners.pixel.apply(this, arguments);
+      }
+    };
+
+/** internal
+ * Xooie.Carousel#continuousScroll(ctrl, direction)
+ * - ctrl (Element): The control that was activated to initiate the scroll
+ * - direction (String): The direction of the scroll.  Can be `left` or `right`.
+ **/
+    function continuousScroll(ctrl, direction) {
+      clearInterval(self._timers.continuous);
+
+      self._timers.continuous = setInterval(function(dir) {
+        if (ctrl.is(':disabled')) {
+          self._timers.continuous = clearInterval(self._timers.continuous);
+        }
+
+        //TODO: Need some way of setting rate
+        self.scrollTo(self.wrappers().scrollLeft() + (dir * 5));
+      }, 0, [direction === 'right' ? 1 : -1]);
+    }
+
+/** internal
+ * Xooie.Carousel#_controlEvents -> Object
+ *
+ * An instance of [[Xooie.EventHandler]] that manages event handlers to be bound to the
+ * [[Xooie.Carousel#controls]].
+ **/
+    this._controlEvents = new EventHandler(this.namespace());
+
+    this._controlEvents.add({
+      keydown: function(event) {
+          var ctrl, args;
+
+          if ([13,32].indexOf(event.which) !== -1) {
+            ctrl = $(this);
+            args = parseCtrlStr(ctrl.attr('data-x-role'));
+
+            if (args[2] === 'continuous' && !ctrl.is(':disabled')) {
+              continuousScroll(ctrl, args[0]);
+
+              event.preventDefault();
+            }
+          }
+      },
+
+      mousedown: function(event) {
+        var ctrl, args;
+
+        ctrl = $(this);
+        args = parseCtrlStr(ctrl.attr('data-x-role'));
+
+        if (args[2] === 'continuous' && !ctrl.is(':disabled')) {
+          continuousScroll(ctrl, args[0]);
+
+          event.preventDefault();
+        }
+      },
+
+      keyup: function(event) {
+        self._timers.continuous = clearInterval(self._timers.continuous);
+
+        if ($(this).is(':disabled')) {
+          return;
+        }
+
+        if ([13,32].indexOf(event.which) !== -1) {
+          var args = parseCtrlStr($(this).attr('data-x-role'));
+
+          if (helpers.isFunction(self._positioners[args[2]])) {
+            self._positioners[args[2]].apply(self, args);
+          }
+
+          event.preventDefault();
+        }
+      },
+
+      mouseup: function(event) {
+        self._timers.continuous = clearInterval(self._timers.continuous);
+
+        if ($(this).is(':disabled')) {
+          return;
+        }
+
+        var args = parseCtrlStr($(this).attr('data-x-role'));
+
+        if (helpers.isFunction(self._positioners[args[2]])) {
+          self._positioners[args[2]].apply(self, args);
+        }
+
+        event.preventDefault();
+      },
+
+      mouseleave: function(event) {
+        self._timers.continuous = clearInterval(self._timers.continuous);
+      },
+
+      blur: function(event) {
+        self._timers.continuous = clearInterval(self._timers.continuous);
+      }
+    });
+
+    function scrollComplete() {
+      self._timers.scroll = clearTimeout(self._timers.scroll);
+
+      self.updateLimits();
+    }
+
+/** internal
+ * Xooie.Carousel#_wrapperEvents -> Object
+ *
+ * An instance of [[Xooie.EventHandler]] that manages event handlers to be bound to the
+ * [[Xooie.Carousel#wrappers]].
+ **/
+    this._wrapperEvents = new EventHandler(this.namespace());
+
+    this._wrapperEvents.add('scroll', function(event){
+      if (self._timers.scroll) {
+          self._timers.scroll = clearTimeout(self._timers.scroll);
+        } else {
+          self.root().removeClass(self.leftClass() + ' ' + self.rightClass());
+        
+          self.controls().prop('disabled', false);
+        }
+
+        // TODO: make this delay adjustable
+        self._timers.scroll = setTimeout(scrollComplete, 250);
+    });
+
+    this.cropStyle(Carousel.createStyleRule('.' + this.instanceClass() + ' .' + this.cropClass() + ', .' + this.instanceClass() + '.' + this.cropClass()));
+
+    // TODO: add functionality to remove from cache
+    Carousel._cache = Carousel._cache.add(this.root());
+
+    this.root().on([
+      this.get('initEvent'),
+      this.get('refreshEvent'),
+      this.get('resizeEvent')].join(' '),
+    function(){
+      self.updateDimensions();
+    });
+
+  });
+
+/** internal
+ * Xooie.Carousel._cache -> jQuery
+ *
+ * A jQuery collection that keeps track of currently instantiated carousel instances.  This collection
+ * is primarily used during a window resize event, where the limits and dimensions are recalculated.
+ **/
+  Carousel._cache = $();
+
+/** internal
+ * Xooie.Carousel#_namespace -> String
+ *
+ * See [[Xooie.Widget#_namespace]]
+ * Default: `carousel`.
+ **/
+/**
+ * Xooie.Carousel#namespace([value]) -> String
+ * - value: an optional value to be set.
+ *
+ * See [[Xooie.Widget#namespace]]
+ **/
+  Carousel.define('namespace', 'carousel');
+
+/** internal
+ * Xooie.Carousel#_isScrolling -> Boolean
+ *
+ * A value that determines whether or not the carousel is currently scrolling
+ * TODO:  Perhaps depricate this in favor of scroll timer detection
+ * Default: `false`.
+ **/
+/**
+ * Xooie.Carousel#isScrolling([value]) -> String
+ * - value: an optional value to be set.
+ *
+ **/
+  Carousel.define('isScrolling', false);
+
+/** internal
+ * Xooie.Carousel#_visibleThreshold -> Integer
+ *
+ * Default: `0.5`.
+ **/
+/**
+ * Xooie.Carousel#visibleThreshold([value]) -> Integer
+ * - value: an optional value to be set.
+ *
+ **/
+  Carousel.define('visibleThreshold', 0.5);
+
+/** internal
+ * Xooie.Carousel#_cropStyle -> cssRule
+ *
+ * Default: `carousel`.
+ **/
+/**
+ * Xooie.Carousel#cropStyle([value]) -> cssRule
+ * - value: an optional value to be set.
+ *
+ **/
+  Carousel.define('cropStyle');
+
+/** internal, read-only
+ * Xooie.Carousel#_resizeEvent -> String
+ *
+ * Default: `xooie-carousel-resize`.
+ **/
+/**
+ * Xooie.Carousel#resizeEvent() -> String
+ *
+ **/
+  Carousel.defineReadOnly('resizeEvent', 'xooie-carousel-resize');
+
+/** internal, read-only
+ * Xooie.Carousel#_wrapperClass -> String
+ *
+ * Default: `xooie-carousel-wrapper`.
+ **/
+/**
+ * Xooie.Carousel#wrapperClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('wrapperClass', 'xooie-carousel-wrapper');
+
+/** internal, read-only
+ * Xooie.Carousel#_cropClass -> String
+ *
+ * Default: `xooie-carousel-crop`.
+ **/
+/**
+ * Xooie.Carousel#cropClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('cropClass', 'xooie-carousel-crop');
+
+/** internal, read-only
+ * Xooie.Carousel#_contentClass -> String
+ *
+ * Default: `xooie-carousel-content`.
+ **/
+/**
+ * Xooie.Carousel#contentClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('contentClass', 'xooie-carousel-content');
+
+/** internal, read-only
+ * Xooie.Carousel#_controlClass -> String
+ *
+ * Default: `xooie-carousel-control`.
+ **/
+/**
+ * Xooie.Carousel#controlClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('controlClass', 'xooie-carousel-control');
+
+/** internal, read-only
+ * Xooie.Carousel#_leftClass -> String
+ *
+ * Default: `is-left-limit`.
+ **/
+/**
+ * Xooie.Carousel#leftClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('leftClass', 'is-left-limit');
+
+/** internal, read-only
+ * Xooie.Carousel#_rightClass -> String
+ *
+ * Default: `is-right-limit`.
+ **/
+/**
+ * Xooie.Carousel#rightClass() -> String
+ *
+ **/
+  Carousel.defineReadOnly('rightClass', 'is-right-limit');
+
+// ROLE DEFINITIONS
+
+/**
+ * Xooie.Carousel#wrapper() -> Elements
+ *
+ *
+ **/
+  Carousel.defineRole('wrapper');
+
+/**
+ * Xooie.Carousel#content() -> Elements
+ *
+ * This role maps to the ARIA [tab list](http://www.w3.org/TR/wai-aria/roles#list)
+ **/
+  Carousel.defineRole('content');
+
+/**
+ * Xooie.Carousel#item() -> Elements
+ *
+ * This role maps to the ARIA [listitem role](http://www.w3.org/TR/wai-aria/roles#listitem)
+ **/
+  Carousel.defineRole('item');
+
+/**
+ * Xooie.Carousel#control() -> Elements
+ *
+ * Controls allow the user to scroll the carousel.  The behavior of this scrolling is determined by
+ * the role itself.  Behavior is set using the `data-x-role` attribute: `data-x-role="control:<direction> <quantity> <mode>"`.
+ * The `direction` value indicates which direction the carousel should be moved: `right`, `left`, or `goto`.
+ * The special `goto` value signifies that the control should scroll to a fixed position.
+ * The control syntax is designed to accept somewhat natural language.  Therefore, plurals and n-aries can be used to
+ * describe the behavior.  For example, you can use the following strings: `control:right 2 items`, `control:left 30 pixels`,
+ * `control:goto 5th item`.
+ **/
+  Carousel.defineRole('control');
+
+// STYLE DEFINITIONS
+
+  Carousel.createStyleRule('.' + Carousel.prototype.wrapperClass(), {
+    position: 'relative',
+    'overflow-x': 'scroll',
+    'overflow-y': 'hidden'
+  });
+
+  Carousel.createStyleRule('.' + Carousel.prototype.cropClass(), {
+    'overflow-y': 'hidden'
+  });
+
+  Carousel.createStyleRule('.' + Carousel.prototype.contentClass(), {
+    display: 'table-cell',
+    'white-space': 'nowrap',
+    'font-size': '0px',
+    'transition': 'left 0.5s'
+  });
+
+  Carousel.createStyleRule('ul.' + Carousel.prototype.contentClass(), {
+     'list-style': 'none',
+     'padding': 0,
+     'margin': 0
+  });
+
+  Carousel.createStyleRule('.' + Carousel.prototype.contentClass() + ' > *', {
+    display: 'inline-block',
+    zoom: '1',
+    '*display': 'inline',
+    'font-size': '1em'
+  });
+
+  Carousel.createStyleRule('.' + Carousel.prototype.leftClass() + '.' + Carousel.prototype.rightClass() + ' [data-x-role^="control:left"]' +
+    ', .' + Carousel.prototype.leftClass() + '.' + Carousel.prototype.rightClass() + ' [data-x-role^="control:right"]', {
+    display: 'none'
+  });
+
+/**
+ * Xooie.Carousel#currentItem(biasRight) -> Integer
+ * - biasRight (Boolean): If true, calculates the current item from the right side of the carousel.
+ *
+ * Returns the index of the first visible item.  The value of [[Xooie.Carousel#visibleThreshold]] determines what
+ * percentage of the item must be showing to be considered visible.
+ **/
+  Carousel.prototype.currentItem = function(biasRight) {
+      var content, items,
+          position, itemWidth,
+          i;
+
+      content = this.contents();
+      items = this.items();
+
+      if (biasRight) {
+        position = content.outerWidth(true) + content.position().left;
+
+        for (i = items.length - 1; i > 0; i -= 1) {
+          itemWidth = items.eq(i).outerWidth(true);
+          position -= itemWidth;
+
+          if (i > 0 && position <= this.visibleThreshold() * itemWidth) {
+              return i;
+          }
+        }
+        return 0;
+      } else {
+        position = content.position().left;
+
+        for (i = 0; i < items.length - 1; i++) {
+          itemWidth = items.eq(i).outerWidth(true);
+
+          if (position + this.visibleThreshold() * itemWidth >= 0){
+            return i;
+          } else {
+            position += itemWidth;
+          }
+        }
+
+        return items.length - 1;
+      }
+  };
+
+/**
+ * Xooie.Carousel#isLeft() -> Boolean
+ *
+ * Indicates if the carousel is scrolled completely to the left.
+ **/
+  Carousel.prototype.isLeft = function() {
+    return this.wrappers().scrollLeft() === 0;
+  };
+
+/**
+ * Xooie.Carousel#isRight() -> Boolean
+ *
+ * Indicates if the carousel is scrolled completely to the right.
+ **/
+  Carousel.prototype.isRight = function() {
+    var lastItem, position;
+
+    try {
+      lastItem = this.items().filter(':visible:last');
+      position = lastItem.position();
+
+      if (position && !helpers.isUndefined(position.left)) {
+        return Math.floor(position.left) + lastItem.outerWidth(true) <= this.wrappers().innerWidth();
+      }
+    } catch (e) {
+      return false;
+    }
+
+    return false;
+  };
+
+/**
+ * Xooie.Carousel#updateDimensions()
+ *
+ * Updates the height of the carousel based on the height of the tallest visible item in the carousel.
+ * The new height is applied to the [[Xooie.Carousel#cropStyle]] rule rather than the cropping element
+ * itself.  This allows developers to use cascade rules to override the height if they so choose.
+ **/
+  Carousel.prototype.updateDimensions = function() {
+    var height = 0;
+
+    this.items().each(function(){
+      height = Math.max(height, $(this).outerHeight(true));
+    });
+
+    //set the height of the wrapper's parent (or cropping element) to ensure we hide the scrollbar
+    this.cropStyle().style.height = height + 'px';
+
+    this.updateLimits();
+  };
+
+/**
+ * Xooie.Carousel#updateLimits()
+ *
+ * Updates the state of the carousel based on whether or not it is scrolled completely to the left or the right.
+ * If the carousel is scrolled completely to the left then the [[Xooie.Carousel#leftClass]] is applied to the
+ * [[Xooie.Widget#root]] and the left [[Xooie.Carousel#controls]] is disabled.  If the carousel is scrolled
+ * completely to the left then the [[Xooie.Carousel#rightClass]] is applied to the [[Xooie.Widget#root]] and the
+ * right [[Xooie.Carousel#controls]] is disabled.
+ **/
+  Carousel.prototype.updateLimits = function() {
+      var isLeft = this.isLeft(),
+          isRight = this.isRight();
+
+      this.root().toggleClass(this.leftClass(), isLeft);
+      this.controls().filter('[data-x-role^="control:left"]')
+                     .prop('disabled', isLeft);
+
+      this.root().toggleClass(this.rightClass(), isRight);
+      this.controls().filter('[data-x-role^="control:right"]')
+                     .prop('disabled', isRight);
+  };
+
+/**
+ * Xooie.Carousel#scrollTo(pos, cb)
+ * - pos (Integer): The position to which the carousel will be scrolled.
+ * - cb (Function): A callback function that is called when the animation is complete.
+ *
+ * Uses the jQuery animate functionality to scroll the carousel to the designated position.
+ **/
+  Carousel.prototype.scrollTo = function(pos, cb) {
+    var self = this;
+
+    pos = Math.floor(pos);
+
+    if (this.isScrolling) {
+      this.wrappers().stop(true,true);
+    }
+
+    this.isScrolling = true;
+
+    // TODO: make the scroll timer configurable
+    this.wrappers().animate({ scrollLeft: pos }, 200,
+      function(){
+        self.isScrolling = false;
+        if (helpers.isFunction(cb)) {
+          cb();
+        }
+      }
+    );
+  };
+
+/** internal
+ * Xooie.Carousel#_process_role_content(content) -> Element
+ * - content (Element): A jQuery-selected collection of [[Xooie.Carousel#contents]]
+ *
+ * This method processes the element that has been designated as a [[Xooie.Carousel#contents]].
+ * In addition to applying the [[Xooie.Carousel#contentClass]] the content is also given the
+ * aria role [list](http://www.w3.org/TR/wai-aria/roles#list) if it is neither a `ul` or `ol` element.
+ **/
+  Carousel.prototype._process_role_content = function(content) {
+    content.addClass(this.contentClass());
+
+    if (!content.is('ul,ol')) {
+      content.attr('role', 'list');
+    }
+
+    return content;
+  };
+
+/** internal
+ * Xooie.Carousel#_render_role_wrapper() -> Element
+ *
+ * Renders a `div` tag that is wrapped around the [[Xooie.Carousel#contents]].  This element is
+ * rendered only if no other [[Xooie.Carousel#wrappers]] is present as a decendant of the root of this
+ * widget.
+ **/
+  Carousel.prototype._render_role_wrapper = function() {
+    var wrapper = $('<div data-x-role="wrapper" />');
+
+    this.contents().wrap(wrapper);
+
+    return this.contents().parent();
+  };
+
+/** internal
+ * Xooie.Carousel#_process_role_wrapper(wrapper) -> Element
+ * - wrapper (Element): A jQuery-selected collection of [[Xooie.Carousel#wrappers]]
+ *
+ * This method processes the element that has been designated as a [[Xooie.Carousel#wrappers]].
+ * The [[Xooie.Carousel#wrapperClass]] is added and the [[Xooie.Carousel#_wrapperEvents]] handlers are
+ * bound.  Also, the [[Xooie.Carousel#cropClass]] is added to this element's parent.
+ **/
+  Carousel.prototype._process_role_wrapper = function(wrapper) {
+    wrapper.addClass(this.wrapperClass())
+           .on(this._wrapperEvents.handlers)
+           .parent().addClass(this.cropClass());
+
+    return wrapper;
+  };
+
+/** internal
+ * Xooie.Carousel#_get_role_item() -> Element
+ *
+ * Gets all children of [[Xooie.Carousel#contents]].
+ **/
+  Carousel.prototype._get_role_item = function() {
+    return this.contents().children();
+  };
+
+/** internal
+ * Xooie.Carousel#_get_role_control() -> Element
+ *
+ * TODO: Test and document
+ **/
+  Carousel.prototype._get_role_control = function(){
+    return this.root().find('[data-x-role^="control"]');
+  };
+
+/** internal
+ * Xooie.Carousel#_process_role_control() -> Element
+ *
+ **/
+  Carousel.prototype._process_role_control = function(controls) {
+    controls.on(this._controlEvents.handlers);
+
+    controls.attr('aria-hidden', true)
+            .addClass(this.controlClass());
+
+    return controls;
+  };
+
+/** internal
+ * Xooie.Carousel#_process_resizeEvent() -> String
+ *
+ * Adds the [[Xooie.Widget#namespace]] to the `resizeEvent` string.
+ **/
+  Carousel.prototype._process_resizeEvent = function(resizeEvent) {
+    return this.namespace() === '' ? resizeEvent : resizeEvent + '.' + this.namespace();
+  };
+
+  return Carousel;
+});
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -103,7 +2361,275 @@ define("xooie/widgets/carousel",["jquery","xooie/helpers","xooie/widgets/base","
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/widgets/dropdown",["jquery","xooie/widgets/base"],function(t,e){var n=function(t){return"string"==typeof t?(t=t.split(","),t.map(function(t){return parseInt(t,10)})):"number"==typeof t?[t]:t},i=e.extend(function(){var e=this,n=e.getHandle(),i=e.getExpander();this.handlers={off:function(n){return"undefined"!=typeof n.data.not&&(t(n.data.not).is(t(this))||t(n.target).parents(n.data.not).length>0)||"undefined"!=typeof n.data.which&&-1===n.data.which.indexOf(n.which)||(t(n.target).is(e.getExpander(n.data.index))||t(n.target).parents(e.dropdownExpanderSelector()).length>0)&&!t(n.target).is(t(this))?!0:(n.preventDefault(),e.collapse(n.data.index,n.data),void 0)},on:function(n){var i=n.data.index||parseInt(t(this).attr("data-dropdown-index"),10);return n.data.delay,t(this),"undefined"!=typeof n.data.not&&(t(n.data.not).is(t(this))||t(n.target).parents(n.data.not).length>0)||"undefined"!=typeof n.data.which&&-1===n.data.which.indexOf(n.which)?!0:(n.preventDefault(),e.expand(i,n.data),void 0)}},this.timers={expand:[],collapse:[],throttle:[]},this.addHandlers("on"),this.root().on({dropdownExpand:function(n,i){e.removeHandlers("on",i),e.addHandlers("off",i),t(this).attr("aria-selected",!0),e.getExpander(i).attr("aria-hidden",!1)},dropdownCollapse:function(n,i){e.removeHandlers("off",i),e.addHandlers("on",i),t(this).attr("aria-selected",!1),e.getExpander(i).attr("aria-hidden",!0)}},this.dropdownHandleSelector()),this.root().on("xooie-init.dropdown xooie-refresh.dropdown",function(){n.each(function(e){var n=t(this),o=i.eq(e);n.attr({"data-dropdown-index":e,"aria-selected":!1}),o.attr({"data-dropdown-index":e,"aria-hidden":!0})})}),i.on("mouseover focus",function(){var n=parseInt(t(this).attr("data-dropdown-index"),10);e.timers.collapse[n]&&(e.timers.collapse[n]=clearTimeout(e.timers.collapse[n]),t(this).on("mouseleave blur",{index:n},function(n){e.collapse(n.data.index,0),t(this).unbind(n)}))})});return i.define("namespace","dropdown"),i.define("throttleDelay",300),i.define("triggers",{on:{focus:{delay:0}},off:{blur:{delay:0}}}),i.defineReadOnly("dropdownHandleSelector",'[data-role="dropdown-handle"]'),i.defineReadOnly("dropdownExpanderSelector",'[data-role="dropdown-content"]'),i.defineReadOnly("activeDropdownClass","is-dropdown-active"),i.prototype.getTriggerHandle=function(e,n){var i=this.getHandle(n);return e.selector?"document"===e.selector?t(document):t(e.selector):i},i.prototype.addHandlers=function(e,i){var o,s,r,a;r=this.triggers()[e];for(o in r)"undefined"!=typeof r[o].which&&(r[o].which=n(r[o].which)),a=[o,e,"count"].join("-"),s=this.getTriggerHandle(r[o],i),s.data(a,s.data(a)+1||1),s.on(o,t.extend({delay:0,index:i},r[o]),this.handlers[e])},i.prototype.removeHandlers=function(t,e){var n,i,o,s,r;o=this.triggers()[t];for(n in o)i=this.getTriggerHandle(o[n],e),s=[n,t,"count"].join("-"),r=i.data(s)-1,0>=r?(i.unbind(n,this.handlers[t]),i.data(s,0)):i.data(s,r)},i.prototype.getHandle=function(t){var e=this.root().find(this.dropdownHandleSelector());return"undefined"!=typeof t&&t>=0?e.eq(t):e},i.prototype.getExpander=function(t){var e;return e="undefined"==typeof t||isNaN(t)?this.dropdownExpanderSelector():this.dropdownExpanderSelector()+'[data-dropdown-index="'+t+'"]',this.root().find(e)},i.prototype.setState=function(t,e,n){if("undefined"!=typeof t&&!isNaN(t)){var i=n?"expand":"collapse",o=n?"collapse":"expand",s=e.delay;this.timers[o][t]=clearTimeout(this.timers[o][t]),this.timers.throttle[t]||this.timers[i][t]||(this.timers[i][t]=setTimeout(function(t,e,n,i){var o=this.getExpander(t),s=this.getHandle(t),r=this;this.timers[e][t]=clearTimeout(this.timers[e][t]),o.toggleClass(this.activeDropdownClass(),n),this.getHandle(t).toggleClass(this.activeDropdownClass(),n),n?s.trigger("dropdownExpand",[t,i]):s.trigger("dropdownCollapse",[t,i]),this.throttleDelay()>0&&(this.timers.throttle[t]=setTimeout(function(){r.timers.throttle[t]=clearTimeout(r.timers.throttle[t])},this.throttleDelay()))}.bind(this,t,i,n,e),s))}},i.prototype.expand=function(t,e){this.getHandle(t).hasClass(this.activeDropdownClass())||this.setState(t,e,!0)},i.prototype.collapse=function(t,e){this.getHandle(t).hasClass(this.activeDropdownClass())&&this.setState(t,e,!1)},i}),/*
+
+/** deprecated: 1.0
+ * class Xooie.Dropdown < Xooie.Widget
+ *
+ * A widget used to hide and show content.
+ * As of v1.0 this widget has been deprecated.  Use the more semantically appropriate
+ * [[Xooie.Tooltip]], [[Xooie.Menu]], [[Xooie.Tab]], or [[Xooie.Accordion]] classes instead.
+ **/
+define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base'], function($, Base) {
+
+
+   var parseWhich = function(which) {
+        if (typeof which === 'string') {
+            which = which.split(',');
+            return which.map(function(string){ return parseInt(string, 10); });
+        } else if (typeof which === 'number') {
+            return [which];
+        }
+
+        return which;
+     };
+
+/**
+ * Xooie.Dropdown(element[, addons])
+ * - element (Element | String): A jQuery-selected element or string selector for the root element of this widget
+ * - addons (Array): An optional collection of [[Xooie.Addon]] classes to be instantiated with this widget
+ *
+ * Instantiates a new Dropdown widget.  Creates event handlers to manage activating and deactivating the expanders.
+ * Also adds methods to manipulate aria roles.
+ **/
+    var Dropdown = Base.extend(function() {
+        var self = this,
+            handles = self.getHandle(),
+            expanders = self.getExpander();
+
+        this.handlers = {
+            off: function(event){
+                if ((typeof event.data.not !== 'undefined' && ($(event.data.not).is($(this)) || $(event.target).parents(event.data.not).length > 0)) || (typeof event.data.which !== 'undefined' && event.data.which.indexOf(event.which) === -1) || ($(event.target).is(self.getExpander(event.data.index)) || $(event.target).parents(self.dropdownExpanderSelector()).length > 0) && !$(event.target).is($(this))) {
+                    return true;
+                }
+
+                event.preventDefault();
+
+                self.collapse(event.data.index, event.data);
+            },
+
+            on: function(event){
+                var index = event.data.index || parseInt($(this).attr('data-dropdown-index'), 10),
+                    delay = event.data.delay,
+                    handle = $(this);
+
+                if ((typeof event.data.not !== 'undefined' && ($(event.data.not).is($(this)) || $(event.target).parents(event.data.not).length > 0)) || typeof event.data.which !== 'undefined' && event.data.which.indexOf(event.which) === -1) {
+                    return true;
+                }
+
+                event.preventDefault();
+
+                self.expand(index, event.data);
+            }
+        };
+
+        this.timers = {
+            expand: [],
+            collapse: [],
+            throttle: []
+        };
+
+        this.addHandlers('on');
+
+        this.root().on({
+            dropdownExpand: function(event, index){
+                self.removeHandlers('on', index);
+
+                self.addHandlers('off', index);
+
+                $(this).attr('aria-selected', true);
+                self.getExpander(index).attr('aria-hidden', false);
+            },
+
+            dropdownCollapse: function(event, index){
+                self.removeHandlers('off', index);
+
+                self.addHandlers('on', index);
+
+                $(this).attr('aria-selected', false);
+                self.getExpander(index).attr('aria-hidden', true);
+            }
+        }, this.dropdownHandleSelector());
+
+        this.root().on('xooie-init.dropdown xooie-refresh.dropdown', function(){
+            handles.each(function(index){
+                var handle = $(this),
+                    expander = expanders.eq(index);
+
+
+                handle.attr({
+                    'data-dropdown-index': index,
+                    'aria-selected': false
+                });
+                expander.attr({
+                    'data-dropdown-index': index,
+                    'aria-hidden': true
+                });
+            });
+        });
+
+        expanders.on('mouseover focus', function(){
+            var index = parseInt($(this).attr('data-dropdown-index'), 10);
+
+            if (self.timers.collapse[index]){
+                self.timers.collapse[index] = clearTimeout(self.timers.collapse[index]);
+
+                $(this).on('mouseleave blur', {index: index}, function(event){
+                    self.collapse(event.data.index, 0);
+                    $(this).unbind(event);
+                });
+            }
+        });
+
+    });
+
+    Dropdown.define('namespace', 'dropdown');
+
+    Dropdown.define('throttleDelay', 300);
+
+    Dropdown.define('triggers', {
+        on: {
+            focus: {
+                delay: 0
+            }
+        },
+        off: {
+            blur: {
+                delay: 0
+            }
+        }
+    });
+
+    Dropdown.defineReadOnly('dropdownHandleSelector', '[data-role="dropdown-handle"]');
+
+    Dropdown.defineReadOnly('dropdownExpanderSelector', '[data-role="dropdown-content"]');
+
+    Dropdown.defineReadOnly('activeDropdownClass', 'is-dropdown-active');
+
+    Dropdown.prototype.getTriggerHandle = function(triggerData, index){
+        var handles = this.getHandle(index);
+
+        if (triggerData.selector) {
+            return triggerData.selector === 'document' ? $(document) : $(triggerData.selector);
+        } else {
+            return handles;
+        }
+    };
+
+    Dropdown.prototype.addHandlers = function(state, index){
+        var trigger, handle, triggerData, countName;
+
+        triggerData = this.triggers()[state];
+
+        for (trigger in triggerData) {
+            if (typeof triggerData[trigger].which !== 'undefined') {
+                triggerData[trigger].which = parseWhich(triggerData[trigger].which);
+            }
+
+            countName = [trigger,state,'count'].join('-');
+
+            handle = this.getTriggerHandle(triggerData[trigger], index);
+
+            handle.data(countName, handle.data(countName) + 1 || 1);
+
+            handle.on(trigger, $.extend({delay: 0, index: index}, triggerData[trigger]), this.handlers[state]);
+        }
+    };
+
+    Dropdown.prototype.removeHandlers = function(state, index){
+        var trigger, handle, triggerData, countName, eventCount;
+
+        triggerData = this.triggers()[state];
+
+        for (trigger in triggerData) {
+            handle = this.getTriggerHandle(triggerData[trigger], index);
+
+            countName = [trigger,state,'count'].join('-');
+
+            eventCount = handle.data(countName) - 1;
+
+            if (eventCount <= 0) {
+                handle.unbind(trigger, this.handlers[state]);
+
+                handle.data(countName, 0);
+            } else {
+                handle.data(countName, eventCount);
+            }
+        }
+    };
+
+    Dropdown.prototype.getHandle = function(index){
+        var handles = this.root().find(this.dropdownHandleSelector());
+
+        return (typeof index !== 'undefined' && index >= 0) ? handles.eq(index) : handles;
+    };
+
+    Dropdown.prototype.getExpander = function(index){
+        var selectorString;
+
+        if (typeof index === 'undefined' || isNaN(index)) {
+            selectorString = this.dropdownExpanderSelector();
+        } else {
+            selectorString = this.dropdownExpanderSelector() + '[data-dropdown-index="' + index + '"]';
+        }
+
+        return this.root().find(selectorString);
+    };
+
+    Dropdown.prototype.setState = function(index, data, active){
+        if (typeof index === 'undefined' || isNaN(index)) {
+            return;
+        }
+
+        var state = active ? 'expand' : 'collapse',
+            counterState = active ? 'collapse' : 'expand',
+            delay = data.delay;
+
+        this.timers[counterState][index] = clearTimeout(this.timers[counterState][index]);
+
+        if (this.timers.throttle[index] || this.timers[state][index]) {
+            return;
+        }
+
+        this.timers[state][index] = setTimeout(function(i, _state, _active, _data) {
+            var expander = this.getExpander(i),
+                handle = this.getHandle(i),
+                self = this;
+
+            this.timers[_state][i] = clearTimeout(this.timers[_state][i]);
+
+            expander.toggleClass(this.activeDropdownClass(), _active);
+            this.getHandle(i).toggleClass(this.activeDropdownClass(), _active);
+
+            if (_active){
+                handle.trigger('dropdownExpand', [i, _data]);
+            } else {
+                handle.trigger('dropdownCollapse', [i, _data]);
+            }
+
+            if (this.throttleDelay() > 0){
+                this.timers.throttle[i] = setTimeout(function(){
+                    self.timers.throttle[i] = clearTimeout(self.timers.throttle[i]);
+                }, this.throttleDelay());
+            }
+
+        }.bind(this, index, state, active, data), delay);
+    };
+
+    Dropdown.prototype.expand = function(index, data) {
+        if (!this.getHandle(index).hasClass(this.activeDropdownClass())) {
+            this.setState(index, data, true);
+        }
+    };
+
+    Dropdown.prototype.collapse = function(index, data) {
+        if (this.getHandle(index).hasClass(this.activeDropdownClass())) {
+            this.setState(index, data, false);
+        }
+    };
+
+    return Dropdown;
+});
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -118,7 +2644,376 @@ define("xooie/widgets/dropdown",["jquery","xooie/widgets/base"],function(t,e){va
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/widgets/tab",["jquery","xooie/helpers","xooie/widgets/base","xooie/event_handler"],function(t,e,n,i){var o=n.extend(function(){var e=this;this._tabEvents=new i(this.namespace()),this._tabEvents.add({keyup:function(n){var i=e.getActiveTabs();-1===[13,32].indexOf(n.which)||i.is(this)||(e.deactivateTab(i),e.activateTab(t(this)),n.preventDefault())},mouseup:function(){var n=e.getActiveTabs();n.is(this)||(e.deactivateTab(n),e.activateTab(t(this)))}}),this.root().on(this.initEvent(),function(){e.activateTab(e.tabs().filter('[data-activate="true"]'))})});return o.define("namespace","tab"),o.define("tabSelector"),o.defineReadOnly("activeClass","is-tab-active"),o.defineRole("tabpanel"),o.defineRole("tab"),o.defineRole("tablist"),o.prototype.activateTab=function(e){e.addClass(this.activeClass()).attr("aria-selected",!0),t("#"+e.attr("aria-controls")).addClass(this.activeClass()).attr("aria-expanded",!0).focus();var n=t.Event("xooie-tab-active");n.tabId=e.attr("id"),this.root().trigger(n)},o.prototype.deactivateTab=function(e){e.removeClass(this.activeClass()).attr("aria-selected",!1),t("#"+e.attr("aria-controls")).removeClass(this.activeClass()).attr("aria-expanded",!1);var n=t.Event("xooie-tab-inactive");n.tabId=e.attr("id"),this.root().trigger(n)},o.prototype.getActiveTabs=function(){return this.tabs().filter("."+this.activeClass())},o.prototype._process_role_tab=function(e){var n,i,o=this.tabpanels();return e.attr("role","tab").attr("aria-selected",!1),e.each(function(e){n=t(this),i=o.eq(e).attr("id"),t(this).attr("aria-controls",i),t(this).is("a")&&t(this).attr("href","#"+i)}),e.on(this._tabEvents.handlers),e},o.prototype._get_role_tab=function(){return e.isUndefined(this.tabSelector())?this.root().find('[data-x-role="tab"]'):t(this.tabSelector())},o.prototype._render_role_tab=function(){},o.prototype._process_role_tablist=function(e){var n=this.tabs();return e.attr("role","tablist"),n.each(function(){var n,i;0===e.has(this).length&&(n=e.attr("aria-owns")||"",n=n.split(" "),i=t(this).attr("id"),-1===n.indexOf(i)&&n.push(i),e.attr("aria-owns",n.join(" ")))}),e},o.prototype._render_role_tablist=function(){return t('<ul data-x-role="tablist"></ul>')},o.prototype._process_role_tabpanel=function(t){return t.attr("role","tabpanel").attr("aria-expanded",!1),t},o}),define("xooie/widgets/accordion",["jquery","xooie/widgets/tab"],function(t,e){var n=e.extend(function(){var e=this;this._tabEvents.clear("keyup"),this._tabEvents.clear("mouseup"),this._tabEvents.add({keyup:function(n){var i=e.getActiveTabs();-1!==[13,32].indexOf(n.which)&&(i.is(this)?e.deactivateTab(t(this)):e.activateTab(t(this)),n.preventDefault())},mouseup:function(){var n=e.getActiveTabs();n.is(this)?e.deactivateTab(t(this)):e.activateTab(t(this))}})});return n.define("namespace","accordion"),n.prototype._process_role_tablist=function(t){return e.prototype._process_role_tablist.apply(this,arguments),t.attr("aria-multiselectable",!0),t},n}),/*
+
+/**
+ * class Xooie.Tab < Xooie.Widget
+ *
+ * A widget that associates containers of information with "tabs".  The pattern is
+ * designed to mimic the real-world concept of a filing cabinet, where content is
+ * stored in folders with protruding tabs that label said content.
+ *
+ * The Tab widget should be used as a way to organize how content is displayed
+ * visually.  Content is hidden until the associated tab is activated.
+ **/
+define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'xooie/event_handler'], function($, helpers, Base, EventHandler) {
+/**
+ * Xooie.Tab@xooie-tab-active(event)
+ * - event (Event): A jQuery event object
+ *
+ * An event that is fired when a tab is activated.  Triggers on the `root` element of the widget.
+ *
+ * ##### Event Properties
+ * - **tabId** (String): The id of the tab that was activated.
+ **/
+
+ /**
+ * Xooie.Tab@xooie-tab-inactive(event)
+ * - event (Event): A jQuery event object
+ *
+ * An event that is fired when a tab is deactivated.  Triggers on the `root` element of the widget.
+ *
+ * ##### Event Properties
+ * - **tabId** (String): The id of the tab that was deactivated.
+ **/
+
+/**
+ * new Xooie.Tab(element[, addons])
+ * - element (Element | String): A jQuery-selected element or string selector for the root element of this widget
+ * - addons (Array): An optional collection of [[Xooie.Addon]] classes to be instantiated with this widget
+ *
+ * Instantiates a new Tab instance.  See [[Xooie.Widget]] for more functionality.
+ **/
+  var Tab = Base.extend(function(){
+    var self = this;
+
+    this._tabEvents = new EventHandler(this.namespace());
+
+    this._tabEvents.add({
+      keyup: function(event){
+        var activeTab = self.getActiveTabs();
+
+        if ([13,32].indexOf(event.which) !== -1 && !activeTab.is(this)){
+          self.deactivateTab(activeTab);
+
+          self.activateTab($(this));
+
+          event.preventDefault();
+        }
+      },
+
+      mouseup: function(){
+        var activeTab = self.getActiveTabs();
+
+        if (!activeTab.is(this)) {
+          self.deactivateTab(activeTab);
+
+          self.activateTab($(this));
+        }
+      }
+    });
+
+    // TODO: Test and document this.  Also, create a property for data-activate
+    this.root().on(this.initEvent(), function(){
+      self.activateTab(self.tabs().filter('[data-activate="true"]'));
+    });
+
+  });
+
+/** internal
+ * Xooie.Tab#_namespace -> String
+ *
+ * See [[Xooie.Widget#_namespace]].
+ * Default: `tab`.
+ **/
+/**
+ * Xooie.Tab#namespace([value]) -> String
+ * - value: an optional value to be set.
+ *
+ * See [[Xooie.Widget#namespace]]
+ **/
+  Tab.define('namespace', 'tab');
+
+/** internal
+ * Xooie.Tab#_tabSelector -> String
+ *
+ * An alternative selector for a [[Xooie.Tab#tabs]]. This allows developers to specify a tab control that may not
+ * be a child of the tab widget.
+ **/
+/**
+ * Xooie.Tab#tabSelector([value]) -> String
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Tab#_tabSelector]].  Returns the current value of
+ * [[Xooie.Tab#_tabSelector]] if no value is passed or sets the value.
+ **/
+  Tab.define('tabSelector');
+
+/** internal
+ * Xooie.Tab#_activeClass -> String
+ *
+ * A class string that is applied to active [[Xooie.Tab#tabs]] and [[Xooie.Tab#tabpanels]].
+ * Default: `is-tab-active`.
+ **/
+/**
+ * Xooie.Tab#activeClass([value]) -> String
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Tab#_activeClass]].  Returns the current value of
+ * [[Xooie.Tab#_activeClass]] if no value is passed or sets the value.
+ **/
+  Tab.defineReadOnly('activeClass', 'is-tab-active');
+
+/**
+ * Xooie.Tab#tabpanels() -> Elements
+ *
+ * Tabpanels are elements that contain the content that is shown or hidden when the corresponding
+ * [[Xooie.Tab#tabs]] is activated.
+ * This role maps to the ARIA [tab role](http://www.w3.org/TR/wai-aria/roles#tab)
+ **/
+  Tab.defineRole('tabpanel');
+
+/**
+ * Xooie.Tab#tabs() -> Elements
+ *
+ * Tabs are elements that, when activated, also activate the corresponding [[Xooie.Tab#tabpanels]].
+ * This role maps to the ARIA [tabpanel role](http://www.w3.org/TR/wai-aria/roles#tabpanel).
+ **/
+  Tab.defineRole('tab');
+
+/**
+ * Xooie.Tab#tablists() -> Elements
+ *
+ * A tablist is an element that contains all the [[Xooie.Tab#tabs]].  If any tabs are not decendants of
+ * the tablist, ownership of the tab is indicated using the `aria-owns` attribute.
+ * There should only be one tablist per tab widget.
+ * This role maps to the ARIA [tablist role](http://www.w3.org/TR/wai-aria/roles#tablist)
+ **/
+  Tab.defineRole('tablist');
+
+/**
+ * Xooie.Tab#activateTab(tab)
+ * - tab (Element): One of the [[Xooie.Tab#tabs]] associated with this widget.
+ *
+ * Activates the [[Xooie.Tab#tabs]] by adding the [[Xooie.Tab#activeClass]] class and setting the `aria-expanded` property to 'true'.
+ * The method also activates the [[Xooie.Tab#tabpanels]] that is indicated by the tab's `aria-controls` attribute,
+ * adding the [[Xooie.Tab#activeClass]] class and setting `aria-expanded` to 'true'.
+ **/
+  Tab.prototype.activateTab = function(tab) {
+    tab.addClass(this.activeClass())
+       .attr('aria-selected', true);
+
+    $('#' + tab.attr('aria-controls')).addClass(this.activeClass())
+                                      .attr('aria-expanded', true)
+                                      .focus();
+
+    var e = $.Event('xooie-tab-active');
+
+    e.tabId = tab.attr('id');
+
+    this.root().trigger(e);
+  };
+
+/**
+ * Xooie.Tab#deactivateTab(tab)
+ * - tab (Element): One of the [[Xooie.Tab#tabs]] associated with this widget.
+ *
+ * Deactivates the [[Xooie.Tab#tabs]] by removing the [[Xooie.Tab#activeClass]] class and setting the `aria-expanded` property to 'false'.
+ * The method also deactivates the [[Xooie.Tab#tabpanels]] that is indicated by the tab's `aria-controls` attribute,
+ * removing the [[Xooie.Tab#activeClass]] class and setting `aria-expanded` to 'false'.
+ **/
+  Tab.prototype.deactivateTab = function(tab) {
+    tab.removeClass(this.activeClass())
+       .attr('aria-selected', false);
+
+    $('#' + tab.attr('aria-controls')).removeClass(this.activeClass())
+                                      .attr('aria-expanded', false);
+
+    var e = $.Event('xooie-tab-inactive');
+
+    e.tabId = tab.attr('id');
+
+    this.root().trigger(e);
+  };
+
+/**
+ * Xooie.Tab#getActiveTabs() -> Elements
+ *
+ * Returns a jQuery-selected collection of all [[Xooie.Tab#tabs]] that currently have the
+ * [[Xooie.Tab#activeClass]] class.
+ **/
+  Tab.prototype.getActiveTabs = function() {
+    return this.tabs().filter('.' + this.activeClass());
+  };
+
+/** internal
+ * Xooie.Tab#_process_role_tab(tabs) -> Element
+ * - tabs (Element): A jQuery-selected collection of [[Xooie.Tab#tabs]]
+ *
+ * This method processes the elements that have been designated as [[Xooie.Tab#tabs]] with
+ * the `data-x-role="tab"` attribute.  Tabs are given the [`role="tab"`](http://www.w3.org/TR/wai-aria/roles#tab) and [`aria-selected="false"`](http://www.w3.org/TR/wai-aria/states_and_properties#aria-selected)
+ * [ARIA](http://www.w3.org/TR/wai-aria/) attributes.
+ **/
+  Tab.prototype._process_role_tab = function(tabs){
+    var tabpanels = this.tabpanels(),
+        tab, panelId,
+        self = this;
+
+    tabs.attr('role', 'tab')
+        .attr('aria-selected', false);
+
+    tabs.each(function(index) {
+      tab = $(this);
+      panelId = tabpanels.eq(index).attr('id');
+
+      $(this).attr('aria-controls', panelId);
+
+      if ($(this).is('a')) {
+        $(this).attr('href', '#' + panelId);
+      }
+
+    });
+
+    tabs.on(this._tabEvents.handlers);
+    
+    return tabs;
+  };
+
+/** internal
+ * Xooie.Tab#_get_role_tab() -> Element
+ *
+ * Internal method used to retrieve the [[Xooie.Tab#tabs]] for this widget.  If [[Xooie.Tab#tabSelector]] has been
+ * defined then its value will be used to select from the DOM.  Otherwise, tabs will be selected from decendants of
+ * the root using the `[data-x-role="tab"]` selector.
+ **/
+  Tab.prototype._get_role_tab = function(){
+    if (!helpers.isUndefined(this.tabSelector())) {
+      return $(this.tabSelector());
+    } else {
+      return this.root().find('[data-x-role="tab"]');
+    }
+  };
+
+/** internal
+ * Xooie.Tab#_render_role_tab() -> Elements
+ *
+ * TODO: Create this method to keep parity with the existing tab functionality
+ **/
+  Tab.prototype._render_role_tab = function(){
+
+  };
+
+/** internal
+ * Xooie.Tab#_process_role_tablist(tablist) -> Element
+ * - tablist (Element): A jQuery-selected collection of [[Xooie.Tab#tablists]]
+ *
+ * This method processes the elements that have been designated as [[Xooie.Tab#tablists]] with
+ * the `data-x-role="tablist"` attribute.  The tablist is given the [`role="tablist"`](http://www.w3.org/TR/wai-aria/roles#tablist)
+ * [ARIA](http://www.w3.org/TR/wai-aria/) attributes.  If any [[Xooie.Tab#tabs]] are not decendants of the tab list, the ids of those
+ * tabs are added to the [`aria-owns`](http://www.w3.org/TR/wai-aria/states_and_properties#aria-owns) attribute.
+ **/
+  Tab.prototype._process_role_tablist = function(tablist) {
+    var tabs = this.tabs();
+
+    tablist.attr('role', 'tablist');
+
+    tabs.each(function(index) {
+      var owns, id;
+      if (tablist.has(this).length === 0) {
+        owns = tablist.attr('aria-owns') || '';
+
+        owns = owns.split(' ');
+
+        id = $(this).attr('id');
+
+        if (owns.indexOf(id) === -1) {
+          owns.push(id);
+        }
+
+        tablist.attr('aria-owns', owns.join(' '));
+      }
+    });
+
+    return tablist;
+  };
+/** internal
+ * Xooie.Tab#_render_role_tablist() -> Element
+ *
+ * TODO: Add this method to render the tablist if it is not included.
+ **/
+  Tab.prototype._render_role_tablist = function(){
+    return $('<ul data-x-role="tablist"></ul>');
+  };
+
+/** internal
+ * Xooie.Tab#_process_role_tabpanel(tabpanels) -> Element
+ * - tabpanels (Element): A jQuery-selected collection of [[Xooie.Tab#tabpanels]]
+ *
+ * This method processes the elements that have been designated as [[Xooie.Tab#tabpanels]] with
+ * the `data-x-role="tabpanel"` attribute.  Tabs are given the [`role="tabpanel"`](http://www.w3.org/TR/wai-aria/roles#tab) and [`aria-expanded="false"`](http://www.w3.org/TR/wai-aria/states_and_properties#aria-selected)
+ * [ARIA](http://www.w3.org/TR/wai-aria/) attributes.
+ **/
+  Tab.prototype._process_role_tabpanel = function(tabpanels) {
+    tabpanels.attr('role', 'tabpanel')
+             .attr('aria-expanded', false);
+
+    return tabpanels;
+  };
+
+  return Tab;
+});
+define('xooie/widgets/accordion', ['jquery', 'xooie/widgets/tab'], function($, Tab){
+  var Accordion = Tab.extend(function() {
+    var self = this;
+
+    this._tabEvents.clear('keyup');
+    this._tabEvents.clear('mouseup');
+
+    this._tabEvents.add({
+      keyup: function(event){
+        var activeTab = self.getActiveTabs();
+
+        if ([13,32].indexOf(event.which) !== -1){
+          if (activeTab.is(this)) {
+            self.deactivateTab($(this));
+          } else {
+            self.activateTab($(this));
+          }
+
+          event.preventDefault();
+        }
+      },
+
+      mouseup: function(){
+        var activeTab = self.getActiveTabs();
+
+        if (activeTab.is(this)) {
+          self.deactivateTab($(this));
+        } else {
+          self.activateTab($(this));
+        }
+      }
+    });
+  });
+
+  Accordion.define('namespace', 'accordion');
+
+/** internal
+ * Xooie.Accordion#_process_role_tablist(tablist) -> Element
+ * - tablist (Element): A jQuery-selected collection of [[Xooie.Tab#tablists]]
+ *
+ * Same as [[Xooie.Tab#_process_role_tablist]] and also adds the [`aria-multiselectable="true"`](http://www.w3.org/TR/wai-aria/states_and_properties#aria-multiselectable) attribute.
+ **/
+  Accordion.prototype._process_role_tablist = function(tablist) {
+    Tab.prototype._process_role_tablist.apply(this, arguments);
+
+    tablist.attr('aria-multiselectable', true);
+
+    return tablist;
+  };
+
+  return Accordion;
+});
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -133,7 +3028,126 @@ define("xooie/widgets/tab",["jquery","xooie/helpers","xooie/widgets/base","xooie
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/dialog",["jquery","xooie/base"],function(t,e){var n=e("dialog",function(){var t=this;this.id=n._counter++,n._instances[this.id]=this,this.root.attr("data-dialog-id",this.id),this.root.find(this.options.containerSelector).attr("role","dialog"),this.root.addClass("xooie-dialog"),this.handlers={mouseup:function(){n.close(t.id)},keyup:function(e){-1!==[13,32].indexOf(e.which)&&n.close(t.id)}}});return n.setDefaultOptions({closeButtonSelector:'[data-role="closeButton"]',containerSelector:'[data-role="container"]',dialogActiveClass:"is-dialog-active"}),n.setCSSRules({".xooie-dialog":{position:"fixed",top:0,bottom:0,left:0,right:0}}),n.prototype.activate=function(){this.root.addClass(this.options.dialogActiveClass),n._active!==this&&(n._active&&n._active.deactivate(),this.root.find(this.options.closeButtonSelector).on(this.handlers),n._active=this,this.root.trigger("dialogActive"))},n.prototype.deactivate=function(){this.root.removeClass(this.options.dialogActiveClass),n._active===this&&(this.root.find(this.options.closeButtonSelector).off(this.handlers),n._active=null,this.root.trigger("dialogInactive"))},n._instances=[],n._counter=0,n._active=null,n._queue=[],n.open=function(t){var e=this._instances[t];"undefined"!=typeof e&&this._active!==e&&(this._active?this._queue.push(e):e.activate())},n.close=function(){this._active&&(this._active.deactivate(),this._queue.length>0&&this._queue.pop().activate())},n}),define("xooie/widgets/dialog",function(){}),/*
+
+define('xooie/dialog', ['jquery', 'xooie/base'], function($, Base) {
+
+    var Dialog = Base('dialog', function(){
+        var self = this;
+
+        this.id = Dialog._counter++;
+
+        Dialog._instances[this.id] = this;
+
+        this.root.attr('data-dialog-id', this.id);
+
+        //add accessibility attributes
+        this.root.find(this.options.containerSelector).attr('role', 'dialog');
+
+        this.root.addClass('xooie-dialog');
+
+        this.handlers = {
+            mouseup: function(event){
+                Dialog.close(self.id);
+            },
+
+            keyup: function(event){
+                if([13,32].indexOf(event.which) !== -1){
+                    Dialog.close(self.id);
+                }
+            }
+        };
+    });
+
+    Dialog.setDefaultOptions({
+        closeButtonSelector: '[data-role="closeButton"]',
+        containerSelector: '[data-role="container"]',
+
+        dialogActiveClass: 'is-dialog-active'
+    });
+
+    Dialog.setCSSRules({
+        '.xooie-dialog': {
+            position: 'fixed',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0
+        }
+    });
+
+    Dialog.prototype.activate = function(){
+        this.root.addClass(this.options.dialogActiveClass);
+
+        if(Dialog._active === this) {
+            return;
+        }
+
+        if(Dialog._active){
+            Dialog._active.deactivate();
+        }
+
+        this.root.find(this.options.closeButtonSelector)
+                 .on(this.handlers);
+
+        Dialog._active = this;
+
+        this.root.trigger('dialogActive');
+    };
+
+    Dialog.prototype.deactivate = function(){
+        this.root.removeClass(this.options.dialogActiveClass);
+
+        if (Dialog._active !== this) {
+            return;
+        }
+
+        this.root.find(this.options.closeButtonSelector)
+                 .off(this.handlers);
+
+        Dialog._active = null;
+
+        this.root.trigger('dialogInactive');
+    };
+
+    Dialog._instances = [];
+    Dialog._counter = 0;
+    Dialog._active = null;
+    Dialog._queue = [];
+
+    Dialog.open = function(id){
+        //get dialog instance
+        var dialog = this._instances[id];
+
+        if (typeof dialog === 'undefined' || this._active === dialog){
+            return;
+        }
+
+        if (this._active) {
+            this._queue.push(dialog);
+        } else {
+            dialog.activate();
+        }
+
+    };
+
+    Dialog.close = function(){
+        //get dialog instance
+        if(!this._active) {
+            return;
+        }
+
+        this._active.deactivate();
+
+        if (this._queue.length > 0) {
+            this._queue.pop().activate();
+        }
+    };
+
+    return Dialog;
+});
+define("xooie/widgets/dialog", function(){});
+
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -148,7 +3162,234 @@ define("xooie/dialog",["jquery","xooie/base"],function(t,e){var n=e("dialog",fun
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/addons/base",["jquery","xooie/shared"],function(t,e){var n=function(t){var e=this;if("undefined"==typeof t)return!1;if(t.addons()&&t.addons().hasOwnProperty(this.name()))return t.addons()[this.name()];t.addons()[this.name()]=this,t.root().addClass(this.addonClass()),this.widget(t);var n=function(){!e._extendCount||e._extendCount<=0?(e.widget().root().trigger(e.get("initEvent")),e._extendCount=null):setTimeout(n,0)};this._extendCount>0?setTimeout(n,0):n()};return n.defineReadOnly=function(t,n){e.defineReadOnly(this,t,n)},n.defineWriteOnly=function(t){e.defineWriteOnly(this,t)},n.define=function(t,e){this.defineReadOnly(t,e),this.defineWriteOnly(t)},n.extend=function(t){return e.extend(t,this)},n.prototype._definedProps=[],n.prototype._extendCount=null,n.define("widget"),n.define("name","addon"),n.defineReadOnly("initEvent","xooie-addon-init"),n.defineReadOnly("addonClass","has-addon"),n.prototype.get=function(t){return e.get(this,t)},n.prototype.set=function(t,n){return e.set(this,t,n)},n.prototype.cleanup=function(){this.widget().root().removeClass(this.addonClass())},n.prototype._process_initEvent=function(t){return"addon"===this.name()?t:t+"."+this.name()},n.prototype._process_addonClass=function(t){return"addon"===this.name()?t:"has-"+this.name()+"-addon"},n}),/*
+
+/**
+ * class Xooie.Addon
+ *
+ * The base xooie addon module.  This module defines how addons function in relation to
+ * widgets, but contains no specific functionality.
+ **/
+define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
+/**
+ * Xooie.Addon@xooie-addon-init(event)
+ * - event (Event): A jQuery event object
+ *
+ * A jQuery special event triggered when the addon is successfully initialized.  Triggers on the `root` element
+ * of the adodn's widget.  Unlike [[Xooie.Widget@xooie-init]], this event only triggers when the addon is first instantiated.
+ **/
+
+/**
+ * new Xooie.Addon(widget)
+ * - widget (Widget): An instance of [[Xooie.Widget]].
+ *
+ * Instantiating a new Addon associates the addon with the widget passed into the constructor.  The addon is
+ * stored in the [[Xooie.Widget#addons]] collection.
+ **/
+    var Addon = function(widget) {
+        var self = this;
+
+        // Check to see if the module is defined:
+        if (typeof widget === 'undefined') {
+            return false;
+        }
+
+        // If there is already an instance of this addon instantiated for the module, return it:
+        if (widget.addons() && widget.addons().hasOwnProperty(this.name())) {
+            return widget.addons()[this.name()];
+        }
+
+        // Add this addon to the widget's addons collection:
+        widget.addons()[this.name()] = this;
+
+        widget.root().addClass(this.addonClass());
+
+        // Reference the widget:
+        this.widget(widget);
+
+        // Check to see if there are any additional constructors to call;
+        var initCheck = function(){
+            var i;
+
+            if (!self._extendCount || self._extendCount <= 0) {
+                self.widget().root().trigger(self.get('initEvent'));
+                self._extendCount = null;
+            } else {
+                setTimeout(initCheck, 0);
+            }
+        };
+
+        if (this._extendCount > 0) {
+            setTimeout(initCheck, 0);
+        } else {
+            initCheck();
+        }
+    };
+
+/**
+ * Xooie.Addon.defineReadOnly(name, defaultValue)
+ * - name (String): The name of the property to define as a read-only property.
+ * - defaultValue (Object): An optional default value.
+ *
+ * See [[Xooie.shared.defineReadOnly]].
+ **/
+    Addon.defineReadOnly = function(name, defaultValue){
+        shared.defineReadOnly(this, name, defaultValue);
+    };
+
+/**
+ * Xooie.Addon.defineWriteOnly(name)
+ * - name (String): The name of the property to define as a write-only property
+ *
+ * See [[Xooie.shared.defineWriteOnly]].
+ **/
+    Addon.defineWriteOnly = function(name){
+        shared.defineWriteOnly(this, name);
+    };
+
+/**
+ * Xooie.Widget.define(name[, defaultValue])
+ * - name (String): The name of the property to define.
+ * - defaultValue: An optional default value.
+ *
+ * A method that defines a property as both readable and writable.  In reality it calls both [[Xooie.Addon.defineReadOnly]]
+ * and [[Xooie.Addon.defineWriteOnly]].
+ **/
+    Addon.define = function(name, defaultValue){
+        this.defineReadOnly(name, defaultValue);
+        this.defineWriteOnly(name);
+    };
+
+/**
+ * Xooie.Addon.extend(constr) -> Addon
+ * - constr (Function): The constructor for the new [[Xooie.Addon]] class.
+ *
+ * See [[Xooie.shared.extend]].
+ **/
+    Addon.extend = function(constr){
+        return shared.extend(constr, this);
+    };
+
+/** internal
+ * Xooie.Addon#_definedProps -> Array
+ *
+ * Same as [[Xooie.Widget#_definedProps]].
+ **/
+    Addon.prototype._definedProps = [];
+
+/** internal
+ * Xooie.Addon#_extendCount -> Integer | null
+ *
+ * Same as [[Xooie.Widget#_extendCount]].
+ **/
+    Addon.prototype._extendCount = null;
+
+/** internal
+ * Xooie.Addon#_widget -> Widget
+ *
+ * The widget for which this addon was instantiated.
+ **/
+/**
+ * Xooie.Addon#widget([value]) -> Widget
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Addon#_widget]].  Returns the current value of
+ * [[Xooie.Addon#_widget]] if no value is passed or sets the value.
+ **/
+    Addon.define('widget');
+
+/** internal
+ * Xooie.Addon#_name -> String
+ *
+ * The name of the addon.
+ **/
+/**
+ * Xooie.Addon#name([value]) -> String
+ * - value: an optional value to be set.
+ *
+ * The method for setting or getting [[Xooie.Addon#_name]].  Returns the current value of
+ * [[Xooie.Addon#_name]] if no value is passed or sets the value.
+ **/
+    Addon.define('name', 'addon');
+
+/** internal, read-only
+ * Xooie.Addon#_initEvent -> String
+ *
+ * The name of the event triggered when the addon is instantiated.
+ **/
+/** read-only
+ * Xooie.Addon#initEvent() -> String
+ *
+ * The method for getting [[Xooie.Addon#_initEvent]].
+ **/
+    Addon.defineReadOnly('initEvent', 'xooie-addon-init');
+
+/** internal, read-only
+ * Xooie.Addon#_addonClass -> String
+ *
+ * The class added to the widget root indicating that this addon has been instantiated.
+ **/
+/** read-only
+ * Xooie.Addon#addonClass() -> String
+ *
+ * The method for getting [[Xooie.Addon#_addonClass]].
+ **/
+    Addon.defineReadOnly('addonClass', 'has-addon');
+
+/**
+ * Xooie.Addon#get(name) -> object
+ * - name (String): The name of the property to be retrieved.
+ *
+ * See [[Xooie.shared.get]].
+ **/
+    Addon.prototype.get = function(name) {
+        return shared.get(this, name);
+    };
+
+/**
+ * Xooie.Addon#set(name, value)
+ * - name (String): The name of the property to be set.
+ * - value: The value of the property to be set.
+ *
+ * See [[Xooie.shared.set]].
+ **/
+    Addon.prototype.set = function(name, value) {
+        return shared.set(this, name, value);
+    };
+
+/**
+ * Xooie.Addon#cleanup()
+ *
+ * Removes the `addonClass` from the `root` of the associated `widget` and prepares this widget to be
+ * garbage collected.
+ **/
+    Addon.prototype.cleanup = function() {
+        this.widget().root().removeClass(this.addonClass());
+    };
+
+/** internal
+ * Xooie.Addon#_process_initEvent(initEvent) -> String
+ * - initEvent (String): The unmodified initEvent string.
+ *
+ * Adds the [[Xooie.Addon#name]] to the `initEvent`
+ **/
+    Addon.prototype._process_initEvent = function(initEvent) {
+        return this.name() === 'addon' ? initEvent : initEvent + '.' + this.name();
+    };
+
+/** internal
+ * Xooie.Addon#_process_addonClass(className) -> String
+ * - className (String): The unmodified className string.
+ *
+ * Adds the [[Xooie.Addon#name]] to the `addonClass`
+ **/
+    Addon.prototype._process_addonClass = function(addonClass) {
+        return this.name() === 'addon' ? addonClass : 'has-' + this.name() + '-addon';
+    };
+
+    return Addon;
+});
+
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -163,7 +3404,115 @@ define("xooie/addons/base",["jquery","xooie/shared"],function(t,e){var n=functio
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/addons/carousel_lentils",["jquery","xooie/addons/base"],function(t,e){var n=e("lentils",function(){var t=this;this.lentilBuilders={item:function(e,n){var i,o,s=t.module.content.children();for(o=0;o<s.length;o+=1)i=t.module.render(n,{number:o+1,scroll_mode:"item",lentil_is_last:o===s.length-1}),e.append(i)},page:function(e,n){if("undefined"!=typeof t.module.addons.pagination){var i,o;for(o=0;o<t.module.addons.pagination._breaks.length;o+=1)i=t.module.render(n,{number:o+1,scroll_mode:"page",lentil_is_last:o===t.module.addons.pagination._breaks.length-1}),e.append(i)}}},this.module.root.addClass("is-carousel-lentiled"),this.module.root.on("carouselUpdated",function(){t.updateLentils()}),this.module.root.on("carouselScrollComplete",function(){t.currentLentil()}),this.updateLentils(),this.currentLentil()});return n.setDefaultOptions({lentilMode:"item",lentilSelector:'[data-role="carousel-lentils"]',lentilTemplateSelector:'[data-role="carousel-lentils-template"]',activeLentilClass:"is-active-lentil"}),n.prototype.currentLentil=function(){var t,e=this.module.root.find(this.options.lentilSelector),n=e.children();t="page"===this.options.lentilMode&&"undefined"!=typeof this.module.addons.pagination?this.module.addons.pagination.currentPage():this.module.currentItem(),n.filter("."+this.options.activeLentilClass).removeClass(this.options.activeLentilClass),n.eq(t).addClass(this.options.activeLentilClass)},n.prototype.updateLentils=function(){var e=this.module.root.find(this.options.lentilSelector),n=this.module.root.find(this.options.lentilTemplateSelector),i=this;e.length>0&&n.length>0&&(e.html(""),"function"==typeof this.lentilBuilders[this.options.lentilMode]&&(this.lentilBuilders[this.options.lentilMode](e,n),e.children().on("click",function(e){e.preventDefault(),i.module.updatePosition(t(this).data("scroll"))}),this.currentLentil()))},n}),/*
+
+define('xooie/addons/carousel_lentils', ['jquery', 'xooie/addons/base'], function($, Base) {
+
+    var Lentils = Base('lentils', function(){
+        var self = this;
+
+        this.lentilBuilders = {
+            "item": function(container, template){
+                var items = self.module.content.children(),
+                    element, i;
+
+                for (i = 0; i < items.length; i += 1) {
+
+                    element = self.module.render(template, {
+                        number: i + 1,
+                        scroll_mode: "item",
+                        lentil_is_last: (i === items.length - 1)
+                    });
+                    container.append(element);
+                }
+            },
+
+            "page": function(container, template){
+                if (typeof self.module.addons.pagination === 'undefined') {
+                    return;
+                }
+
+                var element, i;
+
+                for (i = 0; i < self.module.addons.pagination._breaks.length; i += 1) {
+                    element = self.module.render(template, {
+                        number: i + 1,
+                        scroll_mode: "page",
+                        lentil_is_last: (i === self.module.addons.pagination._breaks.length - 1)
+                    });
+
+                    container.append(element);
+                }
+
+            }
+
+        };
+
+        this.module.root.addClass('is-carousel-lentiled');
+
+        this.module.root.on('carouselUpdated', function(){
+            self.updateLentils();
+        });
+
+        this.module.root.on('carouselScrollComplete', function(){
+            self.currentLentil();
+        });
+
+        this.updateLentils();
+
+        this.currentLentil();
+
+    });
+
+    Lentils.setDefaultOptions({
+        lentilMode: 'item',
+        lentilSelector: '[data-role="carousel-lentils"]',
+        lentilTemplateSelector: '[data-role="carousel-lentils-template"]',
+
+        activeLentilClass: 'is-active-lentil'
+    });
+
+    Lentils.prototype.currentLentil = function(){
+        var container = this.module.root.find(this.options.lentilSelector),
+            lentils = container.children(),
+            index;
+
+        if (this.options.lentilMode === 'page' && typeof this.module.addons.pagination !== 'undefined') {
+            index = this.module.addons.pagination.currentPage();
+        } else {
+            index = this.module.currentItem();
+        }
+
+        lentils.filter('.' + this.options.activeLentilClass).removeClass(this.options.activeLentilClass);
+
+        lentils.eq(index).addClass(this.options.activeLentilClass);
+    };
+
+    Lentils.prototype.updateLentils = function() {
+        var container = this.module.root.find(this.options.lentilSelector),
+            template = this.module.root.find(this.options.lentilTemplateSelector),
+            self = this;
+
+        if (container.length > 0 && template.length > 0) {
+            container.html('');
+
+            if (typeof this.lentilBuilders[this.options.lentilMode] === 'function') {
+                this.lentilBuilders[this.options.lentilMode](container, template);
+
+                container.children().on('click', function(event) {
+                    event.preventDefault();
+                    self.module.updatePosition($(this).data('scroll'));
+                });
+
+                this.currentLentil();
+
+            }
+        }
+    };
+
+    return Lentils;
+});
+
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -178,7 +3527,173 @@ define("xooie/addons/carousel_lentils",["jquery","xooie/addons/base"],function(t
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/addons/carousel_pagination",["jquery","xooie/addons/base"],function(t,e){var n=e("pagination",function(){var e=this;this._breaks=[],this.module.positionUpdaters=t.extend({},this.module.positionUpdaters,{page:function(t,n){var i,o=e.module.content.children(),s=1,r=0,a=e.module.wrapper.scrollLeft();return"undefined"==typeof n?t>0&&t<=e._breaks.length&&(r=Math.round(o.eq(e._breaks[t-1]).position().left)):(n=-1===n?-1:1,s=-n,t&&"number"==typeof t||(t=1),i=e.currentPage(s)+n*t,i=Math.max(0,Math.min(e._breaks.length-1,i)),r=Math.round(o.eq(e._breaks[i]).position().left)),a+r}}),this.module.snapMethods=t.extend({},this.module.snapMethods,{page:function(){var t,n,i,o=e.module.content.children(),s=e.currentPage();n=o.eq(e._breaks[s]).position().left,n=Math.abs(n)<1?0>n?Math.ceil(n):Math.floor(n):Math.round(n),0!==n&&s>0&&(i=o.eq(e._breaks[s-1]).position().left,i=Math.abs(i)<1?0>i?Math.ceil(i):Math.floor(i):Math.round(i),t=Math.abs(n)<Math.abs(i)?n+e.module.wrapper.scrollLeft():i+e.module.wrapper.scrollLeft(),e.module.wrapper.animate({scrollLeft:t}))}}),this.module.displayMethods=t.extend({},this.module.displayMethods,{page:function(t,n){var i=e.module.render(n,{current_page:e.currentPage()+1,total_pages:e._breaks.length});t.append(i)}}),this.module.root.on("carouselUpdated",function(){e.updateBreaks()}),this.updateBreaks()});return n.prototype.currentPage=function(t){var e,n,i,o,s,r=this.module.content.children();if("undefined"==typeof t&&(t=1),1===t){for(i=this.module.content.position().left,e=0;e<this._breaks.length;e+=1){for(o=0,s=e===this._breaks.length-1?r.length:this._breaks[e+1],n=this._breaks[e];s>n;n+=1)o+=r.eq(n).outerWidth(!0);if(i+this.module.options.visibleThreshold*o>=0)return e;i+=o}return r.length-1}for(i=this.module.content.outerWidth(!0)+this.module.content.position().left,e=this._breaks.length-1;e>=0;e--){for(o=0,s=e===this._breaks.length-1?r.length:this._breaks[e+1],n=this._breaks[e];s>n;n+=1)o+=r.eq(n).outerWidth(!0);if(i-=o,i<=this.module.options.visibleThreshold*o)return e}return 0},n.prototype.updateBreaks=function(){var e=this.module.content.children(),n=0,i=this.module.wrapper.innerWidth(),o=[0];e.each(function(e){var s=t(this),r=s.outerWidth(!0);n+=r,n>i&&n-(r-s.innerWidth())>i&&(n=r,o.push(e))}),this.module.root.toggleClass("is-carousel-paginated",o.length>1),this._breaks=o,this.module.updateDisplay()},n}),/*
+
+define('xooie/addons/carousel_pagination', ['jquery', 'xooie/addons/base'], function($, Base){
+
+    var Pagination = Base('pagination', function() {
+        var self = this;
+
+        this._breaks = [];
+
+        this.module.positionUpdaters = $.extend({}, this.module.positionUpdaters, {
+            "page": function(quantity, direction) {
+                var items = self.module.content.children(),
+                    bias = 1,
+                    offset = 0,
+                    position = self.module.wrapper.scrollLeft(),
+                    i;
+
+                if (typeof direction === 'undefined') {
+                    if (quantity > 0 && quantity <= self._breaks.length) {
+                        offset = Math.round(items.eq(self._breaks[quantity - 1]).position().left);
+                    }
+                } else {
+                    direction = direction === -1 ? -1 : 1;
+
+                    bias = -direction;
+
+                    if (!quantity || typeof quantity !== 'number') {
+                        quantity = 1;
+                    }
+
+                    i = self.currentPage(bias) + direction * quantity;
+                    i = Math.max(0, Math.min(self._breaks.length - 1, i));
+                    offset = Math.round(items.eq(self._breaks[i]).position().left);
+                }
+
+                return position + offset;
+            }
+        });
+
+        this.module.snapMethods = $.extend({}, this.module.snapMethods, {
+            "page": function() {
+                var items = self.module.content.children(),
+                    offset, p1, p2,
+                    i = self.currentPage();
+
+                p1 = items.eq(self._breaks[i]).position().left;
+                if (Math.abs(p1) < 1) {
+                    p1 = p1 < 0 ? Math.ceil(p1) : Math.floor(p1);
+                } else {
+                    p1 = Math.round(p1);
+                }
+
+                if (p1 !== 0 && i > 0) {
+                    p2 = items.eq(self._breaks[i - 1]).position().left;
+
+                    if (Math.abs(p2) < 1) {
+                        p2 = p2 < 0 ? Math.ceil(p2) : Math.floor(p2);
+                    } else {
+                        p2 = Math.round(p2);
+                    }
+
+                    if (Math.abs(p1) < Math.abs(p2)) {
+                        offset = p1 + self.module.wrapper.scrollLeft();
+                    } else {
+                        offset = p2 + self.module.wrapper.scrollLeft();
+                    }
+
+                    self.module.wrapper.animate({ scrollLeft: offset });
+                }
+            }
+        });
+
+        this.module.displayMethods = $.extend({}, this.module.displayMethods, {
+            "page": function(container, template){
+
+                var element = self.module.render(template, {
+                    current_page: self.currentPage() + 1,
+                    total_pages: self._breaks.length
+                });
+
+                container.append(element);
+            }
+        });
+
+        this.module.root.on('carouselUpdated', function(){
+            self.updateBreaks();
+        });
+
+        this.updateBreaks();
+    });
+
+    Pagination.prototype.currentPage = function(bias) {
+        var i, k, items = this.module.content.children(),
+            position, itemWidth, lastItem;
+
+        if (typeof bias === 'undefined') {
+            bias = 1;
+        }
+
+        if (bias === 1) {
+            position = this.module.content.position().left;
+
+            for (i = 0; i < this._breaks.length; i += 1) {
+                itemWidth = 0;
+                lastItem = (i === this._breaks.length - 1) ? items.length : this._breaks[i + 1];
+
+                for (k = this._breaks[i]; k < lastItem; k += 1) {
+                    itemWidth += items.eq(k).outerWidth(true);
+                }
+
+                if (position + (this.module.options.visibleThreshold * itemWidth) >= 0){
+                    return i;
+                } else {
+                    position += itemWidth;
+                }
+            }
+            return items.length - 1;
+        } else {
+            position = this.module.content.outerWidth(true) + this.module.content.position().left;
+
+            for (i = this._breaks.length - 1; i >= 0; i--) {
+                itemWidth = 0;
+                lastItem = (i === this._breaks.length - 1) ? items.length : this._breaks[i + 1]; 
+
+                for (k = this._breaks[i]; k < lastItem; k += 1) {
+                    itemWidth += items.eq(k).outerWidth(true);
+                }
+                position -= itemWidth;
+
+                if (position <= this.module.options.visibleThreshold * itemWidth) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+    };
+
+    Pagination.prototype.updateBreaks = function() {
+        var items = this.module.content.children(),
+            width = 0,
+            breakPoint = this.module.wrapper.innerWidth(),
+            breaks = [0];
+
+        items.each(function(i) {
+            var node = $(this),
+                w = node.outerWidth(true);
+
+            width += w;
+
+            if (width > breakPoint) {
+                if (width - (w - node.innerWidth()) > breakPoint) {
+                    width = w;
+                    breaks.push(i);
+                }
+            }
+        });
+
+        this.module.root.toggleClass('is-carousel-paginated', breaks.length > 1);
+
+        this._breaks = breaks;
+
+        this.module.updateDisplay();
+    };
+
+    return Pagination;
+});
+
+/*
 *   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -193,4 +3708,240 @@ define("xooie/addons/carousel_pagination",["jquery","xooie/addons/base"],functio
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-define("xooie/addons/tab_animation",["jquery","xooie/addons/base"],function(t,e){var n=e("animation",function(){var e=this,n=!1,i=[],o=function(){i.length>0?i.shift()():n=!1};this.module.root.on("tabChange",function(t){i.push(function(){var n;n=e.options.wrap?0===t.toTab&&t.fromTab===e.module.getPanel().length-1?1:t.toTab===e.module.getPanel().length-1&&0===t.fromTab?-1:t.toTab>t.fromTab?1:-1:t.toTab>t.fromTab?1:-1,e.animateToTab(t.toTab,t.fromTab,n,o)}),n||(n=!0,o())});var s=function(n,i){return function(o){n.animate(i,{duration:e.options.duration,easing:e.options.easing,complete:function(){t(this).attr("style",""),o()}})}};this.animationMethods={horizontal:function(t,e,n,i){var o=[];return n.css({overflow:"hidden",height:e.outerHeight(),width:n.width()}),e.css({display:"block",position:"absolute",top:0,left:0,width:e.width(),height:e.height()}),t.css({display:"block",position:"absolute",top:0,left:-1===i?-n.innerWidth():n.innerWidth(),width:t.width(),height:t.height()}),o.push(s(e,{left:-1===i?n.innerWidth():-n.innerWidth()}),s(t,{left:0}),s(n,{height:t.outerHeight()})),o},vertical:function(t,e,n,i){var o=[];return n.css({overflow:"hidden",height:e.outerHeight(),width:n.width()}),e.css({display:"block",position:"absolute",top:0,left:0,width:e.width(),height:e.height()}),t.css({display:"block",position:"absolute",top:-1===i?-n.innerHeight():n.innerHeight(),left:0,width:t.width(),height:t.height()}),o.push(s(e,{top:-1===i?n.innerHeight():-n.innerHeight()}),s(t,{top:0}),s(n,{height:t.outerHeight()})),o},fade:function(t,e,n){var i=[];return n.css({overflow:"hidden",height:e.outerHeight(),width:n.width()}),e.css({display:"block",position:"absolute",opacity:1,top:0,left:0,width:e.width(),height:e.height()}),t.css({display:"block",position:"absolute",opacity:0,top:0,left:0,width:t.width(),height:t.height()}),i.push(s(e,{opacity:0}),s(t,{opacity:1}),s(n,{height:t.outerHeight()})),i}}});return n.setDefaultOptions({panelContainerSelector:'[data-role="panel-container"]',animationMode:"horizontal",easing:"linear",duration:500,wrap:!1}),t.extend(n.prototype,{animateToTab:function(t,e,n,i){if(!(t===e||0>t||t>=this.module.getPanel().length)){var o,s,r=this.module.getPanel(e),a=this.module.getPanel(t),d=r.parents(this.options.panelContainerSelector),l=1,u=function(){l--,0===l&&i&&i()};if("function"==typeof this.animationMethods[this.options.animationMode]){for(o=this.animationMethods[this.options.animationMode](a,r,d,n),s=0;s<o.length;s++)l++,o[s](u);u()}}}}),n});
+
+define('xooie/addons/tab_animation', ['jquery', 'xooie/addons/base'], function($, Base) {
+
+    var Animation = Base('animation', function(){
+        var self = this,
+            isAnimating = false,
+            animationQueue = [],
+            callback = function(){
+                if (animationQueue.length > 0) {
+                    animationQueue.shift()();
+                } else {
+                    isAnimating = false;
+                }
+            };
+
+        this.module.root.on('tabChange', function(event){
+            animationQueue.push(function(){
+                var direction;
+
+                if (self.options.wrap) {
+                    if (event.toTab === 0 && event.fromTab === self.module.getPanel().length - 1) {
+                        direction = 1;
+                    } else if (event.toTab === self.module.getPanel().length - 1 && event.fromTab === 0) {
+                        direction = -1;
+                    } else {
+                        direction = event.toTab > event.fromTab ? 1 : -1;
+                    }
+                } else {
+                    direction = event.toTab > event.fromTab ? 1 : -1;
+                }
+
+                self.animateToTab(event.toTab, event.fromTab , direction, callback);
+            });
+
+            if (!isAnimating) {
+                isAnimating = true;
+                callback();
+            }
+        });
+
+        var getAnimation = function(el, properties) {
+            return function(cb) {
+                el.animate(properties, {
+                    duration: self.options.duration,
+                    easing: self.options.easing,
+                    complete: function() {
+                        $(this).attr('style', '');
+                        cb();
+                    }
+                });
+            };
+        };
+
+        this.animationMethods = {
+
+            "horizontal": function(to, from, container, direction){
+                var calls = [];
+
+                container.css({
+                    overflow: 'hidden',
+                    height: from.outerHeight(),
+                    width: container.width()
+                });
+
+                from.css({
+                    display: 'block',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: from.width(),
+                    height: from.height()
+                });
+
+                to.css({
+                    display: 'block',
+                    position: 'absolute',
+                    top: 0,
+                    left: (direction === -1) ? -container.innerWidth() : container.innerWidth(),
+                    width: to.width(),
+                    height: to.height()
+                });
+
+                calls.push(
+                    getAnimation(from, {
+                        left: (direction === -1) ? container.innerWidth() : -container.innerWidth()
+                    }),
+
+                    getAnimation(to, {
+                        left: 0
+                    }),
+
+                    getAnimation(container, {
+                        height: to.outerHeight()
+                    })
+                );
+
+                return calls;
+            },
+
+            "vertical": function(to, from, container, direction){
+                var calls = [];
+
+                container.css({
+                    overflow: 'hidden',
+                    height: from.outerHeight(),
+                    width: container.width()
+                });
+
+                from.css({
+                    display: 'block',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: from.width(),
+                    height: from.height()
+                });
+
+                to.css({
+                    display: 'block',
+                    position: 'absolute',
+                    top: (direction === -1) ? -container.innerHeight() : container.innerHeight(),
+                    left: 0,
+                    width: to.width(),
+                    height: to.height()
+                });
+
+                calls.push(
+                    getAnimation(from, {
+                        top: (direction === -1) ? container.innerHeight() : -container.innerHeight()
+                    }),
+
+                    getAnimation(to, {
+                        top: 0
+                    }),
+
+                    getAnimation(container, {
+                        height: to.outerHeight()
+                    })
+                );
+
+                return calls;
+
+            },
+
+            "fade": function(to, from, container, direction) {
+                var calls = [];
+
+                container.css({
+                    overflow: 'hidden',
+                    height: from.outerHeight(),
+                    width: container.width()
+                });
+
+                from.css({
+                    display: 'block',
+                    position: 'absolute',
+                    opacity: 1.0,
+                    top: 0,
+                    left: 0,
+                    width: from.width(),
+                    height: from.height()
+                });
+
+                to.css({
+                    display: 'block',
+                    position: 'absolute',
+                    opacity: 0,
+                    top: 0,
+                    left: 0,
+                    width: to.width(),
+                    height: to.height()
+                });
+
+                calls.push(
+                    getAnimation(from, {
+                        opacity: 0
+                    }),
+
+                    getAnimation(to, {
+                        opacity: 1.0
+                    }),
+
+                    getAnimation(container, {
+                        height: to.outerHeight()
+                    })
+                );
+
+                return calls;
+
+            }
+        };
+    });
+
+    Animation.setDefaultOptions({
+        panelContainerSelector: '[data-role="panel-container"]',
+        animationMode: 'horizontal', //Can be horizontal, vertical or fade
+        easing: 'linear', //TODO: load other easings if necessary
+        duration: 500,
+        wrap: false
+    });
+
+    $.extend(Animation.prototype, {
+        animateToTab: function(index, currentIndex, direction, callback) {
+            if (index === currentIndex || index < 0 || index >= this.module.getPanel().length) {
+                return;
+            }
+
+            var from = this.module.getPanel(currentIndex),
+                to = this.module.getPanel(index),
+                container = from.parents(this.options.panelContainerSelector),
+                count = 1,
+                calls, i,
+                step_callback = function() {
+                    count--;
+
+                    if (count === 0 && callback) {
+                        callback();
+                    }
+                };
+
+            if (typeof this.animationMethods[this.options.animationMode] === 'function') {
+                calls = this.animationMethods[this.options.animationMode](to, from, container, direction);
+
+                for (i = 0; i < calls.length; i++) {
+                    count++;
+                    calls[i](step_callback);
+                }
+
+                step_callback();
+            }
+        }
+    });
+
+    return Animation;
+
+});
+
