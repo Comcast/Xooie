@@ -1,0 +1,27 @@
+---
+title: Xooie - Widgets - Dialog
+---
+
+<h1 class="x-h1">Dialog</h1>
+
+<div class="x-block-full">
+
+	<button id="x-demo-dialog-open">Open Dialog</button>
+
+	<div class="x-demo-dialog" data-widget-type="dialog">
+		<h2 class="x-h2" data-x-role="dialogtitle">Alert</h2>
+		<p data-x-role="dialogdesc">This is a demo.  It demonstrates how a dialog should function.</p>
+
+		<button data-x-role="dialogcontrol:close">Close</button>
+	</div>
+
+	<script>
+		$("#x-demo-dialog-open").on('mouseup keyup', function(event){
+			if ([1,13,32].indexOf(event.which) !== -1) {
+				$X.openDialog($('.x-demo-dialog'));
+			}
+			
+		});
+	</script>
+
+</div>

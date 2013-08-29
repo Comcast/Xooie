@@ -1,0 +1,10 @@
+@import 'compass';
+@import 'variables';
+@import 'mixins';
+
+.x-demo-dialog {
+	width: 150px;
+	height: 300px;
+	background-color: $almost_white;
+	border: $dark_border;
+}
