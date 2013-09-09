@@ -1,0 +1,33 @@
+@import 'compass';
+@import 'variables';
+@import 'mixins';
+
+[class^="x-key-demo-list"] {
+	@include basic-list;
+	margin: base(2);
+}
+
+.x-key-demo-list-vertical {
+	@include basic-list;
+	margin: base(2);
+
+	.x-key-demo-list-item {
+		margin: base(1) 0;
+	}
+}
+
+.x-key-demo-modal {
+	border: $dark_border;
+	border-radius: base(2);
+	padding: base(2);
+}
+
+.x-key-demo-list-horizontal {
+	@include horizontal-list;
+	margin: base(2);
+
+	.x-key-demo-list-item {
+		margin: 0 base(1);
+	}
+}
+

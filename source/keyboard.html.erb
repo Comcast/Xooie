@@ -1,0 +1,38 @@
+---
+title: Xooie - Keyboard Navigation
+---
+
+<script>
+	require(['keyboard_navigation'], function(KeyboardNavigation) {
+		KeyboardNavigation();
+	});
+</script>
+
+<h1 class="x-h1">Keyboard Navigation</h1>
+
+<ul class="x-key-demo-list" aria-orientation="vertical" data-widget-type="base">
+	<li class="x-key-demo-list-item"><button class="x-button-small">Some</button></li>
+	<li class="x-key-demo-list-item"><button class="x-button-small">Buttons</button></li>
+	<li class="x-key-demo-list-item"><button class="x-button-small">Use Up</button></li>
+	<li class="x-key-demo-list-item"><button class="x-button-small">And Down</button></li>
+	<li class="x-key-demo-list-item"><button class="x-button-small">Arrows</button></li>
+</ul>
+
+<ul class="x-key-demo-list-horizontal" aria-orientation="horizontal" data-widget-type="base">
+	<li class="x-key-demo-list-item"><button class="x-button-small">Other</button></li>
+	<li class="x-key-demo-list-item"><button class="x-button-small">Buttons</button></li>
+	<li class="x-key-demo-list-item"><button class="x-button-small">Use Left</button></li>
+	<li class="x-key-demo-list-item"><button class="x-button-small">And Right</button></li>
+	<li class="x-key-demo-list-item"><button class="x-button-small">Arrows</button></li>
+</ul>
+
+<div data-widget-type="base">
+	<button class="x-button-small">Sometimes</button>
+	<ul class="x-key-demo-list-vertical x-key-demo-modal" data-x-is-modal="true" aria-orientation="vertical">
+		<li class="x-key-demo-list-item"><button class="x-button-small">You Have</button></li>
+		<li class="x-key-demo-list-item"><button class="x-button-small">To Focus</button></li>
+		<li class="x-key-demo-list-item"><button class="x-button-small">Inside Something</button></li>
+		<li class="x-key-demo-list-item"><button class="x-button-small">And Press A Button To</button></li>
+		<li class="x-key-demo-list-item"><button class="x-button-small">Exit</button></li>
+	</ul>
+</div>
