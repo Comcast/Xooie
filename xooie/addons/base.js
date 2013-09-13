@@ -44,6 +44,8 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
             return false;
         }
 
+        this._setData(widget.root().data());
+
         // If there is already an instance of this addon instantiated for the module, return it:
         if (widget.addons() && widget.addons().hasOwnProperty(this.name())) {
             return widget.addons()[this.name()];
@@ -185,6 +187,22 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  * The method for getting [[Xooie.Addon#_addonClass]].
  **/
     Addon.defineReadOnly('addonClass', 'has-addon');
+
+/** internal
+ * Xooie.widget#_setData(data)
+ * - data (Object): A collection of key/value pairs.
+ *
+ * Sets the properties to the values specified, as long as the property has been defined.
+ **/
+  Addon.prototype._setData = function(data) {
+    var i;
+
+    for (i = 0; i < this._definedProps.length; i+=1) {
+      if (typeof data[this._definedProps[i]] !== 'undefined') {
+        this.set(this._definedProps[i], data[this._definedProps[i]]);
+      }
+    }
+  };
 
 /**
  * Xooie.Addon#get(name) -> object
