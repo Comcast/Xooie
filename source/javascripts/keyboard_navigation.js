@@ -44,6 +44,21 @@ define('keyboard_navigation', ['jquery', 'xooie/helpers'], function($, helpers){
     }
   };
 
+  selectors = {
+    unindexed: ['[data-widget-type] a[href]:visible:not(:disabled):not([tabindex])',
+      '[data-widget-type] button:visible:not(:disabled):not([tabindex])',
+      '[data-widget-type] input:visible:not(:disabled):not([tabindex])',
+      '[data-widget-type] select:visible:not(:disabled):not([tabindex])',
+      '[data-widget-type] textarea:visible:not(:disabled):not([tabindex])',
+      '[data-widget-type] [tabindex=0]:visible:not(:disabled)'].join(','),
+    indexed: function(t) {
+      if (t > 0) {
+        return '[data-widget-type] [tabindex=' + t + ']:visible:not(:disabled)';
+      }
+    },
+    allIndexed: '[data-widget-type] [tabindex]:visible:not(:disabled)'
+  };
+
 /** internal
  * Xooie.Widget._moveFocus(direction)
  * - direction (Integer): Determines whether or not to increment or decrement the index.  Can be 1 or -1.
@@ -58,24 +73,9 @@ define('keyboard_navigation', ['jquery', 'xooie/helpers'], function($, helpers){
     // TODO: Add detection of new contexts
     // TODO: Add recollection of last focused item
 
-    var selector, selectors, tabindex, index, target;
+    var selector, tabindex, index, target;
 
     var tabIndicies= [];
-
-    selectors = {
-      unindexed: ['[data-widget-type] a[href]:visible:not(:disabled):not([tabindex])',
-        '[data-widget-type] button:visible:not(:disabled):not([tabindex])',
-        '[data-widget-type] input:visible:not(:disabled):not([tabindex])',
-        '[data-widget-type] select:visible:not(:disabled):not([tabindex])',
-        '[data-widget-type] textarea:visible:not(:disabled):not([tabindex])',
-        '[data-widget-type] [tabindex=0]:visible:not(:disabled)'].join(','),
-      indexed: function(t) {
-        if (t > 0) {
-          return '[data-widget-type] [tabindex=' + t + ']:visible:not(:disabled)';
-        }
-      },
-      allIndexed: '[data-widget-type] [tabindex]:visible:not(:disabled)'
-    };
 
     // jquery select the current item
     current = $(current);

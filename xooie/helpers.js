@@ -41,6 +41,10 @@ define('xooie/helpers', ['jquery'], function($){
     return parseInt(int, 10);
   };
 
+  helpers.isString = function(str) {
+    return typeof str === 'string';
+  };
+
   helpers.isArray = Array.isArray || function(ary) {
     return Array.prototype.toString(ary) === '[object Array]';
   };

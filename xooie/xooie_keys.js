@@ -1,27 +1,96 @@
-define('xooie/keyboard_navigation', ['jquery', 'xooie/helpers'], function($, helpers){
-  var selectors, keyboardNavigation, keybindings;
+define('xooie/xooie_keys', ['jquery', 'xooie/helpers'], function($, helpers){
+  // The goal of this module is to provide keyboard navigation for a widget.
+  // Default behavior is that the directional keys will move based on the orientation of the widget.
 
+  var XooieKeys, instance;
+
+  XooieKeys = function() {
+
+    if (!helpers.isUndefined(instance)) {
+      return instance;
+    }
+
+    instance = this;
+
+    // Default keybindings
+    this.set({
+      37: function(event) {
+        moveFocus($(event.target), -1);
+
+        event.preventDefault();
+      },
+
+      38: function() {
+
+      },
+
+      39: function(event) {
+        moveFocus($(event.target), 1);
+
+        event.preventDefault();
+      },
+
+      40: function() {
+
+      }
+    });
+
+  };
+
+  XooieKeys._selectors = {
+    unindexed: ['[data-widget-type] a[href]:visible:not(:disabled):not([tabindex])',
+      '[data-widget-type] button:visible:not(:disabled):not([tabindex])',
+      '[data-widget-type] input:visible:not(:disabled):not([tabindex])',
+      '[data-widget-type] select:visible:not(:disabled):not([tabindex])',
+      '[data-widget-type] textarea:visible:not(:disabled):not([tabindex])',
+      '[data-widget-type] [tabindex=0]:visible:not(:disabled)'].join(','),
+
+    indexed: function(t) {
+      if (t > 0) {
+        return '[data-widget-type] [tabindex=' + t + ']:visible:not(:disabled)';
+      }
+    },
+
+    allIndexed: '[data-widget-type] [tabindex]:visible:not(:disabled)'
+  };
+
+  XooieKeys._moveFocus = function() {
+
+  };
+
+  XooieKeys.prototype.set = function(key, method, selector){
+    // set a hash of bindings
+    if (helpers.isObject(key) && helpers.isUndefined(method)) {
+        var k;
+
+        for(k in key){
+            if (helpers.isFunction(key[k])) {
+                this.set(k, key[k]);
+            }
+        }
+
+        return;
+    }
+
+    key = helpers.toInt(key);
+
+    if (!isNaN(key) && helpers.isFunction(method)) {
+        this._keybindings[key] = method;
+    }
+  };
+
+  KeyBindings.prototype.call = function() {
+      var key = Array.prototype.shift.apply(arguments);
+
+      key = parseInt(key, 10);
+      
+      if (!isNaN(key) && !_.isUndefined(this._bindings[key])) {
+          this._bindings[key].apply(this._view, arguments);
+      }
+  };
 
   keybindings = {
-    37: function(event) {
-      moveFocus($(event.target), -1);
-
-      event.preventDefault();
-    },
-
-    38: function() {
-
-    },
-
-    39: function(event) {
-      moveFocus($(event.target), 1);
-
-      event.preventDefault();
-    },
-
-    40: function() {
-
-    }
+    
   };
 
 /** internal
@@ -43,18 +112,7 @@ define('xooie/keyboard_navigation', ['jquery', 'xooie/helpers'], function($, hel
     var tabIndicies= [];
 
     selectors = {
-      unindexed: ['[data-widget-type] a[href]:visible:not(:disabled):not([tabindex])',
-        '[data-widget-type] button:visible:not(:disabled):not([tabindex])',
-        '[data-widget-type] input:visible:not(:disabled):not([tabindex])',
-        '[data-widget-type] select:visible:not(:disabled):not([tabindex])',
-        '[data-widget-type] textarea:visible:not(:disabled):not([tabindex])',
-        '[data-widget-type] [tabindex=0]:visible:not(:disabled)'].join(','),
-      indexed: function(t) {
-        if (t > 0) {
-          return '[data-widget-type] [tabindex=' + t + ']:visible:not(:disabled)';
-        }
-      },
-      allIndexed: '[data-widget-type] [tabindex]:visible:not(:disabled)'
+      
     };
 
     // jquery select the current item
