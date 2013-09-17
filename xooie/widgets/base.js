@@ -21,7 +21,7 @@
  * specific functionality.
  **/
 
-define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/shared', 'xooie/keyboard_navigation'], function($, $X, helpers, shared, keyboardNavigation) {
+define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/shared'], function($, $X, helpers, shared) {
 
   var Widget;
 
@@ -173,8 +173,6 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
     } else {
       initCheck();
     }
-
-    // new keyboardNavigation();
   };
 
 /** internal

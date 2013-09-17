@@ -37,6 +37,46 @@ define('xooie/xooie_keys', ['jquery', 'xooie/helpers'], function($, helpers){
 
   };
 
+  function isVisible (element) {
+
+  }
+
+  function isFocusable (element) {
+
+  }
+
+  // return the current tab order on the page
+  function tabbable (element) {
+    /* we're only interested in any content that is descendant from a [data-widget-type]
+       that means we can start by selecting just the widgets: $('[data-widget-type]')
+
+       We're not changing the behavior of a tab keypress.  The user should be able to tab as normal.
+
+       But we are adding arrow key navigation.
+
+       Since navigation using directional keys is dependent on being inside a xooie widget, each widget should be considered a
+       captive experience in terms of directional navigation.
+
+       Therefore, there is no need to set focus on the first widget when an arrow key is pressed.  In fact, we shouldn't.
+
+       The user will use tab to navigate non-DHTML content until they enter a widget.  Once inside the widget, the user can tab as normal.  However, the experience is augmented by the use of directional keys.
+
+       It still makes sense to have a single keypress event bound to the document, as this will also accomodate hotkeys.
+
+       Also: bear in mind, screen readers will usurp keypress events.
+    */
+    // start with all indexed content
+
+    // then get all: a[href] button input select textarea object :visible:not(:disabled):not([tabindex])
+  }
+
+  Bindings = {
+    37: {
+      none: function() {}
+    }
+
+  };
+
   XooieKeys._selectors = {
     unindexed: ['[data-widget-type] a[href]:visible:not(:disabled):not([tabindex])',
       '[data-widget-type] button:visible:not(:disabled):not([tabindex])',
