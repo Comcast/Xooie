@@ -167,6 +167,24 @@ define('xooie/shared', ['jquery'], function($){
       if (typeof instance[prop.setter] === 'function') {
         instance[prop.setter](value);
       }
+    },
+
+/**
+ * Xooie.shared.setData(instance, data)
+ * - instance (Widget | Addon): The instance to set data on
+ * - data (Object): A collection of key/value pairs
+ *
+ * Sets the properties to the values specified, as long as the property has been defined
+ **/
+    setData: function(instance, data) {
+      var i, prop;
+
+      for (i = 0; i < instance._definedProps.length; i++) {
+        prop = instance._definedProps[i];
+        if (typeof data[prop] !== 'undefined') {
+          instance.set(prop, data[prop]);
+        }
+      }
     }
 
   };

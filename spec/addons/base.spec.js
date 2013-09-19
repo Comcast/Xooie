@@ -29,6 +29,13 @@ require(['jquery', 'xooie/widgets/base', 'xooie/addons/base', 'xooie/shared'], f
                 expect(this.widget.root().hasClass(this.addon.addonClass())).toBe(true);
             });
 
+            it('reads the data attributes of the element and sets the data', function() {
+                this.el.data('name', 'example');
+                this.addon = new Addon(this.widget);
+
+                expect(this.addon.name()).toEqual('example');
+            });
+
             it('sets the widget to the widget property', function(){
                 this.addon = new Addon(this.widget);
 

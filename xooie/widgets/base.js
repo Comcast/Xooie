@@ -123,7 +123,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
     element = $(element);
 
     //set the default options
-    this._setData(element.data());
+    shared.setData(this, element.data());
 
     //do instance tracking
     if (element.data('xooieInstance')) {
@@ -465,22 +465,6 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 
 
 //PROTOTYPE DEFINITIONS
-
-/** internal
- * Xooie.widget#_setData(data)
- * - data (Object): A collection of key/value pairs.
- *
- * Sets the properties to the values specified, as long as the property has been defined.
- **/
-  Widget.prototype._setData = function(data) {
-    var i;
-
-    for (i = 0; i < this._definedProps.length; i+=1) {
-      if (typeof data[this._definedProps[i]] !== 'undefined') {
-        this.set(this._definedProps[i], data[this._definedProps[i]]);
-      }
-    }
-  };
 
 /**
  * Xooie.Widget#get(name) -> object

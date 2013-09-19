@@ -56,6 +56,9 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
 
         widget.root().addClass(this.addonClass());
 
+        // Set the default options
+        shared.setData(this, widget.root().data());
+
         // Reference the widget:
         this.widget(widget);
 
