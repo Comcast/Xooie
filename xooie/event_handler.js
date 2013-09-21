@@ -25,7 +25,7 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) 
   };
 
   function format(type, namespace) {
-    if (typeof namespace === 'undefined') {
+    if (!namespace) {
       return type;
     } else {
       return type + '.' + namespace;
