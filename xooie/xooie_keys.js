@@ -119,7 +119,7 @@ define('xooie/xooie_keys', ['jquery', 'xooie/helpers'], function($, helpers){
     }
   };
 
-  KeyBindings.prototype.call = function() {
+  XooieKeys.prototype.call = function() {
       var key = Array.prototype.shift.apply(arguments);
 
       key = parseInt(key, 10);
