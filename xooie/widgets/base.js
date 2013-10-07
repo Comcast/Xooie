@@ -29,8 +29,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Xooie.Widget@xooie-init(event)
  * - event (Event): A jQuery event object
  *
- * A jQuery special event triggered when the widget is successfully initialized.  Triggers on the `root` element
- * of the widget.  This event will fire if bound after the widget is instantiated.
+ * A jQuery special event triggered when the widget is successfully initialized.
  **/
 
   $.event.special['xooie-init'] = {
@@ -50,15 +49,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Xooie.Widget@xooie-refresh(event)
  * - event (Event): A jQuery event object
  *
- * A jQuery special event triggered when the widget is refreshed.  Refresh events occur when the `root` element
- * is passed to [[$X]].  Triggers on the `root` element of the widget.
+ * A jQuery special event triggered when the widget is refreshed.
  **/
 
-/** internal
- * Xooie.Widget.roleDetails(name) -> Object
- *
- * TODO: Test and document.
- **/
+// Internal method to get the details for a role
   function roleDetails (name) {
     return {
       processor: '_process_role_' + name,
@@ -69,30 +63,21 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
     };
   }
 
-/** internal
- * Xooie.Widget.roleDispatcher(name, prototype)
- *
- * TODO: Test and document.
- **/
-  function roleDispatcher(name, prototype) {
-    var role = roleDetails(name);
+// Internal method for adding role methods to the prototype
+  function roleDispatcher(name, prototype, isUnique) {
+    var role = roleDetails(name),
+        methodName = isUnique ? name : role.pluralName;
 
-    if (helpers.isUndefined(prototype[role.pluralName])) {
+    if (helpers.isUndefined(prototype[methodName])) {
       prototype._definedRoles.push(name);
 
-      prototype[role.pluralName] = function() {
+      prototype[methodName] = function() {
         return this[role.getter]();
       };
     }
   }
 
-/** internal
- * Xooie.Widget.cacheInstance(instance) -> Integer
- * - instance (Widget): An instance of a Xooie widget to be cached
- *
- * Recursively checks for the next available index in [[$X._instanceCache]] using [[$X._instanceIndex]]
- * as a reference point.  Returns the index.
- **/
+// Internal method that recursively checks for the next available index in $X._instanceCache using $X._instanceIndex as a reference point.  Returns the index.
   function cacheInstance (instance) {
     if (typeof instance !== 'undefined') {
       var index = $X._instanceIndex;
@@ -122,10 +107,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 
     element = $(element);
 
-    //set the default options
+    // set the default options
     shared.setData(this, element.data());
 
-    //do instance tracking
+    // do instance tracking
     if (element.data('xooieInstance')) {
       if (typeof $X._instanceCache[element.data('xooieInstance')] !== 'undefined'){
         element.trigger(this.get('refreshEvent'));
@@ -135,6 +120,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
       }
     }
 
+    // bind the initEvent and refreshEvent
     element.on(this.get('initEvent') + ' ' + this.get('refreshEvent'), function(){
       self._applyRoles();
     });
@@ -259,17 +245,19 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 
 /**
  * Xooie.Widget.defineRole(name)
+ * - name (String): The name of the role.
+ * - isUnique (Boolean): Flags the role as unique (first element in the read order is considered)
  *
- * TODO: This needs tests and documentation
+ * A method to define a role that an element may have inside this widget.
  **/
-  Widget.defineRole = function(name) {
+  Widget.defineRole = function(name, isUnique) {
     var role = roleDetails(name);
 
-    roleDispatcher(name, this.prototype);
+    roleDispatcher(name, this.prototype, isUnique);
 
     if (!helpers.isFunction(this.prototype[role.getter])) {
       this.prototype[role.getter] = function() {
-        return this.root().find(role.selector);
+        return isUnique ? this.root().find(role.selector + ':first') : this.root().find(role.selector);
       };
     }
   };

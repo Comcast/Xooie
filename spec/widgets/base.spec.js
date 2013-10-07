@@ -175,7 +175,28 @@ require(['jquery', 'xooie/widgets/base', 'xooie/shared'], function($, Widget, Sh
             it('creates and external method that calls the internal method', function(){
                 this.widget = new Widget(this.el);
 
-                spyOn(this.widget, '_get_role_bar');
+      it('adds the role to the definedRoles collection', function(){
+        expect(Widget.prototype._definedRoles.indexOf('bar')).not.toBe(-1);
+      });
+
+      describe('...and that role is unique...', function() {
+        beforeEach(function(){
+          Widget.defineRole('unique', true);
+        });
+
+        it('creates and external getter method', function() {
+          expect(typeof Widget.prototype.unique).toBe('function');
+          expect(Widget.prototype.uniques).toBeUndefined();
+        });
+
+        it('only gets the first element of a role', function(){
+          var w = new Widget($('<div><div data-x-role="unique">First</div><div data-x-role="unique">Second</div></div>'));
+
+          expect(w.unique().length).toBe(1);
+          expect(w.unique().text()).toBe('First');
+        });
+      });
+    });
 
                 this.widget.bars();
 
