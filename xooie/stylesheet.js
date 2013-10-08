@@ -79,6 +79,8 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function($, helpers) {
         this.get().addRule(ruleName, propString, index);
         rule = this.get().rules[index];
       }
+    } else {
+      this.addProperties(ruleName, properties); // if the rule exists, set the properties
     }
 
     return rule;

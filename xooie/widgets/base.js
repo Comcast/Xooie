@@ -277,9 +277,8 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * - selector (String): The selector used to identify the rule.
  * - properties (Object): A hash of key/value pairs of css properties and values.
  *
- * Creates a new css rule in the Xooie stylesheet.  If the rule exists, it will overwrite said rule.
+ * Creates a new css rule in the Xooie stylesheet.  If the rule exists, it will add properties to the rule.
  **/
- // TODO: update so that if the rule exists the properties are added to the rule
   Widget.createStyleRule = function(selector, properties) {
     if (typeof $X._stylesheet.addRule !== 'undefined') {
       return $X._stylesheet.addRule(selector, properties);
@@ -290,8 +289,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Xooie.Widget.getStyleRule(selector) -> cssRule | undefined
  * - selector (String): The selector used to identify the rule.
  *
- * Retrieves the css rule from the Xooie stylesheet using the provided `selector`.  If the rule is not
- * present in [[$X._styleRules]] then the method will check in [[$X._stylesheet]].
+ * Retrieves the css rule from the Xooie stylesheet using the provided `selector`.  If the rule is not present in [[$X._styleRules]] then the method will check in [[$X._stylesheet]].
  **/
   Widget.getStyleRule = function(selector) {
     if ($X._styleRules.hasOwnProperty(selector)) {
@@ -333,8 +331,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Xooie.Widget#id([value]) -> Integer
  * - value: an optional value to be set.
  *
- * The method for setting or getting [[Xooie.Widget#_id]].  Returns the current value of
- * [[Xooie.Widget#_id]] if no value is passed or sets the value.
+ * The method for setting or getting [[Xooie.Widget#_id]].  Returns the current value of [[Xooie.Widget#_id]] if no value is passed or sets the value.
  **/
   Widget.define('id');
 
@@ -347,62 +344,53 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Xooie.Widget#root([value]) -> Element
  * - value: an optional value to be set.
  *
- * The method for setting or getting [[Xooie.Widget#_root]].  Returns the current value of
- * [[Xooie.Widget#_root]] if no value is passed or sets the value.
+ * The method for setting or getting [[Xooie.Widget#_root]].  Returns the current value of [[Xooie.Widget#_root]] if no value is passed or sets the value.
  **/
   Widget.define('root');
 
 /** internal
  * Xooie.Widget#_namespace -> String
  *
- * The namespace of the widget.  This value is used for determining the value of [[Xooie.Widget#className]],
- * [[Xooie.Widget#refreshEvent]], [[Xooie.Widget#initEvent]], and [[Xooie.Widget#instanceClass]].
+ * The namespace of the widget.  This value is used for determining the value of [[Xooie.Widget#className]], [[Xooie.Widget#refreshEvent]], [[Xooie.Widget#initEvent]], and [[Xooie.Widget#instanceClass]].
  **/
 /**
  * Xooie.Widget#namespace([value]) -> String
  * - value: an optional value to be set.
  *
- * The method for setting or getting [[Xooie.Widget#_namespace]].  Returns the current value of
- * [[Xooie.Widget#_namespace]] if no value is passed or sets the value.
+ * The method for setting or getting [[Xooie.Widget#_namespace]].  Returns the current value of [[Xooie.Widget#_namespace]] if no value is passed or sets the value.
  **/
   Widget.define('namespace', '');
 
 /** internal
  * Xooie.Widget#_templateLanguage -> String
  *
- * Determines the template framework to use.
- * Default: `micro_template`.
+ * Determines the template framework to use.  Default: `micro_template`.
  **/
 /**
  * Xooie.Widget#templateLanguage([value]) -> String
  * - value: an optional value to be set.
  *
- * The method for setting or getting [[Xooie.Widget#_templateLanguage]].  Returns the current value of
- * [[Xooie.Widget#_templateLanguage]] if no value is passed or sets the value.
+ * The method for setting or getting [[Xooie.Widget#_templateLanguage]].  Returns the current value of [[Xooie.Widget#_templateLanguage]] if no value is passed or sets the value.
  **/
   Widget.define('templateLanguage', 'micro_template');
 
 /** internal, read-only
  * Xooie.Widget#_addons -> Object
  *
- * A collection of addons instantiated addons associated with this widget.
- * Default: `{}`.
+ * A collection of addons instantiated addons associated with this widget.  Default: `{}`.
  **/
 /** read-only
  * Xooie.Widget#addons([value]) -> Object
  * - value: an optional value to be set.
  *
- * The method for setting or getting [[Xooie.Widget#_addons]].  Returns the current value of
- * [[Xooie.Widget#_addons]] if no value is passed or sets the value.
+ * The method for setting or getting [[Xooie.Widget#_addons]].  Returns the current value of [[Xooie.Widget#_addons]] if no value is passed or sets the value.
  **/
   Widget.defineReadOnly('addons');
 
 /** internal, read-only
  * Xooie.Widget#_refreshEvent -> String
  *
- * The name of the event that is triggered when the module is refreshed.  Refresh events are triggered
- * when the root element of this widget is passed to [[$X]].
- * Default: `xooie-refresh`.
+ * The name of the event that is triggered when the module is refreshed.  Refresh events are triggered when the root element of this widget is passed to [[$X]].  Default: `xooie-refresh`.
  **/
 /** read-only
  * Xooie.Widget#refreshEvent() -> String
@@ -414,9 +402,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 /** internal, read-only
  * Xooie.Widget#_initEvent -> String
  *
- * The name of the event that is triggered when the module is initialized.  The initialization event
- * is not triggered until all addons have been instantiated.
- * Default: `xooie-init`.
+ * The name of the event that is triggered when the module is initialized.  The initialization event is not triggered until all addons have been instantiated.  Default: `xooie-init`.
  **/
 /** read-only
  * Xooie.Widget#initEvent() -> String
@@ -428,8 +414,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 /** internal, read-only
  * Xooie.Widget#_className -> String
  *
- * The string class name that is applied to the root element of this widget when it is instantiated.
- * Default: `is-instantiated`.
+ * The string class name that is applied to the root element of this widget when it is instantiated.  Default: `is-instantiated`.
  **/
 /** read-only
  * Xooie.Widget#className() -> String
@@ -441,8 +426,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 /** internal, read-only
  * Xooie.Widget#_instanceClass -> String
  *
- * A class that is generated and applied to the root element of the widget.
- * Default: `{{namespace}}-{{id}}`
+ * A class that is generated and applied to the root element of the widget.  Default: `{{namespace}}-{{id}}`
  **/
 /** read-only
  * Xooie.Widget#instanceClass() -> String
@@ -478,8 +462,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 /**
  * Xooie.Widget#cleanup()
  *
- * Removes the `className` and `instanceClass` classes and `data-xooie-instance` attribute from the root element.
- * Calls [[Xooie.Addon.cleanup]] for each addon.  This will permit the instance to be garbage collected.
+ * Removes all instantiation data and classes, allowing the widget to be garbage collected.
  **/
   Widget.prototype.cleanup = function() {
     var name;
@@ -500,8 +483,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * - template (Element): A jQuery-selected script element that contains the template to be rendered.
  * - view (Object): The data to be passed to the template when it is rendered.
  *
- * Renders the template with the provided data by calling the method in [[Xooie.Widget.renderMethods]] based on the
- * template language specified.  Returns `$('<span>Error rendering template</span>')` when an error occurs
+ * Renders the template with the provided data by calling the method in [[Xooie.Widget.renderMethods]] based on the template language specified.  Returns `$('<span>Error rendering template</span>')` when an error occurs
  **/
   Widget.prototype.render = function(template, view) {
     var language = template.data('templateLanguage') || this.templateLanguage(),
@@ -519,8 +501,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * - role (String): The name of the role for which this id is being generated.
  * - index (Integer): The index at which the particular element exists in the read order.
  *
- * Generates an id string to be applied to an element of the specified role.  The format of
- * this id string is `x-[[Xooie.Widget#id]]-{role}-{index}`.
+ * Generates an id string to be applied to an element of the specified role.  The format of this id string is `x-[[Xooie.Widget#id]]-{role}-{index}`.
  **/
   Widget.prototype._getRoleId = function(role, index) {
     return 'x-' + this.id() + '-' + role + '-' + index;
@@ -529,7 +510,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 /** internal
  * Xooie.Widget#_applyRoles()
  *
- * TODO: Test and document.
+ * A method to get and process elements tagged with a defined role.
  **/
   Widget.prototype._applyRoles = function() {
     var i, j, role, elements;
@@ -560,8 +541,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Xooie.Widget#_process_addons(addons) -> Object
  * - addons (Object): The collection of instantiated addons for this widget
  *
- * Checks to see if the addons object has been defined.  We can't define objects as
- * 'default' values for properties since the object will be the same for each instance.
+ * A method to check if the addons hash has been defined
  **/
   Widget.prototype._process_addons = function(addons){
     if (typeof addons === 'undefined'){

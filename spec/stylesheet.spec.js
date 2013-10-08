@@ -56,6 +56,14 @@ require(['jquery', 'xooie/stylesheet'], function($, Stylesheet){
 
         expect(s.addRule('test_rule_b')).toBe(rule);
       });
+
+      it('adds the properties to the rule if it already exists', function() {
+        s.addRule('test_rule_b');
+
+        var rule = s.addRule('test_rule_b', {'display': 'none'});
+
+        expect(rule.style['display']).toBe('none');
+      });
     });
 
     describe('When getting a rule...', function(){
