@@ -8,9 +8,11 @@ FileUtils.cp_r 'xooie', 'vendor/assets/javascripts'
 json = File.read('package.json')
 config = JSON.parse(json)
 
+version = config['version'].sub('-pre', '.pre')
+
 Gem::Specification.new do |s|
   s.name        = config['name']
-  s.version     = config['version']
+  s.version     = version
   s.summary     = config['description']
   s.date        = Time.now
   s.description = config['description']
