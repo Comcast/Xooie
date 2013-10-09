@@ -22,9 +22,9 @@ define('xooie/widgets/dialog', ['jquery', 'xooie/xooie', 'xooie/widgets/base', '
     element = $(element);
     var id, instance;
 
-    id = helpers.toInt(element.attr('data-xooie-intsance'));
+    id = helpers.toInt(element.attr('data-xooie-inst  nce'));
 
-    instance = $X._instanceCache[0];
+    instance = $X._instanceCache[id];
 
     if (!helpers.isUndefined(instance)) {
       instance.open();
@@ -35,9 +35,9 @@ define('xooie/widgets/dialog', ['jquery', 'xooie/xooie', 'xooie/widgets/base', '
     element = $(element);
     var id, instance;
 
-    id = helpers.toInt(element.attr('data-xooie-intsance'));
+    id = helpers.toInt(element.attr('data-xooie-instance'));
 
-    instance = $X._instanceCache[0];
+    instance = $X._instanceCache[id];
 
     if (!helpers.isUndefined(instance)) {
       instance.close();
