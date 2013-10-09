@@ -17,12 +17,7 @@
 /**
  * class Xooie.Tab < Xooie.Widget
  *
- * A widget that associates containers of information with "tabs".  The pattern is
- * designed to mimic the real-world concept of a filing cabinet, where content is
- * stored in folders with protruding tabs that label said content.
- *
- * The Tab widget should be used as a way to organize how content is displayed
- * visually.  Content is hidden until the associated tab is activated.
+ * A widget that associates containers of information with "tabs".
  **/
 define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'xooie/event_handler'], function($, helpers, Base, EventHandler) {
 /**
@@ -163,9 +158,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  * Xooie.Tab#activateTab(tab)
  * - tab (Element): One of the [[Xooie.Tab#tabs]] associated with this widget.
  *
- * Activates the [[Xooie.Tab#tabs]] by adding the [[Xooie.Tab#activeClass]] class and setting the `aria-expanded` property to 'true'.
- * The method also activates the [[Xooie.Tab#tabpanels]] that is indicated by the tab's `aria-controls` attribute,
- * adding the [[Xooie.Tab#activeClass]] class and setting `aria-expanded` to 'true'.
+ * Activates a [[Xooie.Tab#tabs]].
  **/
   Tab.prototype.activateTab = function(tab) {
     tab.addClass(this.activeClass())
@@ -226,6 +219,8 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
     var tabpanels = this.tabpanels(),
         tab, panelId,
         self = this;
+
+    tabs.off(this._tabEvents.handlers);
 
     tabs.attr('role', 'tab')
         .attr('aria-selected', false);
