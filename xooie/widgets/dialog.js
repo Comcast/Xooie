@@ -22,7 +22,7 @@ define('xooie/widgets/dialog', ['jquery', 'xooie/xooie', 'xooie/widgets/base', '
     element = $(element);
     var id, instance;
 
-    id = helpers.toInt(element.attr('data-xooie-inst  nce'));
+    id = helpers.toInt(element.attr('data-xooie-instance'));
 
     instance = $X._instanceCache[id];
 
