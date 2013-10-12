@@ -53,27 +53,6 @@ require(['jquery', 'xooie/widgets/base', 'xooie/addons/base', 'xooie/shared'], f
 
                 expect(testVal).toBe(true);
             });
-
-            it('delays triggering the init event if there are constructors to be called', function(){
-                var testVal = false,
-                    AddonExtend = Addon.extend(function() { return true; });
-
-                this.el.on('xooie-addon-init', function(){
-                    testVal = true;
-                });
-
-                this.addon = new AddonExtend(this.widget);
-
-                expect(testVal).toBe(false);
-
-                waitsFor(function(){
-                    return this.addon._extendCount === null;
-                });
-
-                runs(function(){
-                    expect(testVal).toBe(true);
-                });
-            });
         });
 
         describe('When defining a new property...', function(){
@@ -127,14 +106,15 @@ require(['jquery', 'xooie/widgets/base', 'xooie/addons/base', 'xooie/shared'], f
         });
 
         describe('When extending the Addon...', function(){
-            it('calls the Shared extend method', function(){
-                spyOn(Shared, 'extend');
+            it('calls the Shared create method', function(){
+                spyOn(Shared, 'create');
 
-                var constructor = function(){};
+                var constructor = function(){},
+                    post_constructor = function(){};
 
-                Addon.extend(constructor);
+                Addon.extend(constructor, post_constructor);
 
-                expect(Shared.extend).toHaveBeenCalledWith(constructor, Addon);
+                expect(Shared.create).toHaveBeenCalledWith(constructor, post_constructor, Addon);
             });
         });
 

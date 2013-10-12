@@ -74,39 +74,27 @@ require(['jquery', 'xooie/shared', 'xooie/widgets/base'], function($, Shared, Wi
     });
 
     describe('When extending the base module...', function(){
-        var constructor, Extended;
+        var constructor, post_constructor, Extended;
 
         beforeEach(function(){
             constructor = jasmine.createSpy('constructor');
+            post_constructor = jasmine.createSpy('post_constructor');
         });
 
-        it('sets the extendCount to 1 if extending Base', function(){
-            Extended = Shared.extend(constructor, Widget);
-
-            expect(Extended.prototype._extendCount).toBe(1);
-        });
-
-        it('increments the extendCount if an extended widget is extended', function(){
-            Extended = Shared.extend(constructor, Widget);
-
-            var Widget_Two = Extended.extend(constructor);
-
-            expect(Widget_Two.prototype._extendCount).toBe(2);
-        });
-
-        it('returns a new constructor that invokes the Base constructor and the passed constructor', function(){
-            Extended = Shared.extend(function() { constructor(); }, Widget);
+        it('returns a new constructor that invokes the Base constructor, post constructor, and the passed constructor', function(){
+            Extended = Shared.create(constructor, post_constructor, Widget);
 
             this.el = $('<div />');
 
             var w = new Extended(this.el);
 
             expect(constructor).toHaveBeenCalled();
+            expect(post_constructor).toHaveBeenCalled();
             expect(w.root().is(this.el)).toBe(true);
         });
 
         it('extends the new Widget with the parent widget methods', function(){
-            Extended = Shared.extend(function(){ constructor(); }, Widget);
+            Extended = Shared.create(constructor, post_constructor, Widget);
             var prop;
 
             for (prop in Widget) {
@@ -115,7 +103,7 @@ require(['jquery', 'xooie/shared', 'xooie/widgets/base'], function($, Shared, Wi
         });
 
         it('extends the new Widget prototype with the parent prototype', function(){
-            Extended = Shared.extend(function(){ constructor(); }, Widget);
+            Extended = Shared.create(constructor, post_constructor, Widget);
 
             var prop;
 

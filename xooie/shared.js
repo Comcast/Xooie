@@ -116,28 +116,54 @@ define('xooie/shared', ['jquery'], function($){
       }
     },
 /**
- * Xooie.shared.extend(constr, _super) -> Widget | Addon
+ * Xooie.shared.create(constr, post_constr, _super) -> Widget | Addon
  * - constr (Function): The constructor for the new [[Xooie.Widget]] or [[Xooie.Addon]] class.
- * - _super (Widget | Addon): The module which is to be extended
+ * - post_constr (Function): The optional constructor method to run after all constructors have run.
+ * - _super (Widget | Addon): The optional module which is to be extended
  *
  * Creates a new Xooie widget/addon class that inherits all properties from the extended class.
  * Constructors for the class are called in order from the top-level constructor to the
- * base constructor.
+ * base constructor followed by the post constructors from the base to top-level post constructor.
  **/
-    extend: function(constr, module){
+    create: function(constr, post_constr, module){
       var newModule = (function(){
         return function Child() {
-          module.apply(this, arguments);
-          constr.apply(this, arguments);
-          this._extendCount -= 1;
+          var i, result;
+
+          for (i = 0; i < Child._constructors.length; i++) {
+            result = Child._constructors[i].apply(this, arguments);
+
+            if (typeof result !== 'undefined') {
+              return result;
+            }
+          }
+
+          for (i = 0; i < Child._postConstructors.length; i++) {
+            Child._postConstructors[i].apply(this, arguments);
+          }
         };
       })();
-      
 
-      $.extend(true, newModule, module);
-      $.extend(true, newModule.prototype, module.prototype);
+      if (typeof module !== 'undefined') {
+        $.extend(true, newModule, module);
+        $.extend(true, newModule.prototype, module.prototype);
+      }
 
-      newModule.prototype._extendCount = newModule.prototype._extendCount === null ? 1 : newModule.prototype._extendCount += 1;
+      if (typeof newModule._constructors === 'undefined') {
+        newModule._constructors = [];
+      }
+
+      if (constr) {
+        newModule._constructors.push(constr);
+      }
+
+      if (typeof newModule._postConstructors === 'undefined') {
+        newModule._postConstructors = [];
+      }
+
+      if (post_constr) {
+        newModule._postConstructors.unshift(post_constr);
+      }
 
       return newModule;
     },

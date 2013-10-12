@@ -117,7 +117,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Instantiates a new Xooie widget, or returns an existing widget if it is already associated with the element passed.
  * Any addons passed into the constructor will be instantiated and added to the [[Xooie.Widget#addons]] collection.
  **/
-  Widget = function(element, addons) {
+  Widget = shared.create(function(element, addons) {
     var self = this;
 
     element = $(element);
@@ -141,41 +141,27 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 
     var id = cacheInstance(this);
 
+    element.attr('data-xooie-instance', id);
+
     this.set('id', id);
 
     this.set('root', element);
 
     element.addClass(this.get('className'))
            .addClass(this.get('instanceClass'));
+  }, function(element, addons) {
+    var i;
 
-    var initCheck = function(){
-      var i;
-
-      if (!self._extendCount || self._extendCount <= 0) {
-
-        if (typeof addons !== 'undefined') {
-          for (i = 0; i < addons.length; i+=1) {
-            new addons[i](self);
-          }
-        }
-        
-        element.attr('data-xooie-instance', id);
-
-        element.trigger(self.get('initEvent'));
-        self._extendCount = null;
-      } else {
-        setTimeout(initCheck, 0);
+    if (typeof addons !== 'undefined') {
+      for (i = 0; i < addons.length; i+=1) {
+        new addons[i](this);
       }
-    };
-
-    if (this._extendCount > 0) {
-      setTimeout(initCheck, 0);
-    } else {
-      initCheck();
     }
 
+    this.root().trigger(this.get('initEvent'));
+
     // new keyboardNavigation();
-  };
+  });
 
 /** internal
  * Xooie.Widget._renderMethods -> Object
@@ -280,10 +266,10 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Xooie.Widget.extend(constr) -> Widget
  * - constr (Function): The constructor for the new [[Xooie.Widget]] class.
  *
- * See [[Xooie.shared.extend]].
+ * See [[Xooie.shared.create]].
  **/
-  Widget.extend = function(constr){
-    return shared.extend(constr, this);
+  Widget.extend = function(constr, post_constr){
+    return shared.create(constr, post_constr, this);
   };
 
 /**
@@ -328,13 +314,6 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * A collection of roles that have been defined for this class instance.
  **/
   Widget.prototype._definedRoles = [];
-
-/** internal, read-only
- * Xooie.Widget#_extendCount -> Integer | null
- *
- * Tracks the number of constructors that need to be called.
- **/
-  Widget.prototype._extendCount = null;
 
 //PROPERTY DEFINITIONS
 
