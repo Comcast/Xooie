@@ -1,35 +1,5 @@
 define('xooie/widgets/accordion', ['jquery', 'xooie/widgets/tab'], function($, Tab){
   var Accordion = Tab.extend(function() {
-    var self = this;
-
-    this._tabEvents.clear('keyup');
-    this._tabEvents.clear('mouseup');
-
-    this._tabEvents.add({
-      keyup: function(event){
-        var activeTab = self.getActiveTabs();
-
-        if ([13,32].indexOf(event.which) !== -1){
-          if (activeTab.is(this)) {
-            self.deactivateTab(activeTab);
-          } else {
-            self.activateTab($(this));
-          }
-
-          event.preventDefault();
-        }
-      },
-
-      mouseup: function(){
-        var activeTab = self.getActiveTabs();
-
-        if (activeTab.is(this)) {
-          self.deactivateTab(activeTab);
-        } else {
-          self.activateTab($(this));
-        }
-      }
-    });
   });
 
   Accordion.define('namespace', 'accordion');
@@ -46,6 +16,16 @@ define('xooie/widgets/accordion', ['jquery', 'xooie/widgets/tab'], function($, T
     tablist.attr('aria-multiselectable', true);
 
     return tablist;
+  };
+
+  Accordion.prototype.selectTabs = function(event, selectedTab) {
+    var activeTabs = this.getActiveTabs();
+
+    if (activeTabs.is(selectedTab)) {
+      return activeTabs.not(selectedTab);
+    } else {
+      return activeTabs.add(selectedTab);
+    }
   };
 
   return Accordion;
