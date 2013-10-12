@@ -20,6 +20,18 @@
  * A widget that associates containers of information with "tabs".
  **/
 define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'xooie/event_handler'], function($, helpers, Base, EventHandler) {
+
+  function setSelection(widget, selectedTabs) {
+    var activeTabs = widget.getActiveTabs();
+
+    activeTabs.not(selectedTabs).each(function() {
+      widget.deactivateTab($(this));
+    });
+
+    selectedTabs.not(activeTabs).each(function() {
+      widget.activateTab($(this));
+    });
+  }
 /**
  * Xooie.Tab@xooie-tab-active(event)
  * - event (Event): A jQuery event object
@@ -54,25 +66,15 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
 
     this._tabEvents.add({
       keyup: function(event){
-        var activeTab = self.getActiveTabs();
-
-        if ([13,32].indexOf(event.which) !== -1 && !activeTab.is(this)){
-          self.deactivateTab(activeTab);
-
-          self.activateTab($(this));
+        if ([13,32].indexOf(event.which) !== -1){
+          setSelection(self, self.selectTabs(event, $(this)));
 
           event.preventDefault();
         }
       },
 
-      mouseup: function(){
-        var activeTab = self.getActiveTabs();
-
-        if (!activeTab.is(this)) {
-          self.deactivateTab(activeTab);
-
-          self.activateTab($(this));
-        }
+      mouseup: function(event){
+        setSelection(self, self.selectTabs(event, $(this)));
       }
     });
 
@@ -195,6 +197,23 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
     e.tabId = tab.attr('id');
 
     this.root().trigger(e);
+  };
+
+/**
+ * Xooie.Tab#selectTabs(event, selectedTab)
+ * - event (Event): Browser event that triggered selectTabs call
+ * - selectedTab (Element): Tab that was selected by a mouse or keyboard event
+ *
+ * Only called by mouse/keyboard event handlers to generate the list of
+ * currently active tabs. Should return a jQuery collection of tabs that are
+ * to be active. Any tabs which are currently active and not in the
+ * collection will be deactivated, and likewise any tabs not currently active
+ * and in the collection will be activated.
+ *
+ * Override this method to alter the behavior of the Tab widget.
+ **/
+  Tab.prototype.selectTabs = function(event, selectedTab) {
+    return selectedTab;
   };
 
 /**
