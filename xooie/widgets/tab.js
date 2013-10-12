@@ -75,6 +75,10 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
 
       mouseup: function(event){
         setSelection(self, self.selectTabs(event, $(this)));
+      },
+
+      click: function(event){
+        event.preventDefault();
       }
     });
 
