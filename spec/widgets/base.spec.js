@@ -87,55 +87,8 @@ require(['jquery', 'xooie/widgets/base', 'xooie/shared'], function($, Widget, Sh
                 expect(testVal).toBe(true);
             });
 
-            it('delays triggering the init event if there are constructors to be called', function(){
-                var testVal = false,
-                    element = $('<div />'),
-                    WidgetExtend = Widget.extend(function() { return true; });
-
-                element.on('xooie-init', function(){
-                    testVal = true;
-                });
-
-                this.widget = new WidgetExtend(element);
-
-                expect(testVal).toBe(false);
-
-                waitsFor(function(){
-                    return this.widget._extendCount === null;
-                });
-
-                runs(function(){
-                    expect(testVal).toBe(true);
-                });
-            });
-
-            it('delays loading addons if there are inherited constructors to be called', function(){
-                var testVal = false,
-                    element = $('<div />'),
-                    WidgetExtend = Widget.extend(function() { return true; }),
-                    addon = function() {
-                        testVal = true;
-                    };
-
-                element.on('xooie-init', function(){
-                    testVal = true;
-                });
-
-                this.widget = new WidgetExtend(element, [addon]);
-
-                expect(testVal).toBe(false);
-
-                waitsFor(function(){
-                    return this.widget._extendCount === null;
-                });
-
-                runs(function(){
-                    expect(testVal).toBe(true);
-                });
-            });
-
-            it('binds an event handler to the initEvent that calls _applyRoles', function(){
-                spyOn(this.widget, '_applyRoles');
+      it('binds an event handler to the initEvent that calls _applyRoles', function(){
+        spyOn(this.widget, '_applyRoles');
 
                 this.el.trigger(this.widget.initEvent());
 
@@ -263,19 +216,18 @@ require(['jquery', 'xooie/widgets/base', 'xooie/shared'], function($, Widget, Sh
             });
         });
 
-        describe('When defining a new property...', function(){
-            it('makes a property both writable and readable', function(){
-                spyOn(Widget, 'defineWriteOnly');
-                spyOn(Widget, 'defineReadOnly');
+    describe('When extending the Widget...', function(){
+      it('calls the Shared create method', function(){
+        spyOn(Shared, 'create');
 
-                Widget.define('foo_one');
+        var constructor = function(){},
+            post_constructor = function(){};
 
-                expect(Widget.defineWriteOnly).toHaveBeenCalledWith('foo_one');
-                expect(Widget.defineReadOnly).toHaveBeenCalledWith('foo_one', undefined);
-            });
+        Widget.extend(constructor, post_constructor);
 
-            it('calls the Shared.defineReadOnly method', function(){
-                spyOn(Shared, 'defineReadOnly');
+        expect(Shared.create).toHaveBeenCalledWith(constructor, post_constructor, Widget);
+      });
+    });
 
                 Widget.defineReadOnly('foo', 'bar');
 
