@@ -73,7 +73,7 @@ define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
 
             "px": function(quantity, direction) {
                 var position;
-                
+
                 if (typeof direction === 'undefined') {
                     position = 0;
                     direction = 1;
@@ -199,7 +199,7 @@ define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
         //It is possible that images may load after the carousel has instantiated/
         //Also, this can be used for lazy-loading images
         //TODO: This can be problematic, since it is triggering update dimensions for each image load
-        this.content.find('img').on('load', this.updateDimensions.bind(this));
+        this.content.find('img').first().on('load', this.updateDimensions.bind(this));
 
         carouselElements = carouselElements.add(this.root);
     });
@@ -366,7 +366,7 @@ define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
         if (this.isScrolling) {
             self.wrapper.stop(true,true);
         }
-        
+
         callback();
 
     };
