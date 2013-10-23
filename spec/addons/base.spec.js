@@ -133,6 +133,16 @@ require(['jquery', 'xooie/widgets/base', 'xooie/addons/base', 'xooie/shared'], f
                 expect(this.addon.name()).toBe('addon');
             });
 
+            it('defines a root property', function() {
+                expect(Addon.prototype.root).not.toBeUndefined();
+            });
+
+            it('gets the root of the parent widget', function() {
+                this.addon = new Addon(this.widget);
+                
+                expect(this.addon.root()).toBe(this.widget.root());
+            });
+
             it('defines an initEvent property', function(){
                 expect(Addon.prototype.initEvent).not.toBeUndefined();
             });
