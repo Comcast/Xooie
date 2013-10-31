@@ -5,14 +5,14 @@ require(['jquery', 'xooie/carousel'], function($, Carousel) {
 
         beforeEach(function(){
             element = $([
-                '<div>',
+                '<div id="carousel">',
                     '<div data-role="carousel-content">',
-                        '<span></span>',
+                        '<span style="width: 1px;"></span>',
                         '<span style="height: 100px; margin: 10px"></span>',
-                        '<span></span>',
-                        '<span></span>',
-                        '<span></span>',
-                        '<span></span>',
+                        '<span style="width: 1px;"></span>',
+                        '<span style="width: 1px;"></span>',
+                        '<span style="width: 1px;"></span>',
+                        '<span style="width: 1px;"></span>',
                     '</div>',
                     '<div data-role="carousel-control" data-scroll="-1px"></div>',
                     '<div data-role="carousel-display"></div>',
@@ -21,8 +21,12 @@ require(['jquery', 'xooie/carousel'], function($, Carousel) {
                     '</script>',
                 '</div>'
             ].join(''));
+            $('body').append(element);
+            carouselInstance = new Carousel($("#carousel"));
+        });
 
-            carouselInstance = new Carousel(element);
+        afterEach(function() {
+          $('#carousel').remove();
         });
 
         describe('When instantiating a new Carousel class...', function(){
