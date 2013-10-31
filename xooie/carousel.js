@@ -45,7 +45,7 @@ define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
         this.positionUpdaters = {
 
             "item": function(quantity, direction) {
-                var items = self.content.children(),
+                var items = self.content.children(':visible'),
                     bias, offset,
                     position = self.wrapper.scrollLeft(),
                     i;
@@ -244,7 +244,7 @@ define('xooie/carousel', ['jquery', 'xooie/base'], function($, Base) {
     };
 
     Carousel.prototype.currentItem = function(bias) {
-        var i, items = this.content.children(),
+        var i, items = this.content.children(':visible'),
             position, itemWidth;
 
         if (typeof bias === 'undefined') {
