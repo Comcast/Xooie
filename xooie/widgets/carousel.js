@@ -132,8 +132,12 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
           return;
         }
 
-        if (direction === 'goto' && quantity < 1 && quantity <= items.length) {
+        if (direction === 'goto' && quantity > 1 && quantity <= items.length) {
           pos = Math.round(items.eq(quantity - 1).position().left);
+
+          if (pos === 0) {
+            return;
+          }
         } else {
           i = this.currentItem(direction === 'right');
 
