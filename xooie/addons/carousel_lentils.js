@@ -36,7 +36,7 @@ define('xooie/addons/carousel_lentils', ['jquery', 'xooie/addons/base', 'xooie/h
       },
 
       page: function (container, template) {
-        if (helpers.isUndefined(self.widget().addons().pagination) {
+        if (helpers.isUndefined(self.widget().addons().pagination)) {
           return;
         }
 
@@ -80,23 +80,23 @@ define('xooie/addons/carousel_lentils', ['jquery', 'xooie/addons/base', 'xooie/h
 
   Lentils.defineReadOnly('lentilTemplateSelector', '[data-role="carousel-lentils-template"]');
 
-  Lentils.defineReadOnly('')
+  //Lentils.defineReadOnly('')
 
-  <script data-role="carousel-lentils-template" lang>
-    '<li><button></button></li>'
-  </script>
+  //<script data-role="carousel-lentils-template" lang>
+  //  '<li><button></button></li>'
+  //</script>
 
   Lentils.prototype.update = function() {
 
   };
 
-  Lentils.setDefaultOptions({
+  /*Lentils.setDefaultOptions({
       lentilMode: 'item',
       lentilSelector: ,
       lentilTemplateSelector: ,
 
       activeLentilClass: 'is-active-lentil'
-  });
+  });*/
 
   Lentils.prototype.currentLentil = function(){
       var container = this.module.root.find(this.options.lentilSelector),
