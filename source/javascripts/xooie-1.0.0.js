@@ -626,31 +626,12 @@ define('xooie/shared', ['jquery'], function($){
       if (typeof instance[prop.setter] === 'function') {
         instance[prop.setter](value);
       }
-    },
-
-/**
- * Xooie.shared.setData(instance, data)
- * - instance (Widget | Addon): The instance to set data on
- * - data (Object): A collection of key/value pairs
- *
- * Sets the properties to the values specified, as long as the property has been defined
- **/
-    setData: function(instance, data) {
-      var i, prop;
-
-      for (i = 0; i < instance._definedProps.length; i++) {
-        prop = instance._definedProps[i];
-        if (typeof data[prop] !== 'undefined') {
-          instance.set(prop, data[prop]);
-        }
-      }
     }
 
   };
 
   return shared;
 });
-
 define('xooie/keyboard_navigation', ['jquery', 'xooie/helpers'], function($, helpers){
   var selectors, keyboardNavigation, keybindings;
 
@@ -992,7 +973,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
     element = $(element);
 
     //set the default options
-    shared.setData(this, element.data());
+    this._setData(element.data());
 
     //do instance tracking
     if (element.data('xooieInstance')) {
@@ -1337,6 +1318,22 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 
 //PROTOTYPE DEFINITIONS
 
+/** internal
+ * Xooie.widget#_setData(data)
+ * - data (Object): A collection of key/value pairs.
+ *
+ * Sets the properties to the values specified, as long as the property has been defined.
+ **/
+  Widget.prototype._setData = function(data) {
+    var i;
+
+    for (i = 0; i < this._definedProps.length; i+=1) {
+      if (typeof data[this._definedProps[i]] !== 'undefined') {
+        this.set(this._definedProps[i], data[this._definedProps[i]]);
+      }
+    }
+  };
+
 /**
  * Xooie.Widget#get(name) -> object
  * - name (String): The name of the property to be retrieved.
@@ -1523,7 +1520,7 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) 
   };
 
   function format(type, namespace) {
-    if (!namespace) {
+    if (typeof namespace === 'undefined') {
       return type;
     } else {
       return type + '.' + namespace;
@@ -1579,7 +1576,6 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) 
 
   return EventHandler;
 });
-
 /*
 *   Copyright 2013 Comcast
 *
@@ -1714,12 +1710,8 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
           return;
         }
 
-        if (direction === 'goto' && quantity > 1 && quantity <= items.length) {
+        if (direction === 'goto' && quantity < 1 && quantity <= items.length) {
           pos = Math.round(items.eq(quantity - 1).position().left);
-
-          if (pos === 0) {
-            return;
-          }
         } else {
           i = this.currentItem(direction === 'right');
 
@@ -3209,9 +3201,6 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
         widget.addons()[this.name()] = this;
 
         widget.root().addClass(this.addonClass());
-
-        // Set the default options
-        shared.setData(this, widget.root().data());
 
         // Reference the widget:
         this.widget(widget);
