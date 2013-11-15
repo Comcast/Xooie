@@ -1,6 +1,6 @@
 
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ define('xooie/helpers', ['jquery'], function($){
   return helpers;
 });
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -176,7 +176,7 @@ define('xooie/stylesheet', ['jquery'], function($) {
 
 });
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -850,7 +850,7 @@ define('xooie/keyboard_navigation', ['jquery', 'xooie/helpers'], function($, hel
 
 });
 /*
-* Copyright 2012 Comcast
+* Copyright 2013 Comcast
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -1495,7 +1495,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 });
 
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -1578,7 +1578,7 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) 
   return EventHandler;
 });
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -2347,7 +2347,7 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
   return Carousel;
 });
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -2630,7 +2630,7 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base'], function($, B
     return Dropdown;
 });
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -3014,7 +3014,7 @@ define('xooie/widgets/accordion', ['jquery', 'xooie/widgets/tab'], function($, T
   return Accordion;
 });
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -3148,7 +3148,7 @@ define('xooie/dialog', ['jquery', 'xooie/base'], function($, Base) {
 define("xooie/widgets/dialog", function(){});
 
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -3390,7 +3390,7 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
 });
 
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -3513,7 +3513,7 @@ define('xooie/addons/carousel_lentils', ['jquery', 'xooie/addons/base'], functio
 });
 
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -3694,7 +3694,7 @@ define('xooie/addons/carousel_pagination', ['jquery', 'xooie/addons/base'], func
 });
 
 /*
-*   Copyright 2012 Comcast
+*   Copyright 2013 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.

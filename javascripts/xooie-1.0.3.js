@@ -1,6 +1,6 @@
 
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ define('xooie/helpers', ['jquery'], function($){
   return helpers;
 });
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -77,9 +77,15 @@ define('xooie/helpers', ['jquery'], function($){
 *   limitations under the License.
 */
 
-define('xooie/stylesheet', ['jquery'], function($) {
+define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function($, helpers) {
+    
+
+    function nameCheck (index, name) {
+        return document.styleSheets[index].ownerNode.getAttribute('id') === name;
+    }
+
     var Stylesheet = function(name){
-        var i, title;
+        var title;
 
         //check to see if a stylesheet already exists with this name
         this.element = $('style[id=' + name + ']');
@@ -93,17 +99,11 @@ define('xooie/stylesheet', ['jquery'], function($) {
             this.element.appendTo($('head'));
         }
 
-        if (document.styleSheets) {
-            for (i = 0; i < document.styleSheets.length; i += 1){
-                if (document.styleSheets[i].ownerNode.getAttribute('id') === name) {
-                    this._index = i;
-                }
-            }
-        }
+        this._name = name;
     };
 
     Stylesheet.prototype.get = function(){
-        return document.styleSheets[this._index];
+        return document.styleSheets[this.getIndex()];
     };
 
     Stylesheet.prototype.getRule = function(ruleName){
@@ -172,11 +172,30 @@ define('xooie/stylesheet', ['jquery'], function($) {
         return false;
     };
 
+    Stylesheet.prototype.getIndex = function() {
+        var i;
+
+        if (helpers.isUndefined(document.styleSheets)) {
+            return;
+        }
+
+        if (!helpers.isUndefined(this._index) && nameCheck(this._index, this._name)) {
+            return this._index;
+        } else {
+            for (i = 0; i < document.styleSheets.length; i += 1){
+                if (nameCheck(i, this._name)) {
+                    this._index = i;
+                    return i;
+                }
+            }
+        }
+    };
+
     return Stylesheet;
 
 });
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -869,7 +888,7 @@ define('xooie/keyboard_navigation', ['jquery', 'xooie/helpers'], function($, hel
 
 });
 /*
-* Copyright 2013 Comcast
+* Copyright 2012 Comcast
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -1498,7 +1517,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 });
 
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -1582,7 +1601,7 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) 
 });
 
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -2355,7 +2374,7 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
   return Carousel;
 });
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -2638,7 +2657,7 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base'], function($, B
     return Dropdown;
 });
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -2664,6 +2683,18 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base'], function($, B
  * visually.  Content is hidden until the associated tab is activated.
  **/
 define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'xooie/event_handler'], function($, helpers, Base, EventHandler) {
+
+  function setSelection(widget, selectedTabs) {
+    var activeTabs = widget.getActiveTabs();
+
+    activeTabs.not(selectedTabs).each(function() {
+      widget.deactivateTab($(this));
+    });
+
+    selectedTabs.not(activeTabs).each(function() {
+      widget.activateTab($(this));
+    });
+  }
 /**
  * Xooie.Tab@xooie-tab-active(event)
  * - event (Event): A jQuery event object
@@ -2698,25 +2729,19 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
 
     this._tabEvents.add({
       keyup: function(event){
-        var activeTab = self.getActiveTabs();
-
-        if ([13,32].indexOf(event.which) !== -1 && !activeTab.is(this)){
-          self.deactivateTab(activeTab);
-
-          self.activateTab($(this));
+        if ([13,32].indexOf(event.which) !== -1){
+          setSelection(self, self.selectTabs(event, $(this)));
 
           event.preventDefault();
         }
       },
 
-      mouseup: function(){
-        var activeTab = self.getActiveTabs();
+      mouseup: function(event){
+        setSelection(self, self.selectTabs(event, $(this)));
+      },
 
-        if (!activeTab.is(this)) {
-          self.deactivateTab(activeTab);
-
-          self.activateTab($(this));
-        }
+      click: function(event){
+        event.preventDefault();
       }
     });
 
@@ -2841,6 +2866,23 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
     e.tabId = tab.attr('id');
 
     this.root().trigger(e);
+  };
+
+/**
+ * Xooie.Tab#selectTabs(event, selectedTab)
+ * - event (Event): Browser event that triggered selectTabs call
+ * - selectedTab (Element): Tab that was selected by a mouse or keyboard event
+ *
+ * Only called by mouse/keyboard event handlers to generate the list of
+ * currently active tabs. Should return a jQuery collection of tabs that are
+ * to be active. Any tabs which are currently active and not in the
+ * collection will be deactivated, and likewise any tabs not currently active
+ * and in the collection will be activated.
+ *
+ * Override this method to alter the behavior of the Tab widget.
+ **/
+  Tab.prototype.selectTabs = function(event, selectedTab) {
+    return selectedTab;
   };
 
 /**
@@ -2969,38 +3011,9 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
 
   return Tab;
 });
+
 define('xooie/widgets/accordion', ['jquery', 'xooie/widgets/tab'], function($, Tab){
   var Accordion = Tab.extend(function() {
-    var self = this;
-
-    this._tabEvents.clear('keyup');
-    this._tabEvents.clear('mouseup');
-
-    this._tabEvents.add({
-      keyup: function(event){
-        var activeTab = self.getActiveTabs();
-
-        if ([13,32].indexOf(event.which) !== -1){
-          if (activeTab.is(this)) {
-            self.deactivateTab($(this));
-          } else {
-            self.activateTab($(this));
-          }
-
-          event.preventDefault();
-        }
-      },
-
-      mouseup: function(){
-        var activeTab = self.getActiveTabs();
-
-        if (activeTab.is(this)) {
-          self.deactivateTab($(this));
-        } else {
-          self.activateTab($(this));
-        }
-      }
-    });
   });
 
   Accordion.define('namespace', 'accordion');
@@ -3019,10 +3032,21 @@ define('xooie/widgets/accordion', ['jquery', 'xooie/widgets/tab'], function($, T
     return tablist;
   };
 
+  Accordion.prototype.selectTabs = function(event, selectedTab) {
+    var activeTabs = this.getActiveTabs();
+
+    if (activeTabs.is(selectedTab)) {
+      return activeTabs.not(selectedTab);
+    } else {
+      return activeTabs.add(selectedTab);
+    }
+  };
+
   return Accordion;
 });
+
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -3156,7 +3180,7 @@ define('xooie/dialog', ['jquery', 'xooie/base'], function($, Base) {
 define("xooie/widgets/dialog", function(){});
 
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -3401,7 +3425,7 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
 });
 
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -3524,7 +3548,7 @@ define('xooie/addons/carousel_lentils', ['jquery', 'xooie/addons/base'], functio
 });
 
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -3705,7 +3729,7 @@ define('xooie/addons/carousel_pagination', ['jquery', 'xooie/addons/base'], func
 });
 
 /*
-*   Copyright 2013 Comcast
+*   Copyright 2012 Comcast
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
