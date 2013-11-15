@@ -16,14 +16,9 @@ require(['jquery', 'xooie/stylesheet'], function($, Stylesheet){
         expect($('style').length).toBe(initialLength + 1);
       });
 
-      it('sets the stylesheet property of the instantiated stylesheet to the matching document.styleSheets object', function(){
-        expect(document.styleSheets[2].ownerNode.getAttribute('id')).toBe('test');
-        expect(document.styleSheets[2]).toBe(s.get());
-      });
-
-      it('adds a title to the created stylesheet', function(){
-        expect(s.element.attr('id')).toEqual('test');
-      });
+            it('adds a title to the created stylesheet', function(){
+                expect(s.element.attr('id')).toEqual('test');
+            });
 
       it('adds a comment to the created stylesheet indicating that this is a dynamic stylesheet', function(){
         expect(s.element.text()).toEqual('/* This is a dynamically generated stylesheet: test */');
@@ -122,29 +117,25 @@ require(['jquery', 'xooie/stylesheet'], function($, Stylesheet){
           'height': '100px'
         });
 
-        expect(s.getRule('test_rule_f').style['width']).toBe('50px');
-        expect(s.getRule('test_rule_f').style['height']).toBe('100px');
-      });
-    });
+        describe('When getting the index...', function() {
+            var s;
 
-    describe('When deleting a rule...', function(){
-      var s;
+            it('gets the index from document.styleSheets if _index is not defined', function() {
+                s = new Stylesheet('testf');
 
-      beforeEach(function(){
-        s = new Stylesheet('teste');
+                expect(document.styleSheets[8].ownerNode.getAttribute('id')).toBe('testf');
+                expect(s.getIndex()).toBe(8);
+            });
 
-        s.addRule('test_rule_d');
-      });
+            it('gets the index if the index is defined and the stylesheet name is the same', function() {
+                s = new Stylesheet('testf');
 
-      it('removes the rule from the stylesheet object', function(){
-        expect(s.deleteRule('test_rule_d')).toBe(true);
+                s._index = 0;
+                document.styleSheets[0].ownerNode.setAttribute('id', 'testf');
 
-        expect(s.getRule('test_rule_d')).toBe(false);
-      });
-
-      it('returns false if the rule does not exist', function(){
-        expect(s.deleteRule('test_rule_e')).toBe(false);
-      });
+                expect(s.getIndex()).toBe(0);
+            });
+        });
     });
   });
 });

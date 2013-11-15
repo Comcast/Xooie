@@ -15,8 +15,14 @@
 */
 
 define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function($, helpers) {
-  var Stylesheet = function(name){
-    var i, title;
+    
+
+    function nameCheck (index, name) {
+        return document.styleSheets[index].ownerNode.getAttribute('id') === name;
+    }
+
+    var Stylesheet = function(name){
+        var title;
 
     //check to see if a stylesheet already exists with this name
     this.element = $('style[id=' + name + ']');
@@ -27,8 +33,23 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function($, helpers) {
                           '/* This is a dynamically generated stylesheet: ' + name + ' */',
                       '</style>'].join(''));
 
-      this.element.appendTo($('head'));
-    }
+            this.element.appendTo($('head'));
+        }
+
+        this._name = name;
+    };
+
+    Stylesheet.prototype.get = function(){
+        return document.styleSheets[this.getIndex()];
+    };
+
+    Stylesheet.prototype.getRule = function(ruleName){
+        ruleName = ruleName.toLowerCase();
+
+        var i, rules;
+
+        //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
+        rules = this.get().cssRules || this.get().rules;
 
     if (document.styleSheets) {
       for (i = 0; i < document.styleSheets.length; i += 1){
@@ -129,6 +150,25 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function($, helpers) {
     return false;
   };
 
-  return Stylesheet;
+    Stylesheet.prototype.getIndex = function() {
+        var i;
+
+        if (helpers.isUndefined(document.styleSheets)) {
+            return;
+        }
+
+        if (!helpers.isUndefined(this._index) && nameCheck(this._index, this._name)) {
+            return this._index;
+        } else {
+            for (i = 0; i < document.styleSheets.length; i += 1){
+                if (nameCheck(i, this._name)) {
+                    this._index = i;
+                    return i;
+                }
+            }
+        }
+    };
+
+    return Stylesheet;
 
 });
