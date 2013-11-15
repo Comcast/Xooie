@@ -16,11 +16,6 @@ require(['jquery', 'xooie/stylesheet'], function($, Stylesheet){
                 expect($('style').length).toBe(initialLength + 1);
             });
 
-            it('sets the stylesheet property of the instantiated stylesheet to the matching document.styleSheets object', function(){
-                expect(document.styleSheets[2].ownerNode.getAttribute('id')).toBe('test');
-                expect(document.styleSheets[2]).toBe(s.get());
-            });
-
             it('adds a title to the created stylesheet', function(){
                 expect(s.element.attr('id')).toEqual('test');
             });
@@ -92,6 +87,26 @@ require(['jquery', 'xooie/stylesheet'], function($, Stylesheet){
 
             it('returns false if the rule does not exist', function(){
                 expect(s.deleteRule('test_rule_e')).toBe(false);
+            });
+        });
+
+        describe('When getting the index...', function() {
+            var s;
+
+            it('gets the index from document.styleSheets if _index is not defined', function() {
+                s = new Stylesheet('testf');
+
+                expect(document.styleSheets[8].ownerNode.getAttribute('id')).toBe('testf');
+                expect(s.getIndex()).toBe(8);
+            });
+
+            it('gets the index if the index is defined and the stylesheet name is the same', function() {
+                s = new Stylesheet('testf');
+
+                s._index = 0;
+                document.styleSheets[0].ownerNode.setAttribute('id', 'testf');
+
+                expect(s.getIndex()).toBe(0);
             });
         });
     });

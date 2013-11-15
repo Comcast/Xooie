@@ -14,9 +14,15 @@
 *   limitations under the License.
 */
 
-define('xooie/stylesheet', ['jquery'], function($) {
+define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function($, helpers) {
+    
+
+    function nameCheck (index, name) {
+        return document.styleSheets[index].ownerNode.getAttribute('id') === name;
+    }
+
     var Stylesheet = function(name){
-        var i, title;
+        var title;
 
         //check to see if a stylesheet already exists with this name
         this.element = $('style[id=' + name + ']');
@@ -30,17 +36,11 @@ define('xooie/stylesheet', ['jquery'], function($) {
             this.element.appendTo($('head'));
         }
 
-        if (document.styleSheets) {
-            for (i = 0; i < document.styleSheets.length; i += 1){
-                if (document.styleSheets[i].ownerNode.getAttribute('id') === name) {
-                    this._index = i;
-                }
-            }
-        }
+        this._name = name;
     };
 
     Stylesheet.prototype.get = function(){
-        return document.styleSheets[this._index];
+        return document.styleSheets[this.getIndex()];
     };
 
     Stylesheet.prototype.getRule = function(ruleName){
@@ -107,6 +107,25 @@ define('xooie/stylesheet', ['jquery'], function($) {
         }
 
         return false;
+    };
+
+    Stylesheet.prototype.getIndex = function() {
+        var i;
+
+        if (helpers.isUndefined(document.styleSheets)) {
+            return;
+        }
+
+        if (!helpers.isUndefined(this._index) && nameCheck(this._index, this._name)) {
+            return this._index;
+        } else {
+            for (i = 0; i < document.styleSheets.length; i += 1){
+                if (nameCheck(i, this._name)) {
+                    this._index = i;
+                    return i;
+                }
+            }
+        }
     };
 
     return Stylesheet;
