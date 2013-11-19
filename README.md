@@ -19,10 +19,10 @@ To see Xooie in action visit [Xfinity.comcast.net](http://xfinity.comcast.net).
 
 Installation:
 ---
-Setting up Xooie is as easy as dropping the Xooie directory into your codebase.  
+Setting up Xooie is as easy as dropping the Xooie directory into your codebase.
 
 Xooie requires the following libraries:
-* [RequireJS](http://www.requirejs.com)
+* [RequireJS](http://www.requirejs.org)
 * [jQuery](http://www.jquery.com)
 * micro_tmpl.js (found in the lib directory of this project)
 
@@ -44,5 +44,5 @@ Carousel
 Tab
 (documentation coming soon!)
 
-Dropdown 
+Dropdown
 (documentation coming soon!)
