@@ -59,7 +59,6 @@ if (!Function.prototype.bind) {
     };
 }
 
-
 /**
  * class Xooie.helpers
  *
