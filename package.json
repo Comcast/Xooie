@@ -1,14 +1,15 @@
 {
   "name": "xooie",
   "description": "A highly modular, extensible JavaScript UI framework.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "keywords": [
     "ui",
     "modular",
-    "accessible",
-    "responsive"
+    "accessibility",
+    "responsive",
+    "design patterns"
   ],
-  "homepage": "http://github.com/Comcast/Xooie",
+  "homepage": "http://www.xooie.net",
   "bugs": {
     "url": "https://github.com/Comcast/Xooie/issues",
     "email": "andrewlarkin2@gmail.com"
