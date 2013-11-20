@@ -17,14 +17,29 @@ module.exports = function(grunt) {
             "xooie/widgets/carousel",
             "xooie/widgets/dropdown",
             "xooie/widgets/tab",
-            "xooie/widgets/dialog",
-            "xooie/addons/carousel_lentils",
-            "xooie/addons/carousel_pagination",
-            "xooie/addons/tab_automation",
-            "xooie/addons/tab_animation"
+            "xooie/widgets/dialog"
           ],
           out: "source/javascripts/xooie-<%= pkg.version %>.js",
           optimize: "none"
+        }
+      },
+      compile_min: {
+        options: {
+          baseUrl: "",
+          paths: {
+            jquery: "empty:",
+            async: "empty:"
+          },
+          name: "xooie/xooie",
+          include: [
+            "xooie/widgets/carousel",
+            "xooie/widgets/dropdown",
+            "xooie/widgets/accordion",
+            "xooie/widgets/tab",
+            "xooie/widgets/dialog"
+          ],
+          out: "source/javascripts/xooie-<%= pkg.version %>-min.js",
+          optimize: "uglify"
         }
       }
     },
