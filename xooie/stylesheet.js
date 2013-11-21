@@ -32,7 +32,15 @@ define('xooie/stylesheet', ['jquery'], function($) {
 
         if (document.styleSheets) {
             for (i = 0; i < document.styleSheets.length; i += 1){
-                if (document.styleSheets[i].ownerNode.getAttribute('id') === name) {
+                if (document.styleSheets[i].ownerNode && document.styleSheets[i].ownerNode.getAttribute('id') === name) {
+                    this._index = i;
+                }
+            }
+        }
+
+        if (typeof this._index === 'undefined') {
+            for (i = 0; i < document.styleSheets.length; i += 1){
+                if (document.styleSheets[i].id === name) {
                     this._index = i;
                 }
             }
