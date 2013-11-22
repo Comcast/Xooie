@@ -15,7 +15,7 @@
 */
 
 define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
-    
+
    var parseWhich = function(which) {
         if (typeof which === 'string') {
             which = which.split(',');
@@ -258,9 +258,7 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
     };
 
     Dropdown.prototype.collapse = function(index, data) {
-        if (this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
-            this.setState(index, data, false);
-        }
+        this.setState(index, data, false);
     };
 
     Dropdown.prototype.setFocus = function(element){
