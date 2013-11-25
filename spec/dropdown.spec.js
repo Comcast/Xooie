@@ -58,7 +58,7 @@ require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
 
                         expect(d.expand).toHaveBeenCalled();
                     });
-                    
+
                 });
 
                 it('binds the event to the document object if the string "document" is passed in as a selector', function(){
@@ -199,6 +199,24 @@ require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
                 spyOn(d, 'collapse');
 
                 handle.trigger('blur');
+
+                expect(d.collapse).toHaveBeenCalledWith(0, {delay: 0, index: 0});
+            });
+        });
+
+        describe('When the forceCollapse event is triggered...', function(){
+            beforeEach(function(){
+                el = $('<div><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div></div>');
+
+                d = new Dropdown(el);
+            });
+
+            it('calls collapse', function(){
+                var handle = d.getHandle(0);
+
+                spyOn(d, 'collapse');
+
+                handle.trigger('forceCollapse', {delay: 0, index: 0});
 
                 expect(d.collapse).toHaveBeenCalledWith(0, {delay: 0, index: 0});
             });
