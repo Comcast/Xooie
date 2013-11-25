@@ -83,6 +83,10 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
 
                 $(this).attr('aria-selected', false);
                 self.getExpander(index).attr('aria-hidden', true);
+            },
+
+            forceCollapse: function(event, data) {
+                self.collapse(data.index, data);
             }
         }, this.options.dropdownHandleSelector);
 
