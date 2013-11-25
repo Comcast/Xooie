@@ -15,7 +15,7 @@
 */
 
 define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
-    
+
    var parseWhich = function(which) {
         if (typeof which === 'string') {
             which = which.split(',');
@@ -83,6 +83,10 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
 
                 $(this).attr('aria-selected', false);
                 self.getExpander(index).attr('aria-hidden', true);
+            },
+
+            forceCollapse: function(event, data) {
+                self.collapse(data.index, data);
             }
         }, this.options.dropdownHandleSelector);
 
@@ -258,9 +262,7 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
     };
 
     Dropdown.prototype.collapse = function(index, data) {
-        if (this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
-            this.setState(index, data, false);
-        }
+        this.setState(index, data, false);
     };
 
     Dropdown.prototype.setFocus = function(element){
