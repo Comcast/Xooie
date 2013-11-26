@@ -60,13 +60,36 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      files: 'xooie/**/*.js'
+      files: 'xooie/**/*.js',
+      options: {
+        reporter: 'jslint'
+      }
+    },
+    jslint: {
+      //src: ['xooie/**/*.js'],
+      xooie: {
+        src: ['xooie/addons/base.js', 'xooie/widgets/base.js'],
+        directives: {
+          todo: true,
+          nomen: true,
+          nonew: true,
+          indent: 2,
+          predef: [
+            'define',
+            'require',
+            'setTimeout',
+            'Mustache',
+            '_'
+          ]
+        }
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-jslint');
 
   grunt.registerTask('test', ['jshint', 'jasmine']);
   grunt.registerTask('build', ['test', 'requirejs']);
