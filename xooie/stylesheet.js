@@ -18,7 +18,14 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function($, helpers) {
     
 
     function nameCheck (index, name) {
-        return document.styleSheets[index].ownerNode.getAttribute('id') === name;
+        var s = document.styleSheets[index];
+
+        if (!helpers.isUndefined(s.ownerNode)) {
+            return s.ownerNode.getAttribute('id') === name;
+        } else {
+            return s.id === name;
+        }
+        
     }
 
     var Stylesheet = function(name){
