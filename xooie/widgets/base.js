@@ -21,8 +21,8 @@
  * specific functionality.
  **/
 
-define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/shared', 'xooie/keyboard_navigation'], function($, $X, helpers, shared, keyboardNavigation) {
-
+define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/shared'], function ($, $X, helpers, shared) {
+  "use strict";
   var Widget;
 
 /**
@@ -34,10 +34,12 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  **/
 
   $.event.special['xooie-init'] = {
-    add: function(handleObj) {
-      var id = $(this).data('xooieInstance');
-      if (typeof id !== 'undefined') {
-        var event = $.Event('xooie-init');
+    add: function (handleObj) {
+      var id, event;
+
+      id = $(this).data('xooieInstance');
+      if (!helpers.isUndefined(id)) {
+        event = $.Event('xooie-init');
         event.namespace = handleObj.namespace;
         event.data = handleObj.data;
 
@@ -59,7 +61,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * TODO: Test and document.
  **/
-  function roleDetails (name) {
+  function roleDetails(name) {
     return {
       processor: '_process_role_' + name,
       renderer: '_render_role_' + name,
@@ -80,7 +82,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
     if (helpers.isUndefined(prototype[role.pluralName])) {
       prototype._definedRoles.push(name);
 
-      prototype[role.pluralName] = function() {
+      prototype[role.pluralName] = function () {
         return this[role.getter]();
       };
     }
@@ -93,19 +95,18 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Recursively checks for the next available index in [[$X._instanceCache]] using [[$X._instanceIndex]]
  * as a reference point.  Returns the index.
  **/
-  function cacheInstance (instance) {
-    if (typeof instance !== 'undefined') {
+  function cacheInstance(instance) {
+    if (!helpers.isUndefined(instance)) {
       var index = $X._instanceIndex;
 
       $X._instanceIndex += 1;
 
-      if (typeof $X._instanceCache[index] === 'undefined') {
+      if (!helpers.isUndefined($X._instanceCache[index])) {
         $X._instanceCache[index] = instance;
 
         return index;
-      } else {
-        return cacheInstance(instance);
       }
+      return cacheInstance(instance);
     }
   }
 
@@ -117,8 +118,8 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Instantiates a new Xooie widget, or returns an existing widget if it is already associated with the element passed.
  * Any addons passed into the constructor will be instantiated and added to the [[Xooie.Widget#addons]] collection.
  **/
-  Widget = shared.create(function(element, addons) {
-    var self = this;
+  Widget = function (element, addons) {
+    var id, initCheck, self = this;
 
     element = $(element);
 
@@ -127,19 +128,18 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 
     //do instance tracking
     if (element.data('xooieInstance')) {
-      if (typeof $X._instanceCache[element.data('xooieInstance')] !== 'undefined'){
+      if (!helpers.isUndefined($X._instanceCache[element.data('xooieInstance')])) {
         element.trigger(this.get('refreshEvent'));
         return $X._instanceCache[element.data('xooieInstance')];
-      } else {
-        this.cleanup();
       }
+      this.cleanup();
     }
 
-    element.on(this.get('initEvent') + ' ' + this.get('refreshEvent'), function(){
+    element.on(this.get('initEvent') + ' ' + this.get('refreshEvent'), function () {
       self._applyRoles();
     });
 
-    var id = cacheInstance(this);
+    id = cacheInstance(this);
 
     element.attr('data-xooie-instance', id);
 
@@ -152,16 +152,26 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
   }, function(element, addons) {
     var i;
 
-    if (typeof addons !== 'undefined') {
-      for (i = 0; i < addons.length; i+=1) {
-        new addons[i](this);
+    initCheck = function () {
+      var i, addon = [];
+
+      if (!self._extendCount || self._extendCount <= 0) {
+
+        if (!helpers.isUndefined(addons)) {
+          for (i = 0; i < addons.length; i += 1) {
+            addon.push(new addons[i](self));
+          }
+        }
+
+        element.attr('data-xooie-instance', id);
+
+        element.trigger(self.get('initEvent'));
+        self._extendCount = null;
+      } else {
+        setTimeout(initCheck, 0);
       }
     }
-
-    this.root().trigger(this.get('initEvent'));
-
-    // new keyboardNavigation();
-  });
+  };
 
 /** internal
  * Xooie.Widget._renderMethods -> Object
@@ -176,36 +186,32 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  **/
   Widget._renderMethods = {
     //TODO: make this a default template
-    'micro_template': function(template, view) {
-      if (typeof template.micro_render !== 'undefined') {
+    'micro_template': function (template, view) {
+      if (!helpers.isUndefined(template.micro_render)) {
         return $(template.micro_render(view));
-      } else {
-        return false;
       }
+      return false;
     },
 
-    'mustache': function(template, view) {
-      if (typeof Mustache !== 'undefined' && typeof Mustache.render !== 'undefined') {
+    'mustache': function (template, view) {
+      if (!helpers.isUndefined(Mustache) && !helpers.isUndefined(Mustache.render)) {
         return $(Mustache.render(template.html(), view));
-      } else {
-        return false;
       }
+      return false;
     },
 
-    'jsrender': function(template, view) {
-      if (typeof template.render !== 'undefined') {
+    'jsrender': function (template, view) {
+      if (!helpers.isUndefined(template.render)) {
         return $(template.render(view));
-      } else {
-        return false;
       }
+      return false;
     },
 
-    'underscore': function(template, view) {
-      if (typeof _ !== 'undefined' && typeof _.template !== 'undefined') {
+    'underscore': function (template, view) {
+      if (!helpers.isUndefined(_) && !helpers.isUndefined(_.template)) {
         return $(_.template(template.html())(view).trim());
-      } else {
-        return false;
       }
+      return false;
     }
   };
 
@@ -217,7 +223,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * See [[Xooie.shared.defineWriteOnly]].
  **/
-  Widget.defineWriteOnly = function(name) {
+  Widget.defineWriteOnly = function (name) {
     shared.defineWriteOnly(this, name);
   };
 
@@ -228,7 +234,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * See [[Xooie.shared.defineReadOnly]].
  **/
-  Widget.defineReadOnly = function(name, defaultValue){
+  Widget.defineReadOnly = function (name, defaultValue) {
     shared.defineReadOnly(this, name, defaultValue);
   };
 
@@ -240,7 +246,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * A method that defines a property as both readable and writable.  In reality it calls both [[Xooie.Widget.defineReadOnly]]
  * and [[Xooie.Widget.defineWriteOnly]].
  **/
-  Widget.define = function(name, defaultValue){
+  Widget.define = function (name, defaultValue) {
     this.defineReadOnly(name, defaultValue);
     this.defineWriteOnly(name);
   };
@@ -250,13 +256,13 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * TODO: This needs tests and documentation
  **/
-  Widget.defineRole = function(name) {
+  Widget.defineRole = function (name) {
     var role = roleDetails(name);
 
     roleDispatcher(name, this.prototype);
 
     if (!helpers.isFunction(this.prototype[role.getter])) {
-      this.prototype[role.getter] = function() {
+      this.prototype[role.getter] = function () {
         return this.root().find(role.selector);
       };
     }
@@ -268,8 +274,8 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * See [[Xooie.shared.create]].
  **/
-  Widget.extend = function(constr, post_constr){
-    return shared.create(constr, post_constr, this);
+  Widget.extend = function (constr) {
+    return shared.extend(constr, this);
   };
 
 /**
@@ -280,10 +286,11 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Creates a new css rule in the Xooie stylesheet.  If the rule exists, it will overwrite said rule.
  **/
  // TODO: update so that if the rule exists the properties are added to the rule
-  Widget.createStyleRule = function(selector, properties) {
-    if (typeof $X._stylesheet.addRule !== 'undefined') {
+  Widget.createStyleRule = function (selector, properties) {
+    if (!helpers.isUndefined($X._stylesheet.addRule)) {
       return $X._stylesheet.addRule(selector, properties);
     }
+    return false;
   };
 
 /**
@@ -293,12 +300,11 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Retrieves the css rule from the Xooie stylesheet using the provided `selector`.  If the rule is not
  * present in [[$X._styleRules]] then the method will check in [[$X._stylesheet]].
  **/
-  Widget.getStyleRule = function(selector) {
+  Widget.getStyleRule = function (selector) {
     if ($X._styleRules.hasOwnProperty(selector)) {
       return $X._styleRules[selector];
-    } else {
-      return $X._stylesheet.getRule(selector);
     }
+    return $X._stylesheet.getRule(selector);
   };
 
 /** internal
@@ -453,7 +459,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * See [[Xooie.shared.get]].
  **/
-  Widget.prototype.get = function(name) {
+  Widget.prototype.get = function (name) {
     return shared.get(this, name);
   };
 
@@ -464,7 +470,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * See [[Xooie.shared.set]].
  **/
-  Widget.prototype.set = function(name, value) {
+  Widget.prototype.set = function (name, value) {
     return shared.set(this, name, value);
   };
 
@@ -474,7 +480,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Removes the `className` and `instanceClass` classes and `data-xooie-instance` attribute from the root element.
  * Calls [[Xooie.Addon.cleanup]] for each addon.  This will permit the instance to be garbage collected.
  **/
-  Widget.prototype.cleanup = function() {
+  Widget.prototype.cleanup = function () {
     var name;
 
     for (name in this.addons()) {
@@ -496,15 +502,14 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Renders the template with the provided data by calling the method in [[Xooie.Widget.renderMethods]] based on the
  * template language specified.  Returns `$('<span>Error rendering template</span>')` when an error occurs
  **/
-  Widget.prototype.render = function(template, view) {
+  Widget.prototype.render = function (template, view) {
     var language = template.data('templateLanguage') || this.templateLanguage(),
       result = Widget._renderMethods[language](template, view);
 
     if (result === false) {
       return $('<span>Error rendering template</span>');
-    } else {
-      return result;
     }
+    return result;
   };
 
 /** internal
@@ -515,7 +520,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Generates an id string to be applied to an element of the specified role.  The format of
  * this id string is `x-[[Xooie.Widget#id]]-{role}-{index}`.
  **/
-  Widget.prototype._getRoleId = function(role, index) {
+  Widget.prototype._getRoleId = function (role, index) {
     return 'x-' + this.id() + '-' + role + '-' + index;
   };
 
@@ -524,13 +529,13 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * TODO: Test and document.
  **/
-  Widget.prototype._applyRoles = function() {
+  Widget.prototype._applyRoles = function () {
     var i, j, role, elements;
 
-    for (i=0; i < this._definedRoles.length; i+=1) {
+    for (i = 0; i < this._definedRoles.length; i += 1) {
       role = roleDetails(this._definedRoles[i]);
       elements = this[role.getter]();
-      
+
       if (elements.length === 0 && helpers.isFunction(this[role.renderer])) {
         elements = this[role.renderer]();
       }
@@ -539,7 +544,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
         return;
       }
 
-      for (j=0; j < elements.length; j+=1) {
+      for (j = 0; j < elements.length; j += 1) {
         $(elements[j]).attr('id', this._getRoleId(this._definedRoles[i], j));
       }
 
@@ -556,8 +561,8 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * Checks to see if the addons object has been defined.  We can't define objects as
  * 'default' values for properties since the object will be the same for each instance.
  **/
-  Widget.prototype._process_addons = function(addons){
-    if (typeof addons === 'undefined'){
+  Widget.prototype._process_addons = function (addons) {
+    if (helpers.isUndefined(addons)) {
       addons = this._addons = {};
     }
 
@@ -570,7 +575,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * Adds the [[Xooie.Widget#namespace]] to the `refreshEvent`
  **/
-  Widget.prototype._process_refreshEvent = function(refreshEvent){
+  Widget.prototype._process_refreshEvent = function (refreshEvent) {
     return this.namespace() === '' ? refreshEvent : refreshEvent + '.' + this.namespace();
   };
 
@@ -580,7 +585,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * Adds the [[Xooie.Widget#namespace]] to the `initEvent`
  **/
-  Widget.prototype._process_initEvent = function(initEvent){
+  Widget.prototype._process_initEvent = function (initEvent) {
     return this.namespace() === '' ? initEvent : initEvent + '.' + this.namespace();
   };
 
@@ -590,7 +595,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * Adds the [[Xooie.Widget#namespace]] to the `className`
  **/
-  Widget.prototype._process_className = function(className) {
+  Widget.prototype._process_className = function (className) {
     return this.namespace() === '' ? className : className + '-' + this.namespace();
   };
 
@@ -599,7 +604,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  *
  * Creates an instanceClass string from the [[Xooie.Widget#namespace]] and [[Xooie.Widget#id]].
  **/
-  Widget.prototype._process_instanceClass = function() {
+  Widget.prototype._process_instanceClass = function () {
     return this.namespace() === '' ? 'widget-' + this.id() : this.namespace() + '-' + this.id();
   };
 

@@ -20,7 +20,9 @@
  * The base xooie addon module.  This module defines how addons function in relation to
  * widgets, but contains no specific functionality.
  **/
-define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
+define('xooie/addons/base', ['xooie/shared', 'xooie/helpers'], function (shared, helpers) {
+  "use strict";
+  var Addon;
 /**
  * Xooie.Addon@xooie-addon-init(event)
  * - event (Event): A jQuery event object
@@ -36,32 +38,46 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  * Instantiating a new Addon associates the addon with the widget passed into the constructor.  The addon is
  * stored in the [[Xooie.Widget#addons]] collection.
  **/
-    var Addon = shared.create(function(widget) {
-        var self = this;
+  Addon = function (widget) {
+    var initCheck, self = this;
 
-        // Check to see if the module is defined:
-        if (typeof widget === 'undefined') {
-            return false;
-        }
+    // Check to see if the module is defined:
+    if (helpers.isUndefined(widget)) {
+      return false;
+    }
 
-        // If there is already an instance of this addon instantiated for the module, return it:
-        if (widget.addons() && widget.addons().hasOwnProperty(this.name())) {
-            return widget.addons()[this.name()];
-        }
+    // If there is already an instance of this addon instantiated for the module, return it:
+    if (widget.addons() && widget.addons().hasOwnProperty(this.name())) {
+      return widget.addons()[this.name()];
+    }
 
-        // Add this addon to the widget's addons collection:
-        widget.addons()[this.name()] = this;
+    // Add this addon to the widget's addons collection:
+    widget.addons()[this.name()] = this;
 
-        widget.root().addClass(this.addonClass());
+    widget.root().addClass(this.addonClass());
 
-        // Set the default options
-        shared.setData(this, widget.root().data());
+    // Set the default options
+    shared.setData(this, widget.root().data());
 
-        // Reference the widget:
-        this.widget(widget);
-    }, function(widget) {
-      this.widget().root().trigger(this.get('initEvent'));
-    });
+    // Reference the widget:
+    this.widget(widget);
+
+    // Check to see if there are any additional constructors to call;
+    initCheck = function () {
+      if (!self._extendCount || self._extendCount <= 0) {
+        self.widget().root().trigger(self.get('initEvent'));
+        self._extendCount = null;
+      } else {
+        setTimeout(initCheck, 0);
+      }
+    };
+
+    if (this._extendCount > 0) {
+      setTimeout(initCheck, 0);
+    } else {
+      initCheck();
+    }
+  };
 
 /**
  * Xooie.Addon.defineReadOnly(name, defaultValue)
@@ -70,9 +86,9 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  *
  * See [[Xooie.shared.defineReadOnly]].
  **/
-    Addon.defineReadOnly = function(name, defaultValue){
-        shared.defineReadOnly(this, name, defaultValue);
-    };
+  Addon.defineReadOnly = function (name, defaultValue) {
+    shared.defineReadOnly(this, name, defaultValue);
+  };
 
 /**
  * Xooie.Addon.defineWriteOnly(name)
@@ -80,9 +96,9 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  *
  * See [[Xooie.shared.defineWriteOnly]].
  **/
-    Addon.defineWriteOnly = function(name){
-        shared.defineWriteOnly(this, name);
-    };
+  Addon.defineWriteOnly = function (name) {
+    shared.defineWriteOnly(this, name);
+  };
 
 /**
  * Xooie.Widget.define(name[, defaultValue])
@@ -92,10 +108,10 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  * A method that defines a property as both readable and writable.  In reality it calls both [[Xooie.Addon.defineReadOnly]]
  * and [[Xooie.Addon.defineWriteOnly]].
  **/
-    Addon.define = function(name, defaultValue){
-        this.defineReadOnly(name, defaultValue);
-        this.defineWriteOnly(name);
-    };
+  Addon.define = function (name, defaultValue) {
+    this.defineReadOnly(name, defaultValue);
+    this.defineWriteOnly(name);
+  };
 
 /**
  * Xooie.Addon.extend(constr) -> Addon
@@ -103,16 +119,23 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  *
  * See [[Xooie.shared.create]].
  **/
-    Addon.extend = function(constr, post_constr){
-        return shared.create(constr, post_constr, this);
-    };
+  Addon.extend = function (constr) {
+    return shared.extend(constr, this);
+  };
 
 /** internal
  * Xooie.Addon#_definedProps -> Array
  *
  * Same as [[Xooie.Widget#_definedProps]].
  **/
-    Addon.prototype._definedProps = [];
+  Addon.prototype._definedProps = [];
+
+/** internal
+ * Xooie.Addon#_extendCount -> Integer | null
+ *
+ * Same as [[Xooie.Widget#_extendCount]].
+ **/
+  Addon.prototype._extendCount = null;
 
 /** internal
  * Xooie.Addon#_widget -> Widget
@@ -126,7 +149,7 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  * The method for setting or getting [[Xooie.Addon#_widget]].  Returns the current value of
  * [[Xooie.Addon#_widget]] if no value is passed or sets the value.
  **/
-    Addon.define('widget');
+  Addon.define('widget');
 
 /** internal
  * Xooie.Addon#_name -> String
@@ -140,7 +163,7 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  * The method for setting or getting [[Xooie.Addon#_name]].  Returns the current value of
  * [[Xooie.Addon#_name]] if no value is passed or sets the value.
  **/
-    Addon.define('name', 'addon');
+  Addon.define('name', 'addon');
 
 /** internal, read-only
  * Xooie.Addon#_initEvent -> String
@@ -152,7 +175,7 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  *
  * The method for getting [[Xooie.Addon#_initEvent]].
  **/
-    Addon.defineReadOnly('initEvent', 'xooie-addon-init');
+  Addon.defineReadOnly('initEvent', 'xooie-addon-init');
 
 /** internal, read-only
  * Xooie.Addon#_addonClass -> String
@@ -164,7 +187,7 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  *
  * The method for getting [[Xooie.Addon#_addonClass]].
  **/
-    Addon.defineReadOnly('addonClass', 'has-addon');
+  Addon.defineReadOnly('addonClass', 'has-addon');
 
 /**
  * Xooie.Addon#get(name) -> object
@@ -172,9 +195,9 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  *
  * See [[Xooie.shared.get]].
  **/
-    Addon.prototype.get = function(name) {
-        return shared.get(this, name);
-    };
+  Addon.prototype.get = function (name) {
+    return shared.get(this, name);
+  };
 
 /**
  * Xooie.Addon#set(name, value)
@@ -183,9 +206,9 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  *
  * See [[Xooie.shared.set]].
  **/
-    Addon.prototype.set = function(name, value) {
-        return shared.set(this, name, value);
-    };
+  Addon.prototype.set = function (name, value) {
+    return shared.set(this, name, value);
+  };
 
 /**
  * Xooie.Addon#cleanup()
@@ -193,9 +216,9 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  * Removes the `addonClass` from the `root` of the associated `widget` and prepares this widget to be
  * garbage collected.
  **/
-    Addon.prototype.cleanup = function() {
-        this.widget().root().removeClass(this.addonClass());
-    };
+  Addon.prototype.cleanup = function () {
+    this.widget().root().removeClass(this.addonClass());
+  };
 
 /** internal
  * Xooie.Addon#_process_initEvent(initEvent) -> String
@@ -203,9 +226,9 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  *
  * Adds the [[Xooie.Addon#name]] to the `initEvent`
  **/
-    Addon.prototype._process_initEvent = function(initEvent) {
-        return this.name() === 'addon' ? initEvent : initEvent + '.' + this.name();
-    };
+  Addon.prototype._process_initEvent = function (initEvent) {
+    return this.name() === 'addon' ? initEvent : initEvent + '.' + this.name();
+  };
 
 /** internal
  * Xooie.Addon#_process_addonClass(className) -> String
@@ -213,9 +236,9 @@ define('xooie/addons/base', ['jquery', 'xooie/shared'], function($, shared) {
  *
  * Adds the [[Xooie.Addon#name]] to the `addonClass`
  **/
-    Addon.prototype._process_addonClass = function(addonClass) {
-        return this.name() === 'addon' ? addonClass : 'has-' + this.name() + '-addon';
-    };
+  Addon.prototype._process_addonClass = function (addonClass) {
+    return this.name() === 'addon' ? addonClass : 'has-' + this.name() + '-addon';
+  };
 
-    return Addon;
+  return Addon;
 });
