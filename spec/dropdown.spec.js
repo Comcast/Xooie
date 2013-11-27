@@ -204,24 +204,6 @@ require(['jquery', 'xooie/dropdown'], function($, Dropdown) {
             });
         });
 
-        describe('When the forceCollapse event is triggered...', function(){
-            beforeEach(function(){
-                el = $('<div><div data-role="dropdown-handle"></div><div data-role="dropdown-content"></div></div>');
-
-                d = new Dropdown(el);
-            });
-
-            it('calls collapse', function(){
-                var handle = d.getHandle(0);
-
-                spyOn(d, 'collapse');
-
-                handle.trigger('forceCollapse', {delay: 0, index: 0});
-
-                expect(d.collapse).toHaveBeenCalledWith(0, {delay: 0, index: 0});
-            });
-        });
-
         describe('When getting the handle elements...', function(){
             beforeEach(function(){
                 el = $(['<div>',
