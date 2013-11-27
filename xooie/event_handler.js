@@ -14,9 +14,10 @@
 *   limitations under the License.
 */
 
-define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) {
+define('xooie/event_handler', ['jquery', 'xooie/helpers'], function ($, helpers) {
+  'use strict';
 
-  var EventHandler = function(namespace) {
+  var EventHandler = function (namespace) {
     this.namespace = namespace;
 
     this.handlers = {};
@@ -25,20 +26,17 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) 
   };
 
   function format(type, namespace) {
-    if (!namespace) {
-      return type;
-    } else {
-      return type + '.' + namespace;
-    }
+    return !namespace ? type : type + '.' + namespace;
   }
 
-  EventHandler.prototype.add = function(type, method) {
-    var self = this,
-        formattedType, t;
+  EventHandler.prototype.add = function (type, method) {
+    var self, formattedType, t;
+
+    self = this;
 
     if (helpers.isObject(type) && helpers.isUndefined(method)) {
-      for(t in type) {
-        if (helpers.isFunction(type[t])) {
+      for (t in type) {
+        if (type.hasOwnProperty(t) && helpers.isFunction(type[t])) {
           this.add(t, type[t]);
         }
       }
@@ -49,7 +47,7 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) 
     formattedType = format(type, this.namespace);
 
     if (helpers.isUndefined(this.handlers[formattedType])) {
-      this.handlers[formattedType] = function(e) {
+      this.handlers[formattedType] = function (e) {
         self.fire(e, this, arguments);
       };
     }
@@ -61,15 +59,15 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function($, helpers) 
     this._callbacks[type].add(method);
   };
 
-  EventHandler.prototype.clear = function(type) {
-    delete(this.handlers[format(type, this.namespace)]);
+  EventHandler.prototype.clear = function (type) {
+    delete (this.handlers[format(type, this.namespace)]);
 
     if (!helpers.isUndefined(this._callbacks[type])) {
       this._callbacks[type].empty();
     }
   };
 
-  EventHandler.prototype.fire = function(event, context, args) {
+  EventHandler.prototype.fire = function (event, context, args) {
     if (event.namespace && event.namespace !== this.namespace) {
       return;
     }

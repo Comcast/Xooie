@@ -5,8 +5,10 @@
  * This module exists to abstract common functionality so that it can be maintained in one place.
  * It is not intended to be used independently.
  **/
-define('xooie/shared', ['jquery'], function($){
+define('xooie/shared', ['jquery', 'xooie/helpers'], function ($, helpers) {
+  'use strict';
 
+  var shared;
 /** internal
  * Xooie.shared.propertyDetails(name) -> Object
  * - name (String): The name of the property
@@ -28,7 +30,7 @@ define('xooie/shared', ['jquery'], function($){
  * - **value** (String): The name of the internally stored value for this property.
  * `_name`
  **/
-  function propertyDetails (name) {
+  function propertyDetails(name) {
     return {
       getter: '_get_' + name,
       setter: '_set_' + name,
@@ -48,23 +50,22 @@ define('xooie/shared', ['jquery'], function($){
  * (or [[Xooie.Addon#_definedProps]]).  Adds a method called `name` to the prototype that allows this property to be set or
  * retrieved.
  **/
-  function propertyDispatcher (name, prototype) {
+  function propertyDispatcher(name, prototype) {
     var prop = propertyDetails(name);
 
-    if (typeof prototype[name] !== 'function') {
+    if (!helpers.isFunction(prototype[name])) {
       prototype._definedProps.push(name);
 
-      prototype[name] = function(value) {
-        if (typeof value === 'undefined') {
+      prototype[name] = function (value) {
+        if (helpers.isUndefined(value)) {
           return this[prop.getter]();
-        } else {
-          return this[prop.setter](value);
         }
+        return this[prop.setter](value);
       };
     }
   }
 
-  var shared = {
+  shared = {
 /**
  * Xooie.shared.defineReadOnly(module, name[, defaultValue])
  * - module (Widget | Addon): The module on which this property will be defined.
@@ -74,7 +75,7 @@ define('xooie/shared', ['jquery'], function($){
  * Defines a read-only property that can be accessed either by [[Xooie.Widget#get]]/[[Xooie.Addon#get]] or
  * calling the `{{name}}` method on the instance of the module.
  **/
-    defineReadOnly: function(module, name, defaultValue){
+    defineReadOnly: function (module, name, defaultValue) {
       var prop = propertyDetails(name);
 
       propertyDispatcher(name, module.prototype);
@@ -82,11 +83,11 @@ define('xooie/shared', ['jquery'], function($){
       //The default value is reset each time this method is called;
       module.prototype[prop.defaultValue] = defaultValue;
 
-      if (typeof module.prototype[prop.getter] !== 'function') {
-        module.prototype[prop.getter] = function() {
-          var value = typeof this[prop.value] !== 'undefined' ? this[prop.value] : this[prop.defaultValue];
+      if (!helpers.isFunction(module.prototype[prop.getter])) {
+        module.prototype[prop.getter] = function () {
+          var value = helpers.isUndefined(this[prop.value]) ? this[prop.defaultValue] : this[prop.value];
 
-          if (typeof this[prop.processor] === 'function') {
+          if (helpers.isFunction(this[prop.processor])) {
             return this[prop.processor](value);
           }
 
@@ -102,14 +103,14 @@ define('xooie/shared', ['jquery'], function($){
  * Defines a write-only property that can be set using [[Xooie.Widget#set]]/[[Xooie.Addon#set]] or by passing
  * a value to the `{{name}}` method on the instance of the module.
  **/
-    defineWriteOnly: function(module, name){
+    defineWriteOnly: function (module, name) {
       var prop = propertyDetails(name);
 
       propertyDispatcher(name, module.prototype);
 
-      if (typeof module.prototype[prop.setter] !== 'function') {
-        module.prototype[prop.setter] = function(value){
-          if (typeof this[prop.validator] !== 'function' || this[prop.validator](name)) {
+      if (!helpers.isFunction(module.prototype[prop.setter])) {
+        module.prototype[prop.setter] = function (value) {
+          if (!helpers.isFunction(this[prop.validator]) || this[prop.validator](name)) {
             this[prop.value] = value;
           }
         };
@@ -125,8 +126,8 @@ define('xooie/shared', ['jquery'], function($){
  * Constructors for the class are called in order from the top-level constructor to the
  * base constructor followed by the post constructors from the base to top-level post constructor.
  **/
-    create: function(constr, post_constr, module){
-      var newModule = (function(){
+    extend: function (constr, module) {
+      var newModule = (function () {
         return function Child() {
           var i, result;
 
@@ -142,28 +143,14 @@ define('xooie/shared', ['jquery'], function($){
             Child._postConstructors[i].apply(this, arguments);
           }
         };
-      })();
+      }());
 
       if (typeof module !== 'undefined') {
         $.extend(true, newModule, module);
         $.extend(true, newModule.prototype, module.prototype);
       }
 
-      if (typeof newModule._constructors === 'undefined') {
-        newModule._constructors = [];
-      }
-
-      if (constr) {
-        newModule._constructors.push(constr);
-      }
-
-      if (typeof newModule._postConstructors === 'undefined') {
-        newModule._postConstructors = [];
-      }
-
-      if (post_constr) {
-        newModule._postConstructors.unshift(post_constr);
-      }
+      newModule.prototype._extendCount = newModule.prototype._extendCount === null ? 1 : newModule.prototype._extendCount + 1;
 
       return newModule;
     },
@@ -174,7 +161,7 @@ define('xooie/shared', ['jquery'], function($){
  *
  * Retrieves the value of the property.  Returns `undefined` if the property has not been defined.
  **/
-    get: function(instance, name){
+    get: function (instance, name) {
       var prop = propertyDetails(name);
 
       return instance[prop.getter]();
@@ -187,10 +174,10 @@ define('xooie/shared', ['jquery'], function($){
  *
  * Sets a property, so long as that property has been defined.
  **/
-    set: function(instance, name, value){
+    set: function (instance, name, value) {
       var prop = propertyDetails(name);
 
-      if (typeof instance[prop.setter] === 'function') {
+      if (helpers.isFunction(instance[prop.setter])) {
         instance[prop.setter](value);
       }
     },
@@ -202,12 +189,12 @@ define('xooie/shared', ['jquery'], function($){
  *
  * Sets the properties to the values specified, as long as the property has been defined
  **/
-    setData: function(instance, data) {
+    setData: function (instance, data) {
       var i, prop;
 
-      for (i = 0; i < instance._definedProps.length; i++) {
+      for (i = 0; i < instance._definedProps.length; i += 1) {
         prop = instance._definedProps[i];
-        if (typeof data[prop] !== 'undefined') {
+        if (!helpers.isUndefined(data[prop])) {
           instance.set(prop, data[prop]);
         }
       }

@@ -14,127 +14,125 @@
 *   limitations under the License.
 */
 
-define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function($, helpers) {
-    
+define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function ($, helpers) {
+  'use strict';
 
-    function nameCheck (index, name) {
-        var s = document.styleSheets[index];
+  function nameCheck(index, name) {
+    var s = document.styleSheets[index];
 
-        if (!helpers.isUndefined(s.ownerNode)) {
-            return s.ownerNode.getAttribute('id') === name;
-        } else {
-            return s.id === name;
-        }
-        
+    if (!helpers.isUndefined(s.ownerNode)) {
+      return s.ownerNode.getAttribute('id') === name;
+    }
+    return s.id === name;
+  }
+
+  var Stylesheet = function (name) {
+    //check to see if a stylesheet already exists with this name
+    this.element = $('style[id=' + name + ']');
+
+    if (this.element.length <= 0) {
+      //if it does, use it, else create a new one
+      this.element = $(['<style id="' + name + '">',
+                          '/* This is a dynamically generated stylesheet: ' + name + ' */',
+                      '</style>'].join(''));
+
+      this.element.appendTo($('head'));
     }
 
-    var Stylesheet = function(name){
-        var title;
+    this._name = name;
+  };
 
-        //check to see if a stylesheet already exists with this name
-        this.element = $('style[id=' + name + ']');
+  Stylesheet.prototype.get = function () {
+    return document.styleSheets[this.getIndex()];
+  };
 
-        if (this.element.length <= 0) {
-            //if it does, use it, else create a new one
-            this.element = $(['<style id="' + name + '">',
-                                '/* This is a dynamically generated stylesheet: ' + name + ' */',
-                            '</style>'].join(''));
+  Stylesheet.prototype.getRule = function (ruleName) {
+    var i, rules;
 
-            this.element.appendTo($('head'));
+    ruleName = ruleName.toLowerCase();
+
+    //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
+    rules = this.get().cssRules || this.get().rules;
+
+    for (i = 0; i < rules.length; i += 1) {
+      if (rules[i].selectorText.toLowerCase() === ruleName) {
+        return rules[i];
+      }
+    }
+
+    return false;
+  };
+
+  Stylesheet.prototype.addRule = function (ruleName, properties) {
+    var rule = this.getRule(ruleName), index, prop, propString = '';
+
+    if (!rule) {
+      for (prop in properties) {
+        if (properties.hasOwnProperty(prop)) {
+          propString += prop + ': ' + properties[prop] + ';';
         }
+      }
 
-        this._name = name;
-    };
+      if (this.get().insertRule) {
+        //This is the W3C-preferred method
+        index = this.get().cssRules.length;
+        this.get().insertRule(ruleName + ' {' + propString + '}', index);
+        rule = this.get().cssRules[index];
+      } else {
+        //support for IE < 9
+        index = this.get().rules.length;
+        this.get().addRule(ruleName, propString, index);
+        rule = this.get().rules[index];
+      }
+    }
 
-    Stylesheet.prototype.get = function(){
-        return document.styleSheets[this.getIndex()];
-    };
+    return rule;
+  };
 
-    Stylesheet.prototype.getRule = function(ruleName){
-        ruleName = ruleName.toLowerCase();
+  Stylesheet.prototype.deleteRule = function (ruleName) {
+    var i, rules;
 
-        var i, rules;
+    ruleName = ruleName.toLowerCase();
 
-        //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
-        rules = this.get().cssRules || this.get().rules;
+    //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
+    rules = this.get().cssRules || this.get().rules;
 
-        for (i = 0; i < rules.length; i += 1){
-            if (rules[i].selectorText.toLowerCase() === ruleName) {
-                return rules[i];
-            }
-        }
-
-        return false;
-    };
-
-    Stylesheet.prototype.addRule = function(ruleName, properties){
-        var rule = this.getRule(ruleName), index, prop, propString = '';
-
-        if (!rule){
-            for (prop in properties) {
-                propString += prop + ': ' + properties[prop] + ';';
-            }
-
-            if (this.get().insertRule) {
-                //This is the W3C-preferred method
-                index = this.get().cssRules.length;
-                this.get().insertRule(ruleName + ' {' + propString + '}', index);
-                rule = this.get().cssRules[index];
-            } else {
-                //support for IE < 9
-                index = this.get().rules.length;
-                this.get().addRule(ruleName, propString, index);
-                rule = this.get().rules[index];
-            }
-        }
-
-        return rule;
-    };
-
-    Stylesheet.prototype.deleteRule = function(ruleName){
-        ruleName = ruleName.toLowerCase();
-
-        var i, rules;
-
-        //Check if this uses the IE format (styleSheet.rules) or the Mozilla/Webkit format
-        rules = this.get().cssRules || this.get().rules;
-
-        for (i = 0; i < rules.length; i += 1){
-            if (rules[i].selectorText.toLowerCase() === ruleName) {
-                if (this.get().deleteRule) {
-                    //this is the W3C-preferred method
-                    this.get().deleteRule(i);
-                } else {
-                    //support for IE < 9
-                    this.get().removeRule(i);
-                }
-
-                return true;
-            }
-        }
-
-        return false;
-    };
-
-    Stylesheet.prototype.getIndex = function() {
-        var i;
-
-        if (helpers.isUndefined(document.styleSheets)) {
-            return;
-        }
-
-        if (!helpers.isUndefined(this._index) && nameCheck(this._index, this._name)) {
-            return this._index;
+    for (i = 0; i < rules.length; i += 1) {
+      if (rules[i].selectorText.toLowerCase() === ruleName) {
+        if (this.get().deleteRule) {
+          //this is the W3C-preferred method
+          this.get().deleteRule(i);
         } else {
-            for (i = 0; i < document.styleSheets.length; i += 1){
-                if (nameCheck(i, this._name)) {
-                    this._index = i;
-                    return i;
-                }
-            }
+          //support for IE < 9
+          this.get().removeRule(i);
         }
-    };
 
-    return Stylesheet;
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  Stylesheet.prototype.getIndex = function () {
+    var i;
+
+    if (helpers.isUndefined(document.styleSheets)) {
+      return;
+    }
+
+    if (!helpers.isUndefined(this._index) && nameCheck(this._index, this._name)) {
+      return this._index;
+    }
+
+    for (i = 0; i < document.styleSheets.length; i += 1) {
+      if (nameCheck(i, this._name)) {
+        this._index = i;
+        return i;
+      }
+    }
+  };
+
+  return Stylesheet;
 
 });

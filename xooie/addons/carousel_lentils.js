@@ -16,7 +16,45 @@
 
 define('xooie/addons/carousel_lentils', ['jquery', 'xooie/addons/base'], function($, Base) {
 
-    var Lentils = Base('lentils', function(){
+    var Lentils = Base.extend(function(){
+
+    });
+
+
+    Lentils.define('someProp', 'default');
+
+    Lentils.defineReadOnly('someReadOnlyProp', 'default');
+
+
+    // data-x-role="lentil"
+    Lentils.defineRole('lentil');
+
+    Lentils.prototype.someMethod = function(){
+        this.someProp();
+
+        this.someProp('newValue');
+
+        this.lentils();
+
+        this.lentil();
+    };
+
+    //return Lentils;
+
+
+    /*
+        <ul>
+            <li><button data-x-role="control:goto 1 item"></button></li>
+            <li><button data-x-role="control:goto 2 item"></button></li>
+            <li><button data-x-role="control:goto 3 item"></button></li>
+        </ul>
+
+        $('.my_carousel').on('carouselScroll')
+
+
+                
+    */
+    var _Lentils = Base('lentils', function(){
         var self = this;
 
         this.lentilBuilders = {

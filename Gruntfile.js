@@ -60,15 +60,12 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      files: 'xooie/**/*.js',
-      options: {
-        reporter: 'jslint'
-      }
+      files: 'xooie/**/*.js'
     },
     jslint: {
       //src: ['xooie/**/*.js'],
       xooie: {
-        src: ['xooie/addons/base.js', 'xooie/widgets/base.js'],
+        src: ['xooie/*.js', 'xooie/widgets/carousel.js'],
         directives: {
           todo: true,
           nomen: true,
@@ -77,7 +74,12 @@ module.exports = function(grunt) {
           predef: [
             'define',
             'require',
+            'window',
+            'document',
             'setTimeout',
+            'clearTimeout',
+            'setInterval',
+            'clearInterval',
             'Mustache',
             '_'
           ]
