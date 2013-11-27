@@ -18,10 +18,11 @@
 
 // Adds Array.prototype.indexOf functionality to IE<9 (From MDN)
 if (!Array.prototype.indexOf) {
-  Array.prototype.indexOf = function (searchElement , fromIndex) {
-    var i,
-        pivot = (fromIndex) ? fromIndex : 0,
-        length;
+  Array.prototype.indexOf = function (searchElement, fromIndex) {
+    'use strict';
+    var i, pivot, length;
+
+    pivot = fromIndex || 0;
 
     if (!this) {
       throw new TypeError();
@@ -37,7 +38,7 @@ if (!Array.prototype.indexOf) {
       pivot = length - Math.abs(pivot);
     }
 
-    for (i = pivot; i < length; i++) {
+    for (i = pivot; i < length; i += 1) {
       if (this[i] === searchElement) {
         return i;
       }
@@ -48,14 +49,17 @@ if (!Array.prototype.indexOf) {
 
 // Adds Function.prototype.bind to browsers that do not support it
 if (!Function.prototype.bind) {
-    Function.prototype.bind = function(context) {
-        var f = this,
-            args = Array.prototype.slice.call(arguments, 1);
+  Function.prototype.bind = function (context) {
+    'use strict';
+    var f, args;
 
-        return function() {
-            return f.apply(context, args.concat(Array.prototype.slice.call(arguments)));
-        };
+    f = this;
+    args = Array.prototype.slice.call(arguments, 1);
+
+    return function () {
+      return f.apply(context, args.concat(Array.prototype.slice.call(arguments)));
     };
+  };
 }
 
 /**
@@ -64,8 +68,10 @@ if (!Function.prototype.bind) {
  * A collection of helper methods used by Xooie modules.
  **/
 
-define('xooie/helpers', ['jquery'], function($){
-  var helpers = {};
+define('xooie/helpers', [], function () {
+  'use strict';
+
+  var helpers = {
 /**
  * Xooie.helpers.toAry(str) -> Array
  * - str (String | Array): The string to be converted to an array, or an array.
@@ -73,36 +79,37 @@ define('xooie/helpers', ['jquery'], function($){
  * Converts a string to an array, or returns the passed argument if it is already an array.  Used
  * when parsing data attributes that can be either a space-delineated string or an array.
  **/
-  helpers.toAry = function(str) {
-    if (typeof str === 'string') {
-      return str.split(/\s+/);
-    } else if (str instanceof Array) {
-      return str;
+    toAry: function (str) {
+      if (typeof str === 'string') {
+        return str.split(/\s+/);
+      }
+
+      if (str instanceof Array) {
+        return str;
+      }
+    },
+
+    toInt: function (int) {
+      return parseInt(int, 10);
+    },
+
+    isArray: (function () {
+      return Array.isArray || function (ary) {
+        return Array.prototype.toString(ary) === '[object Array]';
+      };
+    }()),
+
+    isObject: function (obj) {
+      return Object.prototype.toString(obj) === '[object Object]';
+    },
+
+    isUndefined: function (obj) {
+      return obj === undefined;
+    },
+
+    isFunction: function (func) {
+      return typeof func === 'function';
     }
-  };
-
-  helpers.toInt = function(int) {
-    return parseInt(int, 10);
-  };
-
-  helpers.isString = function(str) {
-    return typeof str === 'string';
-  };
-
-  helpers.isArray = Array.isArray || function(ary) {
-    return Array.prototype.toString(ary) === '[object Array]';
-  };
-
-  helpers.isObject = function(obj) {
-    return Object.prototype.toString(obj) === '[object Object]';
-  };
-
-  helpers.isUndefined = function(obj) {
-    return obj === void 0;
-  };
-
-  helpers.isFunction = function(func) {
-    return typeof func === 'function';
   };
 
   return helpers;

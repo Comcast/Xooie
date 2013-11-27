@@ -31,31 +31,32 @@ var $X, Xooie;
  * widget for every element that has a data-widget-type attribute.
  **/
 
-$X = Xooie = (function(static_config) {
-    var config = {
-            widgets: {},
-            addons: {}
-        },
-        obj = function() {
-            return false;
-        },
-        gcTimer = null;
+$X = Xooie = (function (static_config) {
+  'use strict';
+  var config = {
+      widgets: {},
+      addons: {}
+    },
+    obj = function () {
+      return false;
+    },
+    gcTimer = null;
 
-    function copyObj(dst, src) {
-        var name;
+  function copyObj(dst, src) {
+    var name;
 
-        for (name in src) {
-            if (src.hasOwnProperty(name)) {
-                dst[name] = src[name];
-            }
-        }
+    for (name in src) {
+      if (src.hasOwnProperty(name)) {
+        dst[name] = src[name];
+      }
     }
+  }
 
-    function gcCallback() {
-        if (typeof Xooie.cleanup !== 'undefined') {
-            Xooie.cleanup();
-        }
+  function gcCallback() {
+    if (Xooie.cleanup !== undefined) {
+      Xooie.cleanup();
     }
+  }
 
 /**
  * $X.config(options)
@@ -76,27 +77,27 @@ $X = Xooie = (function(static_config) {
  * Default: `0`.
  **/
 
-    obj.config = function(options) {
-        var name;
+  obj.config = function (options) {
+    var name;
 
-        for (name in options) {
-            if (options.hasOwnProperty(name)) {
-                if (name === 'widgets' || name == 'addons') {
-                    copyObj(config[name], options[name]);
-                } else {
-                    config[name] = options[name];
-                }
-            }
+    for (name in options) {
+      if (options.hasOwnProperty(name)) {
+        if (name === 'widgets' || name === 'addons') {
+          copyObj(config[name], options[name]);
+        } else {
+          config[name] = options[name];
         }
+      }
+    }
 
-        if (typeof options.cleanupInterval !== 'undefined') {
-            gcTimer = clearInterval(gcTimer);
+    if (options.cleanupInterval !== undefined) {
+      gcTimer = clearInterval(gcTimer);
 
-            if (config.cleanupInterval > 0) {
-                gcTimer = setInterval(gcCallback, config.cleanupInterval);
-            }
-        }
-    };
+      if (config.cleanupInterval > 0) {
+        gcTimer = setInterval(gcCallback, config.cleanupInterval);
+      }
+    }
+  };
 
 /** internal
  * $X._mapName(name, type) -> String
@@ -106,143 +107,143 @@ $X = Xooie = (function(static_config) {
  * Maps the name of the widget or addon to the correct url string where the module file is located.
  **/
 
-    obj._mapName = function(name, type) {
-        if (typeof config[type][name] === 'undefined') {
-            return [config.root, '/', type, '/', name].join('');
-        } else {
-            return config[type][name];
-        }
-    };
-
-    obj.config({
-        root: 'xooie',
-        cleanupInterval: 0
-    });
-
-    if (static_config) {
-        obj.config(static_config);
+  obj._mapName = function (name, type) {
+    if (config[type][name] === undefined) {
+      return [config.root, '/', type, '/', name].join('');
     }
+    return config[type][name];
+  };
 
-    return obj;
+  obj.config({
+    root: 'xooie',
+    cleanupInterval: 0
+  });
+
+  if (static_config) {
+    obj.config(static_config);
+  }
+
+  return obj;
 }(Xooie));
 
-define('xooie/xooie', ['jquery', 'xooie/helpers', 'xooie/stylesheet'], function($, helpers, Stylesheet){
-    var config = Xooie.config,
-        _mapName = Xooie._mapName,
-        widgetSelector = '[data-widget-type]';
-        widgetDataAttr = 'widgetType';
-        addonDataAttr = 'addons';
+define('xooie/xooie', ['jquery', 'xooie/helpers', 'xooie/stylesheet'], function ($, helpers, Stylesheet) {
+  'use strict';
+  var config, _mapName, widgetSelector, widgetDataAttr, addonDataAttr;
 
-    $X = Xooie = function(element){
-        var nodes, moduleNames, moduleUrls,
-            node, url,
-            i, j;
+  config = Xooie.config;
+  _mapName = Xooie._mapName;
+  widgetSelector = '[data-widget-type]';
+  widgetDataAttr = 'widgetType';
+  addonDataAttr = 'addons';
 
-        element = $(element);
+  $X = Xooie = function (element) {
+    var node, nodes, moduleNames, moduleUrls, url, i, j;
 
-        // Find all elements labeled as widgets:
-        nodes = element.find(widgetSelector);
+    element = $(element);
 
-        // If the element is also tagged, add it to the collection:
-        if (element.is(widgetSelector)){
-            nodes = nodes.add(element);
+    // Find all elements labeled as widgets:
+    nodes = element.find(widgetSelector);
+
+    // If the element is also tagged, add it to the collection:
+    if (element.is(widgetSelector)) {
+      nodes = nodes.add(element);
+    }
+
+    // This array will be the list of unique modules to load:
+    moduleUrls = [];
+
+    // Iterate through each item in the collection:
+    for (i = 0; i < nodes.length; i += 1) {
+      node = $(nodes[i]);
+
+      // Add all of the widget types to the list of modules we need:
+      moduleNames = helpers.toAry(node.data(widgetDataAttr));
+
+      // For each widget we check to see if the url is already in our
+      // list of urls to require:
+      for (j = 0; j < moduleNames.length; j += 1) {
+        url = $X._mapName(moduleNames[j], 'widgets');
+
+        if (moduleUrls.indexOf(url) === -1) {
+          moduleUrls.push(url);
         }
+      }
 
-        // This array will be the list of unique modules to load:
-        moduleUrls = [];
+      // Do the same with each addon name:
+      moduleNames = helpers.toAry(node.data(addonDataAttr)) || [];
 
-        // Iterate through each item in the collection:
-        for(i = 0; i < nodes.length; i+=1) {
-            node = $(nodes[i]);
+      for (j = 0; j < moduleNames.length; j += 1) {
+        url = $X._mapName(moduleNames[j], 'addons');
 
-            // Add all of the widget types to the list of modules we need:
-            moduleNames = helpers.toAry(node.data(widgetDataAttr));
-
-            // For each widget we check to see if the url is already in our
-            // list of urls to require:
-            for (j = 0; j < moduleNames.length; j+=1) {
-                url = $X._mapName(moduleNames[j], 'widgets');
-
-                if (moduleUrls.indexOf(url) === -1) {
-                    moduleUrls.push(url);
-                }
-            }
-
-            // Do the same with each addon name:
-            moduleNames = helpers.toAry(node.data(addonDataAttr)) || [];
-
-            for (j = 0; j < moduleNames.length; j+=1) {
-                url = $X._mapName(moduleNames[j], 'addons');
-
-                if (moduleUrls.indexOf(url) === -1) {
-                    moduleUrls.push(url);
-                }
-            }
+        if (moduleUrls.indexOf(url) === -1) {
+          moduleUrls.push(url);
         }
+      }
+    }
 
-        // Now that we have a list of urls to load, let's load them:
-        require(moduleUrls, function(){
-            var widgets, addons, node,
-                addonMods, widgetMod, argIndex,
-                i, j, k;
+    // Now that we have a list of urls to load, let's load them:
+    require(moduleUrls, function () {
+      var widgets, addons, addonMods, WidgetMod, argIndex, instances, k;
 
-            // We need to iterate through our collection of nodes again:
-            for (i = 0; i < nodes.length; i+=1) {
-                node = $(nodes[i]);
+      instances = [];
 
-                // This time, we're keeping track of our addons and widges separately:
-                widgets = helpers.toAry(node.data(widgetDataAttr));
-                addons = helpers.toAry(node.data(addonDataAttr)) || [];
+      // We need to iterate through our collection of nodes again:
+      for (i = 0; i < nodes.length; i += 1) {
+        node = $(nodes[i]);
 
-                // Iterate through each widget type:
-                for (j = 0; j < widgets.length; j+=1) {
+        // This time, we're keeping track of our addons and widges separately:
+        widgets = helpers.toAry(node.data(widgetDataAttr));
+        addons = helpers.toAry(node.data(addonDataAttr)) || [];
 
-                    // Get the index of this module from the moduleUrls:
-                    argIndex = moduleUrls.indexOf($X._mapName(widgets[j], 'widgets'));
+        // Iterate through each widget type:
+        for (j = 0; j < widgets.length; j += 1) {
 
-                    //Get the widget that we'll be instantiating:
-                    widgetMod = arguments[argIndex];
+          // Get the index of this module from the moduleUrls:
+          argIndex = moduleUrls.indexOf($X._mapName(widgets[j], 'widgets'));
 
-                    addonMods = [];
+          //Get the widget that we'll be instantiating:
+          WidgetMod = arguments[argIndex];
 
-                    // Now get each addon that we'll instantiate with the widget:
-                    for (k = 0; k < addons.length; k+=1) {
-                        // Get the index of the addon module from moduleUrls:
-                        argIndex = moduleUrls.indexOf($X._mapName(addons[k], 'addons'));
+          addonMods = [];
 
-                        addonMods.push(arguments[argIndex]);
-                    }
+          // Now get each addon that we'll instantiate with the widget:
+          for (k = 0; k < addons.length; k += 1) {
+            // Get the index of the addon module from moduleUrls:
+            argIndex = moduleUrls.indexOf($X._mapName(addons[k], 'addons'));
 
-                    // Instantiate the new instance using the argIndex to find the right module:
-                    new widgetMod(node, addonMods);
-                }
-            }
-        });
-    };
+            addonMods.push(arguments[argIndex]);
+          }
 
-    Xooie.config = config;
-    Xooie._mapName = _mapName;
+          // Instantiate the new instance using the argIndex to find the right module:
+          instances.push(new WidgetMod(node, addonMods));
+        }
+      }
+    });
+  };
+
+  Xooie.config = config;
+  Xooie._mapName = _mapName;
 
 /** internal, read-only
  * $X._stylesheet -> Object
  *
  * An instance of the [[Stylesheet]] class used to manipluate a dynamically created Xooie stylesheet
  **/
-    Xooie._stylesheet = new Stylesheet('Xooie');
+  Xooie._stylesheet = new Stylesheet('Xooie');
 
 /** internal
  * $X._styleRules -> Object
  *
  * A cache of css rules defined by the [[Xooie.Widget.createStyleRule]] method.
  **/
-    Xooie._styleRules = {};
+  Xooie._styleRules = {};
 
 /** internal
  * $X._instanceCache -> Array
  *
  * A collection of currently instantiated widgets.
  **/
-    Xooie._instanceCache = [];
+  Xooie._instanceCache = [];
 
 /** internal
  * $X._instanceIndex -> Integer
@@ -250,8 +251,8 @@ define('xooie/xooie', ['jquery', 'xooie/helpers', 'xooie/stylesheet'], function(
  * Tracks the next available instance index in the cache.  This value also serves as the id of the
  * next instantiated widget.
  **/
-    Xooie._instanceIndex = 0;
-    
+  Xooie._instanceIndex = 0;
+
 /**
  * $X.cleanup()
  *
@@ -259,24 +260,26 @@ define('xooie/xooie', ['jquery', 'xooie/helpers', 'xooie/stylesheet'], function(
  * root element is no longer in the DOM, the module is garbage collected.
  **/
 
-    Xooie.cleanup = function() {
-        var i, instance;
+  Xooie.cleanup = function () {
+    var i, instance;
 
-        for (i = 0; i < $X._instanceCache.length; i++) {
-            instance = $X._instanceCache[i];
+    for (i = 0; i < $X._instanceCache.length; i += 1) {
+      instance = $X._instanceCache[i];
 
-            if (instance.root() && instance.root().parents('body').length === 0) {
-                instance.cleanup();
-                delete $X._instanceCache[i];
-            }
-        }
-    };
+      if (instance.root() && instance.root().parents('body').length === 0) {
+        instance.cleanup();
+        delete $X._instanceCache[i];
+      }
+    }
+  };
 
-    return Xooie;
+  return Xooie;
 });
 
-require(['jquery', 'xooie/xooie'], function($, $X){
-    $(document).ready(function() {
-        $X($(this));
-    });
+require(['jquery', 'xooie/xooie'], function ($, $X) {
+  'use strict';
+
+  $(document).ready(function () {
+    $X($(this));
+  });
 });
