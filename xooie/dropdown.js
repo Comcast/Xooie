@@ -83,10 +83,6 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
 
                 $(this).attr('aria-selected', false);
                 self.getExpander(index).attr('aria-hidden', true);
-            },
-
-            forceCollapse: function(event, data) {
-                self.collapse(data.index, data);
             }
         }, this.options.dropdownHandleSelector);
 
@@ -154,8 +150,12 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
         }
     };
 
+    Dropdown.prototype.getNamespacedTrigger = function(trigger, state){
+        return trigger + '.' + state + 'XooieDropdown';
+    };
+
     Dropdown.prototype.addHandlers = function(state, index){
-        var trigger, handle, triggerData, countName;
+        var trigger, nsTrigger, handle, triggerData, countName;
 
         triggerData = this.options.triggers[state];
 
@@ -170,12 +170,14 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
 
             handle.data(countName, handle.data(countName) + 1 || 1);
 
-            handle.on(trigger, $.extend({delay: 0, index: index}, triggerData[trigger]), this.handlers[state]);
+            nsTrigger = this.getNamespacedTrigger(trigger, state);
+
+            handle.on(nsTrigger, $.extend({delay: 0, index: index}, triggerData[trigger]), this.handlers[state]);
         }
     };
 
     Dropdown.prototype.removeHandlers = function(state, index){
-        var trigger, handle, triggerData, countName, eventCount;
+        var trigger, nsTrigger, handle, triggerData, countName, eventCount;
 
         triggerData = this.options.triggers[state];
 
@@ -187,7 +189,9 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
             eventCount = handle.data(countName) - 1;
 
             if (eventCount <= 0) {
-                handle.unbind(trigger, this.handlers[state]);
+                nsTrigger = this.getNamespacedTrigger(trigger, state);
+
+                handle.unbind(nsTrigger);
 
                 handle.data(countName, 0);
             } else {
@@ -262,7 +266,9 @@ define('xooie/dropdown', ['jquery', 'xooie/base'], function($, Base) {
     };
 
     Dropdown.prototype.collapse = function(index, data) {
-        this.setState(index, data, false);
+        if (this.getHandle(index).hasClass(this.options.activeDropdownClass)) {
+            this.setState(index, data, false);
+        }
     };
 
     Dropdown.prototype.setFocus = function(element){
