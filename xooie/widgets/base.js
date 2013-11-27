@@ -96,7 +96,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 
       $X._instanceIndex += 1;
 
-      if (!helpers.isUndefined($X._instanceCache[index])) {
+      if (helpers.isUndefined($X._instanceCache[index])) {
         $X._instanceCache[index] = instance;
 
         return index;
