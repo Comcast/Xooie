@@ -19,16 +19,17 @@
  *
  * A widget that associates containers of information with "tabs".
  **/
-define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'xooie/event_handler'], function($, helpers, Base, EventHandler) {
+define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'xooie/event_handler'], function ($, helpers, Base, EventHandler) {
+  'use strict';
 
   function setSelection(widget, selectedTabs) {
     var activeTabs = widget.getActiveTabs();
 
-    activeTabs.not(selectedTabs).each(function() {
+    activeTabs.not(selectedTabs).each(function () {
       widget.deactivateTab($(this));
     });
 
-    selectedTabs.not(activeTabs).each(function() {
+    selectedTabs.not(activeTabs).each(function () {
       widget.activateTab($(this));
     });
   }
@@ -59,31 +60,31 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  *
  * Instantiates a new Tab instance.  See [[Xooie.Widget]] for more functionality.
  **/
-  var Tab = Base.extend(function(){
+  var Tab = Base.extend(function () {
     var self = this;
 
     this._tabEvents = new EventHandler(this.namespace());
 
     this._tabEvents.add({
-      keyup: function(event){
-        if ([13,32].indexOf(event.which) !== -1){
+      keyup: function (event) {
+        if ([13, 32].indexOf(event.which) !== -1) {
           setSelection(self, self.selectTabs(event, $(this)));
 
           event.preventDefault();
         }
       },
 
-      mouseup: function(event){
+      mouseup: function (event) {
         setSelection(self, self.selectTabs(event, $(this)));
       },
 
-      click: function(event){
+      click: function (event) {
         event.preventDefault();
       }
     });
 
     // TODO: Test and document this.  Also, create a property for data-activate
-    this.root().on(this.initEvent(), function(){
+    this.root().on(this.initEvent(), function () {
       self.activateTab(self.tabs().filter('[data-activate="true"]'));
     });
 
@@ -166,7 +167,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  *
  * Activates a [[Xooie.Tab#tabs]].
  **/
-  Tab.prototype.activateTab = function(tab) {
+  Tab.prototype.activateTab = function (tab) {
     tab.addClass(this.activeClass())
        .attr('aria-selected', true);
 
@@ -189,7 +190,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  * The method also deactivates the [[Xooie.Tab#tabpanels]] that is indicated by the tab's `aria-controls` attribute,
  * removing the [[Xooie.Tab#activeClass]] class and setting `aria-expanded` to 'false'.
  **/
-  Tab.prototype.deactivateTab = function(tab) {
+  Tab.prototype.deactivateTab = function (tab) {
     tab.removeClass(this.activeClass())
        .attr('aria-selected', false);
 
@@ -204,8 +205,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
   };
 
 /**
- * Xooie.Tab#selectTabs(event, selectedTab)
- * - event (Event): Browser event that triggered selectTabs call
+ * Xooie.Tab#selectTabs(selectedTab)
  * - selectedTab (Element): Tab that was selected by a mouse or keyboard event
  *
  * Only called by mouse/keyboard event handlers to generate the list of
@@ -216,7 +216,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  *
  * Override this method to alter the behavior of the Tab widget.
  **/
-  Tab.prototype.selectTabs = function(event, selectedTab) {
+  Tab.prototype.selectTabs = function (selectedTab) {
     return selectedTab;
   };
 
@@ -226,7 +226,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  * Returns a jQuery-selected collection of all [[Xooie.Tab#tabs]] that currently have the
  * [[Xooie.Tab#activeClass]] class.
  **/
-  Tab.prototype.getActiveTabs = function() {
+  Tab.prototype.getActiveTabs = function () {
     return this.tabs().filter('.' + this.activeClass());
   };
 
@@ -238,30 +238,32 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  * the `data-x-role="tab"` attribute.  Tabs are given the [`role="tab"`](http://www.w3.org/TR/wai-aria/roles#tab) and [`aria-selected="false"`](http://www.w3.org/TR/wai-aria/states_and_properties#aria-selected)
  * [ARIA](http://www.w3.org/TR/wai-aria/) attributes.
  **/
-  Tab.prototype._process_role_tab = function(tabs){
-    var tabpanels = this.tabpanels(),
-        tab, panelId,
-        self = this;
+  Tab.prototype._process_role_tab = function (tabs) {
+    var tabpanels;
+
+    tabpanels = this.tabpanels();
 
     tabs.off(this._tabEvents.handlers);
 
     tabs.attr('role', 'tab')
         .attr('aria-selected', false);
 
-    tabs.each(function(index) {
+    tabs.each(function (index) {
+      var tab, panelId;
+
       tab = $(this);
       panelId = tabpanels.eq(index).attr('id');
 
-      $(this).attr('aria-controls', panelId);
+      tab.attr('aria-controls', panelId);
 
-      if ($(this).is('a')) {
-        $(this).attr('href', '#' + panelId);
+      if (tab.is('a')) {
+        tab.attr('href', '#' + panelId);
       }
 
     });
 
     tabs.on(this._tabEvents.handlers);
-    
+
     return tabs;
   };
 
@@ -272,12 +274,11 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  * defined then its value will be used to select from the DOM.  Otherwise, tabs will be selected from decendants of
  * the root using the `[data-x-role="tab"]` selector.
  **/
-  Tab.prototype._get_role_tab = function(){
+  Tab.prototype._get_role_tab = function () {
     if (!helpers.isUndefined(this.tabSelector())) {
       return $(this.tabSelector());
-    } else {
-      return this.root().find('[data-x-role="tab"]');
     }
+    return this.root().find('[data-x-role="tab"]');
   };
 
 /** internal
@@ -285,9 +286,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  *
  * TODO: Create this method to keep parity with the existing tab functionality
  **/
-  Tab.prototype._render_role_tab = function(){
-
-  };
+  Tab.prototype._render_role_tab = function () { return false; };
 
 /** internal
  * Xooie.Tab#_process_role_tablist(tablist) -> Element
@@ -298,12 +297,12 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  * [ARIA](http://www.w3.org/TR/wai-aria/) attributes.  If any [[Xooie.Tab#tabs]] are not decendants of the tab list, the ids of those
  * tabs are added to the [`aria-owns`](http://www.w3.org/TR/wai-aria/states_and_properties#aria-owns) attribute.
  **/
-  Tab.prototype._process_role_tablist = function(tablist) {
+  Tab.prototype._process_role_tablist = function (tablist) {
     var tabs = this.tabs();
 
     tablist.attr('role', 'tablist');
 
-    tabs.each(function(index) {
+    tabs.each(function () {
       var owns, id;
       if (tablist.has(this).length === 0) {
         owns = tablist.attr('aria-owns') || '';
@@ -327,7 +326,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  *
  * TODO: Add this method to render the tablist if it is not included.
  **/
-  Tab.prototype._render_role_tablist = function(){
+  Tab.prototype._render_role_tablist = function () {
     return $('<ul data-x-role="tablist"></ul>');
   };
 
@@ -339,7 +338,7 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
  * the `data-x-role="tabpanel"` attribute.  Tabs are given the [`role="tabpanel"`](http://www.w3.org/TR/wai-aria/roles#tab) and [`aria-expanded="false"`](http://www.w3.org/TR/wai-aria/states_and_properties#aria-selected)
  * [ARIA](http://www.w3.org/TR/wai-aria/) attributes.
  **/
-  Tab.prototype._process_role_tabpanel = function(tabpanels) {
+  Tab.prototype._process_role_tabpanel = function (tabpanels) {
     tabpanels.attr('role', 'tabpanel')
              .attr('aria-expanded', false);
 

@@ -59,13 +59,9 @@ module.exports = function(grunt) {
         }
       }
     },
-    jshint: {
-      files: 'xooie/**/*.js'
-    },
     jslint: {
-      //src: ['xooie/**/*.js'],
       xooie: {
-        src: ['xooie/*.js', 'xooie/widgets/carousel.js'],
+        src: ['xooie/**/*.js'],
         directives: {
           todo: true,
           nomen: true,
@@ -90,10 +86,9 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-jslint');
 
-  grunt.registerTask('test', ['jshint', 'jasmine']);
+  grunt.registerTask('test', ['jslint', 'jasmine']);
   grunt.registerTask('build', ['test', 'requirejs']);
 
 };
