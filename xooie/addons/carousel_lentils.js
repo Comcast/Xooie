@@ -14,147 +14,110 @@
 *   limitations under the License.
 */
 
-define('xooie/addons/carousel_lentils', ['jquery', 'xooie/addons/base'], function($, Base) {
+define('xooie/addons/carousel_lentils', ['jquery', 'xooie/addons/base', 'xooie/helpers'], function ($, Base, helpers) {
+  'use strict';
 
-    var Lentils = Base.extend(function(){
+  var Lentils = new Base('lentils', function () {
+    var self = this;
 
-    });
+    this.lentilBuilders = {
+      "item": function (container, template) {
+        var items, element, i;
 
+        items = self.module.content.children();
 
-    Lentils.define('someProp', 'default');
+        for (i = 0; i < items.length; i += 1) {
+          element = self.module.render(template, {
+            number: i + 1,
+            scroll_mode: "item",
+            lentil_is_last: (i === items.length - 1)
+          });
+          container.append(element);
+        }
+      },
 
-    Lentils.defineReadOnly('someReadOnlyProp', 'default');
+      "page": function (container, template) {
+        if (helpers.isUndefined(self.module.addons.pagination)) {
+          return;
+        }
 
+        var element, i;
 
-    // data-x-role="lentil"
-    Lentils.defineRole('lentil');
+        for (i = 0; i < self.module.addons.pagination._breaks.length; i += 1) {
+          element = self.module.render(template, {
+            number: i + 1,
+            scroll_mode: "page",
+            lentil_is_last: (i === self.module.addons.pagination._breaks.length - 1)
+          });
 
-    Lentils.prototype.someMethod = function(){
-        this.someProp();
-
-        this.someProp('newValue');
-
-        this.lentils();
-
-        this.lentil();
+          container.append(element);
+        }
+      }
     };
 
-    //return Lentils;
+    this.module.root.addClass('is-carousel-lentiled');
 
+    this.module.root.on('carouselUpdated', function () {
+      self.updateLentils();
+    });
 
-    /*
-        <ul>
-            <li><button data-x-role="control:goto 1 item"></button></li>
-            <li><button data-x-role="control:goto 2 item"></button></li>
-            <li><button data-x-role="control:goto 3 item"></button></li>
-        </ul>
+    this.module.root.on('carouselScrollComplete', function () {
+      self.currentLentil();
+    });
 
-        $('.my_carousel').on('carouselScroll')
+    this.updateLentils();
 
+    this.currentLentil();
 
-                
-    */
-    var _Lentils = Base('lentils', function(){
-        var self = this;
+  });
 
-        this.lentilBuilders = {
-            "item": function(container, template){
-                var items = self.module.content.children(),
-                    element, i;
+  Lentils.setDefaultOptions({
+    lentilMode: 'item',
+    lentilSelector: '[data-role="carousel-lentils"]',
+    lentilTemplateSelector: '[data-role="carousel-lentils-template"]',
 
-                for (i = 0; i < items.length; i += 1) {
+    activeLentilClass: 'is-active-lentil'
+  });
 
-                    element = self.module.render(template, {
-                        number: i + 1,
-                        scroll_mode: "item",
-                        lentil_is_last: (i === items.length - 1)
-                    });
-                    container.append(element);
-                }
-            },
+  Lentils.prototype.currentLentil = function () {
+    var container, lentils, index;
 
-            "page": function(container, template){
-                if (typeof self.module.addons.pagination === 'undefined') {
-                    return;
-                }
+    container = this.module.root.find(this.options.lentilSelector);
+    lentils = container.children();
 
-                var element, i;
+    if (this.options.lentilMode === 'page' && !helpers.isUndefned(this.module.addons.pagination)) {
+      index = this.module.addons.pagination.currentPage();
+    } else {
+      index = this.module.currentItem();
+    }
 
-                for (i = 0; i < self.module.addons.pagination._breaks.length; i += 1) {
-                    element = self.module.render(template, {
-                        number: i + 1,
-                        scroll_mode: "page",
-                        lentil_is_last: (i === self.module.addons.pagination._breaks.length - 1)
-                    });
+    lentils.filter('.' + this.options.activeLentilClass).removeClass(this.options.activeLentilClass);
 
-                    container.append(element);
-                }
+    lentils.eq(index).addClass(this.options.activeLentilClass);
+  };
 
-            }
+  Lentils.prototype.updateLentils = function () {
+    var container, template, self;
 
-        };
+    container = this.module.root.find(this.options.lentilSelector);
+    template = this.module.root.find(this.options.lentilTemplateSelector);
+    self = this;
 
-        this.module.root.addClass('is-carousel-lentiled');
+    if (container.length > 0 && template.length > 0) {
+      container.html('');
 
-        this.module.root.on('carouselUpdated', function(){
-            self.updateLentils();
+      if (helpers.isFunction(this.lentilBuilders[this.options.lentilMode])) {
+        this.lentilBuilders[this.options.lentilMode](container, template);
+
+        container.children().on('click', function (event) {
+          event.preventDefault();
+          self.module.updatePosition($(this).data('scroll'));
         });
-
-        this.module.root.on('carouselScrollComplete', function(){
-            self.currentLentil();
-        });
-
-        this.updateLentils();
 
         this.currentLentil();
+      }
+    }
+  };
 
-    });
-
-    Lentils.setDefaultOptions({
-        lentilMode: 'item',
-        lentilSelector: '[data-role="carousel-lentils"]',
-        lentilTemplateSelector: '[data-role="carousel-lentils-template"]',
-
-        activeLentilClass: 'is-active-lentil'
-    });
-
-    Lentils.prototype.currentLentil = function(){
-        var container = this.module.root.find(this.options.lentilSelector),
-            lentils = container.children(),
-            index;
-
-        if (this.options.lentilMode === 'page' && typeof this.module.addons.pagination !== 'undefined') {
-            index = this.module.addons.pagination.currentPage();
-        } else {
-            index = this.module.currentItem();
-        }
-
-        lentils.filter('.' + this.options.activeLentilClass).removeClass(this.options.activeLentilClass);
-
-        lentils.eq(index).addClass(this.options.activeLentilClass);
-    };
-
-    Lentils.prototype.updateLentils = function() {
-        var container = this.module.root.find(this.options.lentilSelector),
-            template = this.module.root.find(this.options.lentilTemplateSelector),
-            self = this;
-
-        if (container.length > 0 && template.length > 0) {
-            container.html('');
-
-            if (typeof this.lentilBuilders[this.options.lentilMode] === 'function') {
-                this.lentilBuilders[this.options.lentilMode](container, template);
-
-                container.children().on('click', function(event) {
-                    event.preventDefault();
-                    self.module.updatePosition($(this).data('scroll'));
-                });
-
-                this.currentLentil();
-
-            }
-        }
-    };
-
-    return Lentils;
+  return Lentils;
 });

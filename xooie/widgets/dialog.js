@@ -14,119 +14,118 @@
 *   limitations under the License.
 */
 
-define('xooie/dialog', ['jquery', 'xooie/base'], function($, Base) {
+define('xooie/dialog', ['xooie/base', 'xooie/helpers'], function (Base, helpers) {
+  'use strict';
 
-    var Dialog = Base('dialog', function(){
-        var self = this;
+  var Dialog = new Base('dialog', function () {
+    var self = this;
 
-        this.id = Dialog._counter++;
+    this.id = Dialog._counter = Dialog._counter + 1;
 
-        Dialog._instances[this.id] = this;
+    Dialog._instances[this.id] = this;
 
-        this.root.attr('data-dialog-id', this.id);
+    this.root.attr('data-dialog-id', this.id);
 
-        //add accessibility attributes
-        this.root.find(this.options.containerSelector).attr('role', 'dialog');
+    //add accessibility attributes
+    this.root.find(this.options.containerSelector).attr('role', 'dialog');
 
-        this.root.addClass('xooie-dialog');
+    this.root.addClass('xooie-dialog');
 
-        this.handlers = {
-            mouseup: function(event){
-                Dialog.close(self.id);
-            },
+    this.handlers = {
+      mouseup: function () {
+        Dialog.close(self.id);
+      },
 
-            keyup: function(event){
-                if([13,32].indexOf(event.which) !== -1){
-                    Dialog.close(self.id);
-                }
-            }
-        };
-    });
-
-    Dialog.setDefaultOptions({
-        closeButtonSelector: '[data-role="closeButton"]',
-        containerSelector: '[data-role="container"]',
-
-        dialogActiveClass: 'is-dialog-active'
-    });
-
-    Dialog.setCSSRules({
-        '.xooie-dialog': {
-            position: 'fixed',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0
+      keyup: function (event) {
+        if ([13, 32].indexOf(event.which) !== -1) {
+          Dialog.close(self.id);
         }
-    });
-
-    Dialog.prototype.activate = function(){
-        this.root.addClass(this.options.dialogActiveClass);
-
-        if(Dialog._active === this) {
-            return;
-        }
-
-        if(Dialog._active){
-            Dialog._active.deactivate();
-        }
-
-        this.root.find(this.options.closeButtonSelector)
-                 .on(this.handlers);
-
-        Dialog._active = this;
-
-        this.root.trigger('dialogActive');
+      }
     };
+  });
 
-    Dialog.prototype.deactivate = function(){
-        this.root.removeClass(this.options.dialogActiveClass);
+  Dialog.setDefaultOptions({
+    closeButtonSelector: '[data-role="closeButton"]',
+    containerSelector: '[data-role="container"]',
 
-        if (Dialog._active !== this) {
-            return;
-        }
+    dialogActiveClass: 'is-dialog-active'
+  });
 
-        this.root.find(this.options.closeButtonSelector)
-                 .off(this.handlers);
+  Dialog.setCSSRules({
+    '.xooie-dialog': {
+      position: 'fixed',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0
+    }
+  });
 
-        Dialog._active = null;
+  Dialog.prototype.activate = function () {
+    this.root.addClass(this.options.dialogActiveClass);
 
-        this.root.trigger('dialogInactive');
-    };
+    if (Dialog._active === this) {
+      return;
+    }
 
-    Dialog._instances = [];
-    Dialog._counter = 0;
+    if (Dialog._active) {
+      Dialog._active.deactivate();
+    }
+
+    this.root.find(this.options.closeButtonSelector)
+             .on(this.handlers);
+
+    Dialog._active = this;
+
+    this.root.trigger('dialogActive');
+  };
+
+  Dialog.prototype.deactivate = function () {
+    this.root.removeClass(this.options.dialogActiveClass);
+
+    if (Dialog._active !== this) {
+      return;
+    }
+
+    this.root.find(this.options.closeButtonSelector)
+             .off(this.handlers);
+
     Dialog._active = null;
-    Dialog._queue = [];
 
-    Dialog.open = function(id){
-        //get dialog instance
-        var dialog = this._instances[id];
+    this.root.trigger('dialogInactive');
+  };
 
-        if (typeof dialog === 'undefined' || this._active === dialog){
-            return;
-        }
+  Dialog._instances = [];
+  Dialog._counter = 0;
+  Dialog._active = null;
+  Dialog._queue = [];
 
-        if (this._active) {
-            this._queue.push(dialog);
-        } else {
-            dialog.activate();
-        }
+  Dialog.open = function (id) {
+    //get dialog instance
+    var dialog = this._instances[id];
 
-    };
+    if (helpers.isUndefined(dialog) || this._active === dialog) {
+      return;
+    }
 
-    Dialog.close = function(){
-        //get dialog instance
-        if(!this._active) {
-            return;
-        }
+    if (this._active) {
+      this._queue.push(dialog);
+    }
+    dialog.activate();
+  };
 
-        this._active.deactivate();
+  Dialog.close = function () {
+    //get dialog instance
+    if (!this._active) {
+      return;
+    }
 
-        if (this._queue.length > 0) {
-            this._queue.pop().activate();
-        }
-    };
+    this._active.deactivate();
 
-    return Dialog;
+    if (this._queue.length > 0) {
+      this._queue.pop().activate();
+    }
+  };
+
+  return Dialog;
 });
