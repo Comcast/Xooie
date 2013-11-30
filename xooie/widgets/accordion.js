@@ -1,9 +1,7 @@
 define('xooie/widgets/accordion', ['xooie/widgets/tab'], function (Tab) {
   'use strict';
 
-  var Accordion = Tab.extend(function () {
-    return this;
-  });
+  var Accordion = Tab.extend();
 
   Accordion.define('namespace', 'accordion');
 
