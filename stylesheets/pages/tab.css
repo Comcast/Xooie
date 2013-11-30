@@ -1,22 +1,22 @@
-/* line 9, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+/* line 9, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
 .x-demo-tablist {
   display: inline-block;
   list-style-type: none;
   margin: 0;
   padding: 0;
   font-size: 0; }
-  /* line 35, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  /* line 35, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
   .x-demo-tablist > li {
     display: inline-block;
     font-size: 14px; }
-  /* line 12, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+  /* line 12, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
   .x-demo-tablist li {
     margin-right: 10px; }
-    /* line 15, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+    /* line 15, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
     .x-demo-tablist li:last-child {
       margin-right: 0; }
 
-/* line 21, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+/* line 21, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
 .x-demo-tab-control {
   color: #434345;
   text-decoration: none;
@@ -25,11 +25,11 @@
   -moz-transition: color 0.2s ease-in-out 0;
   -o-transition: color 0.2s ease-in-out 0;
   transition: color 0.2s ease-in-out 0; }
-  /* line 17, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
+  /* line 17, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/_mixins.scss */
   .x-demo-tab-control:hover, .x-demo-tab-control:focus {
     color: #0591ab; }
 
-/* line 25, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+/* line 25, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
 .x-demo-tabpanel {
   padding: 0;
   border: 1px solid #434345;
@@ -40,7 +40,7 @@
   -o-transition: height 0.2s ease-in-out 0;
   transition: height 0.2s ease-in-out 0;
   overflow: hidden; }
-  /* line 32, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
+  /* line 32, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/pages/tab.scss */
   .x-demo-tabpanel.is-tab-active {
     padding: 10px;
     height: 100px; }
