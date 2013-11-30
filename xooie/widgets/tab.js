@@ -68,14 +68,14 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
     this._tabEvents.add({
       keyup: function (event) {
         if ([13, 32].indexOf(event.which) !== -1) {
-          setSelection(self, self.selectTabs(event, $(this)));
+          setSelection(self, self.selectTabs($(this), event));
 
           event.preventDefault();
         }
       },
 
       mouseup: function (event) {
-        setSelection(self, self.selectTabs(event, $(this)));
+        setSelection(self, self.selectTabs($(this), event));
       },
 
       click: function (event) {
@@ -205,8 +205,9 @@ define('xooie/widgets/tab', ['jquery', 'xooie/helpers', 'xooie/widgets/base', 'x
   };
 
 /**
- * Xooie.Tab#selectTabs(selectedTab)
+ * Xooie.Tab#selectTabs(selectedTab, event)
  * - selectedTab (Element): Tab that was selected by a mouse or keyboard event
+ * - event (Event): The jQuery event that triggered the selection
  *
  * Only called by mouse/keyboard event handlers to generate the list of
  * currently active tabs. Should return a jQuery collection of tabs that are
