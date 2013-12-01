@@ -1,4 +1,3 @@
-
 /*
 *   Copyright 2013 Comcast
 *
@@ -672,16 +671,16 @@ define('xooie/shared', ['jquery', 'xooie/helpers'], function ($, helpers) {
         return function Child() {
           var i, result;
 
-          for (i = 0; i < Child._constructors.length; i += 1) {
-            result = Child._constructors[i].apply(this, arguments);
+          for (i = 0; i < newModule._constructors.length; i += 1) {
+            result = newModule._constructors[i].apply(this, arguments);
 
             if (!helpers.isUndefined(result)) {
               return result;
             }
           }
 
-          for (i = 0; i < Child._postConstructors.length; i += 1) {
-            Child._postConstructors[i].apply(this, arguments);
+          for (i = 0; i < newModule._postConstructors.length; i += 1) {
+            newModule._postConstructors[i].apply(this, arguments);
           }
         };
       }());
