@@ -127,7 +127,7 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
 
         items = this.items();
 
-        quantity = helpers.toInt(quantity);
+        quantity = helpers.toInteger(quantity);
 
         if (isNaN(quantity)) {
           return;
@@ -155,7 +155,7 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
       pixel: function (direction, quantity) {
         var pos;
 
-        quantity = helpers.toInt(quantity);
+        quantity = helpers.toInteger(quantity);
 
         if (isNaN(quantity)) {
           return;
