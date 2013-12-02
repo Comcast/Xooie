@@ -89,7 +89,7 @@ define('xooie/helpers', [], function () {
       }
     },
 
-    toInt: function (int) {
+    toInteger: function (int) {
       return parseInt(int, 10);
     },
 
