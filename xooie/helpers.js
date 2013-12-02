@@ -73,13 +73,13 @@ define('xooie/helpers', [], function () {
 
   var helpers = {
 /**
- * Xooie.helpers.toAry(str) -> Array
+ * Xooie.helpers.toArray(str) -> Array
  * - str (String | Array): The string to be converted to an array, or an array.
  *
  * Converts a string to an array, or returns the passed argument if it is already an array.  Used
  * when parsing data attributes that can be either a space-delineated string or an array.
  **/
-    toAry: function (str) {
+    toArray: function (str) {
       if (typeof str === 'string') {
         return str.split(/\s+/);
       }
@@ -89,8 +89,8 @@ define('xooie/helpers', [], function () {
       }
     },
 
-    toInteger: function (int) {
-      return parseInt(int, 10);
+    toInteger: function (integer) {
+      return parseInt(integer, 10);
     },
 
     isArray: (function () {
