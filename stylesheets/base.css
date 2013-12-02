@@ -1,14 +1,14 @@
-/* line 5, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+/* line 5, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/base.scss */
 button {
   border: 0;
   padding: 0;
   background-color: transparent; }
 
-/* line 11, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+/* line 11, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/base.scss */
 body {
   margin-left: 150px; }
 
-/* line 15, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+/* line 15, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/base.scss */
 .x-h1 {
   margin: 0;
   padding: 0;
@@ -16,26 +16,26 @@ body {
   font-size: 46px;
   padding: 5px 25px 10px; }
 
-/* line 21, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+/* line 21, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/base.scss */
 .x-h2 {
   margin: 0;
   padding: 0;
   font-weight: normal;
   font-size: 36px; }
 
-/* line 26, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+/* line 26, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/base.scss */
 .x-h3 {
   margin: 0;
   padding: 0;
   font-weight: normal;
   font-size: 24px; }
 
-/* line 31, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+/* line 31, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/base.scss */
 .x-block-full {
   border-top: 1px solid #c6c6cc;
   padding: 25px 20px; }
 
-/* line 36, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+/* line 36, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/base.scss */
 .x-block-inline {
   display: -moz-inline-stack;
   display: inline-block;
@@ -46,7 +46,7 @@ body {
   border: 1px solid #c6c6cc;
   padding: 15px; }
 
-/* line 42, /Users/alarkin2/Documents/workspace/Xooie/source/stylesheets/base.scss */
+/* line 42, /Users/alarki200/Documents/workspace/Xooie/source/stylesheets/base.scss */
 .x-code-block {
   display: -moz-inline-stack;
   display: inline-block;
