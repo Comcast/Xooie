@@ -9827,11 +9827,3 @@ K(c)||(d=c,c=null);!c&&J(d)&&(c=[],d.length&&(d.toString().replace(ma,"").replac
 h(u)}})(this);
 
 
-require.config({
-    baseUrl: '/javascripts',
-    paths: {
-        jquery: 'vendor/jquery'
-    }
-});
-
-
