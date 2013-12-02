@@ -1,2 +1,2 @@
-//= require_tree ./vendor
+//= require vendor_manifest
 //= require require_config
