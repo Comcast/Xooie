@@ -64,7 +64,7 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function ($, helpers) {
   };
 
   Stylesheet.prototype.addRule = function (ruleName, properties) {
-    var rule = this.getRule(ruleName), index, prop, propString = '';
+    var rule = this.getRule(ruleName), index, prop, propString = '', ruleNameArray, i;
 
     if (!rule) {
       for (prop in properties) {
@@ -81,7 +81,12 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function ($, helpers) {
       } else {
         //support for IE < 9
         index = this.get().rules.length;
-        this.get().addRule(ruleName, propString, index);
+        ruleNameArray = ruleName.split(',');
+
+        for(i = 0; i < ruleNameArray.length; i += 1) {
+            this.get().addRule(ruleNameArray[i], propString, index+i);
+        }
+
         rule = this.get().rules[index];
       }
     }
