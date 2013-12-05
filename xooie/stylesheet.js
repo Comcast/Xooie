@@ -82,7 +82,7 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function ($, helpers) {
         //support for IE < 9
         index = this.get().rules.length;
         ruleNameArray = ruleName.split(',');
-
+        // READ: http://msdn.microsoft.com/en-us/library/ie/aa358796%28v=vs.85%29.aspx
         for(i = 0; i < ruleNameArray.length; i += 1) {
             this.get().addRule(ruleNameArray[i], propString, index+i);
         }
