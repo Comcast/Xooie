@@ -17,16 +17,22 @@
 define('xooie/dialog', ['jquery', 'xooie/base'], function($, Base) {
 
     var Dialog = Base('dialog', function(){
-        var self = this;
+        var self = this,
+            contentId;
 
         this.id = Dialog._counter++;
+
+        contentId = 'modal-content-' + this.id;
 
         Dialog._instances[this.id] = this;
 
         this.root.attr('data-dialog-id', this.id);
 
+        this.root.find(this.options.contentSelector).attr('id', contentId);
+
         //add accessibility attributes
-        this.root.find(this.options.containerSelector).attr('role', 'dialog');
+        this.root.find(this.options.containerSelector).attr('role', 'dialog')
+                                                      .attr('aria-describedby', contentId);
 
         this.root.addClass('xooie-dialog');
 
@@ -46,6 +52,7 @@ define('xooie/dialog', ['jquery', 'xooie/base'], function($, Base) {
     Dialog.setDefaultOptions({
         closeButtonSelector: '[data-role="closeButton"]',
         containerSelector: '[data-role="container"]',
+        contentSelector: '[data-role="content"]',
 
         dialogActiveClass: 'is-dialog-active'
     });
