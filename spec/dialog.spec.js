@@ -5,7 +5,9 @@ require(['jquery', 'xooie/dialog'], function($, Dialog) {
         beforeEach(function(){
             el = $(['<div data-widget-type="dialog">',
                         '<div data-role="container">',
-                            '<button data-role="closeButton" />',
+                            '<div data-role="content">',
+                                '<button data-role="closeButton" />',
+                            '</div>',
                         '</div>',
                     '</div>'].join(''));
 
@@ -36,8 +38,16 @@ require(['jquery', 'xooie/dialog'], function($, Dialog) {
                 expect(dialog2.id).toBe(1);
             });
 
-            it('adds the dialog aria role to the content container', function(){
+            it('adds the dialog aria role to the container', function(){
                 expect(this.dialog.root.find(this.dialog.options.containerSelector).attr('role')).toBe('dialog');
+            });
+
+            it('adds aria-describedby to the container', function() {
+                expect(this.dialog.root.find(this.dialog.options.containerSelector).attr('aria-describedby')).toBe('modal-content-' + this.dialog.id);
+            });
+
+            it('adds a unique id to the content', function() {
+                expect(this.dialog.root.find(this.dialog.options.contentSelector).attr('id')).toBe('modal-content-' + this.dialog.id);
             });
 
             it('adds the class xooie-dialog to the root', function(){
