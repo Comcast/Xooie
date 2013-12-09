@@ -115,6 +115,21 @@ require(['jquery', 'xooie/dialog'], function($, Dialog) {
                 expect(Dialog._active).toBe(this.dialog);
             });
 
+            it('focuses the first tabbable element in the container', function () {
+                var el = $('<button />'),
+                    passed = false;
+
+                el.on('focus', function () {
+                    passed = true;
+                });
+
+                spyOn(this.dialog, 'getTabbable').andReturn(el);
+
+                this.dialog.activate();
+
+                expect(passed).toBe(true);
+            });
+
             it('triggers a dialogActive event', function(){
                 var test = false;
 
@@ -191,6 +206,55 @@ require(['jquery', 'xooie/dialog'], function($, Dialog) {
                 this.dialog.deactivate();
 
                 expect(test).toBe(false);
+            });
+        });
+
+        describe('When getting all tabbable elements', function() {
+            beforeEach(function () {
+                spyOn($.fn, 'closest').andReturn($());
+            });
+
+            it('gets all anchors with hrefs', function() {
+                this.dialog.root = $('<div><div data-role="container"><a id="anchor1"></a><a href="#" id="anchor2"></a></div></div>');
+
+                expect(this.dialog.getTabbable().is('#anchor2')).toBe(true);
+                expect(this.dialog.getTabbable().is('#anchor1')).toBe(false);
+            });
+
+            it('gets all buttons', function () {
+                this.dialog.root = $('<div><div data-role="container"><div /><button id="button1"></button></div></div>');
+
+                expect(this.dialog.getTabbable().is('#button1')).toBe(true);
+            });
+
+            it('gets all inputs', function () {
+                this.dialog.root = $('<div><div data-role="container"><div /><input id="input1"></input></div></div>');
+
+                expect(this.dialog.getTabbable().is('#input1')).toBe(true);
+            });
+
+            it('gets all selects', function () {
+                this.dialog.root = $('<div><div data-role="container"><div /><select id="select1"></select></div></div>');
+
+                expect(this.dialog.getTabbable().is('#select1')).toBe(true);
+            });
+
+            it('gets all textarea', function () {
+                this.dialog.root = $('<div><div data-role="container"><div /><textarea id="textarea1" /></div></div>');
+
+                expect(this.dialog.getTabbable().is('#textarea1')).toBe(true);
+            });
+
+            it('gets all tabindex', function () {
+                this.dialog.root = $('<div><div data-role="container"><div /><div id="div1" tabindex="0"></div></div></div>');
+
+                expect(this.dialog.getTabbable().is('#div1')).toBe(true);
+            });
+
+            it('does not get tabindex=-1', function() {
+                this.dialog.root = $('<div><div data-role="container"><div /><button id="button1" tabindex="-1"></button></div></div>');
+
+                expect(this.dialog.getTabbable().is('#button1')).not.toBe(true);
             });
         });
 

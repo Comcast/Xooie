@@ -83,6 +83,8 @@ define('xooie/dialog', ['jquery', 'xooie/base'], function($, Base) {
 
         Dialog._active = this;
 
+        this.getTabbable().first().focus();
+
         this.root.trigger('dialogActive');
     };
 
@@ -99,6 +101,26 @@ define('xooie/dialog', ['jquery', 'xooie/base'], function($, Base) {
         Dialog._active = null;
 
         this.root.trigger('dialogInactive');
+    };
+
+    // Loosely based on jQueryUI's tabbable selector logic
+    Dialog.prototype.getTabbable = function () {
+        return this.root.find(this.options.containerSelector).find('*').filter(function (i) {
+            var tag, tabindex, istabbable;
+
+            tag = this.nodeName.toLowerCase();
+            tabindex = parseInt($(this).attr('tabindex'), 10);
+
+            if (/input|select|textarea|button|object/.test(tag)) {
+                istabbable = !this.disabled && (isNaN(tabindex) || tabindex > -1);
+            } else if ('a' === tag || 'area' === tag) {
+                istabbable =  this.href || tabindex > -1;
+            } else {
+                istabbable = tabindex > -1;
+            }
+
+            return istabbable && !$(this)['area' === tag ? 'parents' : 'closest'](':hidden').length;
+        });
     };
 
     Dialog._instances = [];
