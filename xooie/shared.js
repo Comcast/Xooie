@@ -194,7 +194,7 @@ define('xooie/shared', ['jquery', 'xooie/helpers'], function ($, helpers) {
 
       for (i = 0; i < instance._definedProps.length; i += 1) {
         prop = instance._definedProps[i];
-        if (!helpers.isUndefined(data[prop])) {
+        if (helpers.isDefined(data[prop])) {
           instance.set(prop, data[prop]);
         }
       }
