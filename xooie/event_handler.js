@@ -47,8 +47,9 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function ($, helpers)
     formattedType = format(type, this.namespace);
 
     if (helpers.isUndefined(this.handlers[formattedType])) {
-      this.handlers[formattedType] = function (e) {
-        self.fire(e, this, arguments);
+      this.handlers[formattedType] = function () {
+        [].splice.call(arguments, 1, 0, this);
+        self.fire.apply(self, arguments);
       };
     }
 
@@ -67,13 +68,15 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function ($, helpers)
     }
   };
 
-  EventHandler.prototype.fire = function (event, context, args) {
+  EventHandler.prototype.fire = function (event) {
     if (event.namespace && event.namespace !== this.namespace) {
       return;
     }
 
+    var args = [].slice.call(arguments, 1);
+
     if (!helpers.isUndefined(this._callbacks[event.type])) {
-      this._callbacks[event.type].fireWith(context, args);
+      this._callbacks[event.type].fireWith.apply(this._callbacks[event.type].fireWith, args);
     }
   };
 

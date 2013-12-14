@@ -50,18 +50,23 @@ module.exports = function(grunt) {
         options: {
           //specs: "spec/**/*.spec.js",
           specs: ['spec/widgets/base.spec.js', 'spec/widgets/dropdown.spec.js', 'spec/widgets/carousel.spec.js', 'spec/addons/base.spec.js', 'spec/**.js'],
-          template: require("grunt-template-jasmine-requirejs"),
+          template: require('grunt-template-jasmine-istanbul'),
           vendor: ["lib/jquery.js","lib/require.js","lib/micro_tmpl.js","lib/jasmine-jquery.js"],
           helpers: "spec/helpers.js",
           templateOptions: {
-            requireConfigFile: 'lib/config.js'
+            coverage: 'source/coverage/coverage.json',
+            report: 'source/coverage',
+            template: require('grunt-template-jasmine-requirejs'),
+            templateOptions: {
+              requireConfigFile: 'lib/config.js'
+            }
           }
         }
       }
     },
     jslint: {
       xooie: {
-        src: ['xooie/**/*.js'],
+        src: ['xooie/**/*.js', 'spec/event_handler.spec.js'],
         directives: {
           todo: true,
           nomen: true,
@@ -77,7 +82,13 @@ module.exports = function(grunt) {
             'setInterval',
             'clearInterval',
             'Mustache',
-            '_'
+            '_',
+            'jasmine',
+            'describe',
+            'it',
+            'expect',
+            'beforeEach',
+            'spyOn'
           ]
         }
       }
