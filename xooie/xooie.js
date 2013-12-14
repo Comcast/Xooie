@@ -126,7 +126,7 @@ $X = Xooie = (function (static_config) {
   return obj;
 }(Xooie));
 
-define('xooie/xooie', ['jquery', 'xooie/helpers', 'xooie/stylesheet'], function ($, helpers, Stylesheet) {
+define('xooie/xooie', ['jquery', 'xooie/helpers', 'xooie/stylesheet', 'xooie/polyfill'], function ($, helpers, Stylesheet) {
   'use strict';
   var config, _mapName, widgetSelector, widgetDataAttr, addonDataAttr;
 
