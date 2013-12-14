@@ -20,7 +20,7 @@
  * A collection of helper methods used by Xooie modules.
  **/
 
-define('xooie/helpers', [], function () {
+define('xooie/helpers', ['jquery'], function ($) {
   'use strict';
 
   var helpers = {
@@ -52,7 +52,7 @@ define('xooie/helpers', [], function () {
     }()),
 
     isObject: function (obj) {
-      return Object.prototype.toString(obj) === '[object Object]';
+      return $.isPlainObject(obj);
     },
 
     isUndefined: function (obj) {

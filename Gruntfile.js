@@ -66,7 +66,7 @@ module.exports = function(grunt) {
     },
     jslint: {
       xooie: {
-        src: ['xooie/**/*.js', 'spec/event_handler.spec.js'],
+        src: ['xooie/**/*.js', 'spec/event_handler.spec.js', 'spec/helpers.spec.js'],
         directives: {
           todo: true,
           nomen: true,

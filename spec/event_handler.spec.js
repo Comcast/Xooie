@@ -74,7 +74,7 @@ require(['jquery', 'xooie/event_handler', 'xooie/helpers'], function ($, EventHa
       });
 
       it('does not create a new entry in #_callbacks if is already defined', function () {
-        var testFunc = function () { return false; };
+        var testFunc = $.Callbacks('unique');
 
         this.eventhandler._callbacks.someEvent = testFunc;
 
