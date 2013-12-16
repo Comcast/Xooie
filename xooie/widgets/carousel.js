@@ -306,7 +306,7 @@ define('xooie/widgets/carousel', ['jquery', 'xooie/helpers', 'xooie/widgets/base
       self._timers.scroll = setTimeout(scrollComplete, 250);
     });
 
-    this.cropStyle(Carousel.createStyleRule('.' + this.instanceClass() + ' .' + this.cropClass() + ', .' + this.instanceClass() + '.' + this.cropClass(),{'height':'auto'}));
+    this.cropStyle(Carousel.createStyleRule('.' + this.instanceClass() + ' .' + this.cropClass() + ', .' + this.instanceClass() + '.' + this.cropClass(), {'height': 'auto'}));
 
     // TODO: add functionality to remove from cache
     Carousel._cache = Carousel._cache.add(this.root());

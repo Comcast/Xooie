@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function ($, helpers) {
+define('xooie/stylesheet', ['jquery'], function ($) {
   'use strict';
 
   var Stylesheet = function (name) {
@@ -34,7 +34,7 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function ($, helpers) {
   };
 
   Stylesheet.prototype.get = function () {
-    return  this.element[0].sheet || this.element[0].styleSheet;
+    return this.element[0].sheet || this.element[0].styleSheet;
   };
 
   Stylesheet.prototype.getRule = function (ruleName) {
@@ -74,8 +74,8 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function ($, helpers) {
         index = this.get().rules.length;
         ruleNameArray = ruleName.split(',');
         // READ: http://msdn.microsoft.com/en-us/library/ie/aa358796%28v=vs.85%29.aspx
-        for(i = 0; i < ruleNameArray.length; i += 1) {
-            this.get().addRule(ruleNameArray[i], propString, index+i);
+        for (i = 0; i < ruleNameArray.length; i += 1) {
+          this.get().addRule(ruleNameArray[i], propString, index + i);
         }
 
         rule = this.get().rules[index];
