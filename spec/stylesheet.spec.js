@@ -90,24 +90,5 @@ require(['jquery', 'xooie/stylesheet'], function($, Stylesheet){
             });
         });
 
-        describe('When getting the index...', function() {
-            var s;
-
-            it('gets the index from document.styleSheets if _index is not defined', function() {
-                s = new Stylesheet('testf');
-
-                expect(document.styleSheets[8].ownerNode.getAttribute('id')).toBe('testf');
-                expect(s.getIndex()).toBe(8);
-            });
-
-            it('gets the index if the index is defined and the stylesheet name is the same', function() {
-                s = new Stylesheet('testf');
-
-                s._index = 0;
-                document.styleSheets[0].ownerNode.setAttribute('id', 'testf');
-
-                expect(s.getIndex()).toBe(0);
-            });
-        });
     });
 });
