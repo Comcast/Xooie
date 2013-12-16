@@ -17,15 +17,6 @@
 define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function ($, helpers) {
   'use strict';
 
-  function nameCheck(index, name) {
-    var s = document.styleSheets[index];
-
-    if (!helpers.isUndefined(s.ownerNode)) {
-      return s.ownerNode.getAttribute('id') === name;
-    }
-    return s.id === name;
-  }
-
   var Stylesheet = function (name) {
     //check to see if a stylesheet already exists with this name
     this.element = $('style[id=' + name + ']');
@@ -43,7 +34,7 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function ($, helpers) {
   };
 
   Stylesheet.prototype.get = function () {
-    return document.styleSheets[this.getIndex()];
+    return  this.element[0].sheet || this.element[0].styleSheet;
   };
 
   Stylesheet.prototype.getRule = function (ruleName) {
@@ -117,25 +108,6 @@ define('xooie/stylesheet', ['jquery', 'xooie/helpers'], function ($, helpers) {
     }
 
     return false;
-  };
-
-  Stylesheet.prototype.getIndex = function () {
-    var i;
-
-    if (helpers.isUndefined(document.styleSheets)) {
-      return;
-    }
-
-    if (!helpers.isUndefined(this._index) && nameCheck(this._index, this._name)) {
-      return this._index;
-    }
-
-    for (i = 0; i < document.styleSheets.length; i += 1) {
-      if (nameCheck(i, this._name)) {
-        this._index = i;
-        return i;
-      }
-    }
   };
 
   return Stylesheet;
