@@ -49,8 +49,47 @@ require(['jquery', 'xooie/stylesheet'], function($, Stylesheet){
       it('retrieves the rule if the rule already exists', function(){
         var rule = s.addRule('test_rule_b');
 
-        expect(s.addRule('test_rule_b')).toBe(rule);
-      });
+                expect(s.addRule('test_rule_b')).toBe(rule);
+            });
+
+            describe('In IE8 or less...', function(){
+                var s, sh, actual_insertRule, ruleNameLength;
+                beforeEach(function(){
+
+                    s = new Stylesheet('testx');
+
+                    spyOn(s, 'getRule').andReturn(false);
+
+                    spyOn(s, 'addRule').andCallThrough();
+
+                    //force it to work like IE
+                    spyOn(s, 'get').andReturn( (function () {
+                        var addRule = jasmine.createSpy('addRule');
+
+                        addRule.andCallFake(function (ruleName, propString, index) {
+                            s.get().rules[index] = ruleName + ' {' + propString + '}';
+                        });
+
+                        return {
+                            rules: [],
+                            addRule: addRule
+                        };
+                    }()) );
+                });
+
+                it('adds a new rule to the end of the cssRule array', function(){
+                    s.addRule('test_rule_x');
+
+                    expect(s.get().addRule.callCount).toEqual(1);
+                });
+
+                it('loops through multiple context selectors', function () {
+                    s.addRule('.foo, .bar');
+
+                    expect(s.get().addRule.callCount).toEqual(2);
+                });
+            });
+        });
 
       it('adds the properties to the rule if it already exists', function() {
         s.addRule('test_rule_b');
