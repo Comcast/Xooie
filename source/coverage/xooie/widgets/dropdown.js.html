@@ -100,6 +100,11 @@
         .cstat-no { background: #fc8c84; color: #111; }
         .fstat-no { background: #ffc520; color: #111 !important; }
         .cbranch-no { background:  yellow !important; color: #111; }
+
+        .cstat-skip { background: #ddd; color: #111; }
+        .fstat-skip { background: #ddd; color: #111 !important; }
+        .cbranch-skip { background: #ddd !important; color: #111; }
+
         .missing-if-branch {
             display: inline-block;
             margin-right: 10px;
@@ -107,9 +112,18 @@
             padding: 0 4px;
             background: black;
             color: yellow;
-            xtext-decoration: line-through;
         }
-        .missing-if-branch .typ {
+
+        .skip-if-branch {
+            display: none;
+            margin-right: 10px;
+            position: relative;
+            padding: 0 4px;
+            background: #ccc;
+            color: white;
+        }
+
+        .missing-if-branch .typ, .skip-if-branch .typ {
             color: inherit !important;
         }
 
@@ -176,6 +190,8 @@
             margin: 0 !important;
         }
         .com { color: #999 !important; }
+        .ignore-none { color: #999; font-weight: normal; }
+
     </style>
 </head>
 <body>
@@ -194,6 +210,7 @@
         
         Lines: <span class="metric">89.71% <small>(122 / 136)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
     <div class="path"><a href="../../index.html">All files</a> &#187; <a href="index.html">xooie/widgets/</a> &#187; dropdown.js</div>
 </div>
@@ -891,18 +908,18 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base', 'xooie/helpers
       off: function (event) {
         var check = false;
 &nbsp;
-        <span class="missing-if-branch" title="if path not taken"" >I</span>if (!helpers.isUndefined(event.data.not)) {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!helpers.isUndefined(event.data.not)) {
 <span class="cstat-no" title="statement not covered" >          check = $(event.data.not).is($(this)) || $(event.target).parents(event.data.not).length &gt; 0;</span>
         }
 &nbsp;
-        <span class="missing-if-branch" title="if path not taken"" >I</span>if (!helpers.isUndefined(event.data.which)) {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!helpers.isUndefined(event.data.which)) {
 <span class="cstat-no" title="statement not covered" >          check = check || event.data.which.indexOf(event.which) === -1;</span>
         }
 &nbsp;
         check = check || ($(event.target).is(self.getExpander(event.data.index)) || $(event.target).parents(self.dropdownExpanderSelector()).length &gt; 0);
         check = check &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!$(event.target).is($(this));</span>
 &nbsp;
-        <span class="missing-if-branch" title="if path not taken"" >I</span>if (check) {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (check) {
 <span class="cstat-no" title="statement not covered" >          return true;</span>
         }
 &nbsp;
@@ -916,14 +933,14 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base', 'xooie/helpers
 &nbsp;
         index = event.data.index || parseInt($(this).attr('data-dropdown-index'), 10);
 &nbsp;
-        <span class="missing-if-branch" title="if path not taken"" >I</span>if (!helpers.isUndefined(event.data.not)) {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!helpers.isUndefined(event.data.not)) {
 <span class="cstat-no" title="statement not covered" >          check = $(event.data.not).is($(this));</span>
 <span class="cstat-no" title="statement not covered" >          check = check || $(event.target).parents(event.data.not).length &gt; 0;</span>
         }
 &nbsp;
         check = check || (!helpers.isUndefined(event.data.which) &amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >event.data.which.indexOf(event.which) === -1)</span>;
 &nbsp;
-        <span class="missing-if-branch" title="if path not taken"" >I</span>if (check) {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (check) {
 <span class="cstat-no" title="statement not covered" >          return true;</span>
         }
 &nbsp;
@@ -986,7 +1003,7 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base', 'xooie/helpers
     expanders.on('mouseover focus', function () {
       var index = parseInt($(this).attr('data-dropdown-index'), 10);
 &nbsp;
-      <span class="missing-if-branch" title="else path not taken"" >E</span>if (self.timers.collapse[index]) {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (self.timers.collapse[index]) {
         self.timers.collapse[index] = clearTimeout(self.timers.collapse[index]);
 &nbsp;
         $(this).on('mouseleave blur', {index: index}, function (event) {
@@ -1035,8 +1052,8 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base', 'xooie/helpers
     triggerData = this.triggers()[state];
 &nbsp;
     for (trigger in triggerData) {
-      <span class="missing-if-branch" title="else path not taken"" >E</span>if (triggerData.hasOwnProperty(trigger)) {
-        <span class="missing-if-branch" title="if path not taken"" >I</span>if (!helpers.isUndefined(triggerData[trigger].which)) {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (triggerData.hasOwnProperty(trigger)) {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!helpers.isUndefined(triggerData[trigger].which)) {
 <span class="cstat-no" title="statement not covered" >          triggerData[trigger].which = parseWhich(triggerData[trigger].which);</span>
         }
 &nbsp;
@@ -1057,7 +1074,7 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base', 'xooie/helpers
     triggerData = this.triggers()[state];
 &nbsp;
     for (trigger in triggerData) {
-      <span class="missing-if-branch" title="else path not taken"" >E</span>if (triggerData.hasOwnProperty(trigger)) {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (triggerData.hasOwnProperty(trigger)) {
         handle = this.getTriggerHandle(triggerData[trigger], index);
 &nbsp;
         countName = [trigger, state, 'count'].join('-');
@@ -1094,7 +1111,7 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base', 'xooie/helpers
   };
 &nbsp;
   Dropdown.prototype.setState = function (index, data, active) {
-    <span class="missing-if-branch" title="if path not taken"" >I</span>if (helpers.isUndefined(index) || isNaN(index)) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (helpers.isUndefined(index) || isNaN(index)) {
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
 &nbsp;
@@ -1138,13 +1155,13 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base', 'xooie/helpers
   };
 &nbsp;
   Dropdown.prototype.expand = function (index, data) {
-    <span class="missing-if-branch" title="else path not taken"" >E</span>if (!this.getHandle(index).hasClass(this.activeDropdownClass())) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (!this.getHandle(index).hasClass(this.activeDropdownClass())) {
       this.setState(index, data, true);
     }
   };
 &nbsp;
   Dropdown.prototype.collapse = function (index, data) {
-    <span class="missing-if-branch" title="else path not taken"" >E</span>if (this.getHandle(index).hasClass(this.activeDropdownClass())) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (this.getHandle(index).hasClass(this.activeDropdownClass())) {
       this.setState(index, data, false);
     }
   };
@@ -1155,7 +1172,7 @@ define('xooie/widgets/dropdown', ['jquery', 'xooie/widgets/base', 'xooie/helpers
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Dec 18 2013 11:47:05 GMT-0500 (EST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Dec 19 2013 16:11:51 GMT-0500 (EST)</div>
 </div>
 
 <script src="../../prettify.js"></script>

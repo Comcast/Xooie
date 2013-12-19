@@ -100,6 +100,11 @@
         .cstat-no { background: #fc8c84; color: #111; }
         .fstat-no { background: #ffc520; color: #111 !important; }
         .cbranch-no { background:  yellow !important; color: #111; }
+
+        .cstat-skip { background: #ddd; color: #111; }
+        .fstat-skip { background: #ddd; color: #111 !important; }
+        .cbranch-skip { background: #ddd !important; color: #111; }
+
         .missing-if-branch {
             display: inline-block;
             margin-right: 10px;
@@ -107,9 +112,18 @@
             padding: 0 4px;
             background: black;
             color: yellow;
-            xtext-decoration: line-through;
         }
-        .missing-if-branch .typ {
+
+        .skip-if-branch {
+            display: none;
+            margin-right: 10px;
+            position: relative;
+            padding: 0 4px;
+            background: #ccc;
+            color: white;
+        }
+
+        .missing-if-branch .typ, .skip-if-branch .typ {
             color: inherit !important;
         }
 
@@ -176,6 +190,8 @@
             margin: 0 !important;
         }
         .com { color: #999 !important; }
+        .ignore-none { color: #999; font-weight: normal; }
+
     </style>
 </head>
 <body>
@@ -194,6 +210,7 @@
         
         Lines: <span class="metric">92.91% <small>(131 / 141)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
     <div class="path"><a href="../../index.html">All files</a> &#187; <a href="index.html">xooie/widgets/</a> &#187; base.js</div>
 </div>
@@ -1505,12 +1522,12 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  * as a reference point.  Returns the index.
  **/
   function cacheInstance(instance) {
-    <span class="missing-if-branch" title="else path not taken"" >E</span>if (!helpers.isUndefined(instance)) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (!helpers.isUndefined(instance)) {
       var index = $X._instanceIndex;
 &nbsp;
       $X._instanceIndex += 1;
 &nbsp;
-      <span class="missing-if-branch" title="else path not taken"" >E</span>if (helpers.isUndefined($X._instanceCache[index])) {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (helpers.isUndefined($X._instanceCache[index])) {
         $X._instanceCache[index] = instance;
 &nbsp;
         return index;
@@ -1588,28 +1605,28 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
   Widget._renderMethods = {
     //TODO: make this a default template
     'micro_template': function (template, view) {
-      <span class="missing-if-branch" title="else path not taken"" >E</span>if (!helpers.isUndefined(template.micro_render)) {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (!helpers.isUndefined(template.micro_render)) {
         return $(template.micro_render(view));
       }
 <span class="cstat-no" title="statement not covered" >      return false;</span>
     },
 &nbsp;
     'mustache': function (template, view) {
-      <span class="missing-if-branch" title="else path not taken"" >E</span>if (!helpers.isUndefined(Mustache) &amp;&amp; !helpers.isUndefined(Mustache.render)) {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (!helpers.isUndefined(Mustache) &amp;&amp; !helpers.isUndefined(Mustache.render)) {
         return $(Mustache.render(template.html(), view));
       }
 <span class="cstat-no" title="statement not covered" >      return false;</span>
     },
 &nbsp;
     'jsrender': function (template, view) {
-      <span class="missing-if-branch" title="else path not taken"" >E</span>if (!helpers.isUndefined(template.render)) {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (!helpers.isUndefined(template.render)) {
         return $(template.render(view));
       }
 <span class="cstat-no" title="statement not covered" >      return false;</span>
     },
 &nbsp;
     'underscore': function (template, view) {
-      <span class="missing-if-branch" title="else path not taken"" >E</span>if (!helpers.isUndefined(_) &amp;&amp; !helpers.isUndefined(_.template)) {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (!helpers.isUndefined(_) &amp;&amp; !helpers.isUndefined(_.template)) {
         return $(_.template(template.html())(view).trim());
       }
 <span class="cstat-no" title="statement not covered" >      return false;</span>
@@ -1688,7 +1705,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
  **/
  // TODO: update so that if the rule exists the properties are added to the rule
   Widget.createStyleRule = function (selector, properties) {
-    <span class="missing-if-branch" title="else path not taken"" >E</span>if (!helpers.isUndefined($X._stylesheet.addRule)) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (!helpers.isUndefined($X._stylesheet.addRule)) {
       return $X._stylesheet.addRule(selector, properties);
     }
 <span class="cstat-no" title="statement not covered" >    return false;</span>
@@ -1885,7 +1902,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
     var name;
 &nbsp;
     for (name in this.addons()) {
-      <span class="missing-if-branch" title="else path not taken"" >E</span>if (this.addons().hasOwnProperty(name)) {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (this.addons().hasOwnProperty(name)) {
         this.addons()[name].cleanup();
       }
     }
@@ -1907,7 +1924,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
     var language = template.data('templateLanguage') || this.templateLanguage(),
       result = Widget._renderMethods[language](template, view);
 &nbsp;
-    <span class="missing-if-branch" title="if path not taken"" >I</span>if (result === false) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (result === false) {
 <span class="cstat-no" title="statement not covered" >      return $('&lt;span&gt;Error rendering template&lt;/span&gt;');</span>
     }
     return result;
@@ -2016,7 +2033,7 @@ define('xooie/widgets/base', ['jquery', 'xooie/xooie', 'xooie/helpers', 'xooie/s
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Dec 18 2013 11:47:05 GMT-0500 (EST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Dec 19 2013 16:11:51 GMT-0500 (EST)</div>
 </div>
 
 <script src="../../prettify.js"></script>
