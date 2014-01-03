@@ -64,7 +64,7 @@ require(['jquery', 'xooie/event_handler', 'xooie/helpers'], function ($, EventHa
 
         el.trigger(e, 'testArg');
 
-        expect(this.eventhandler.fire).toHaveBeenCalledWith(e, el[0], 'testArg');
+        expect(this.eventhandler.fire).toHaveBeenCalledWith(el[0], e, 'testArg');
       });
 
       it('creates an entry in #_callbacks that is a new $.Callbacks instance', function () {
@@ -165,9 +165,9 @@ require(['jquery', 'xooie/event_handler', 'xooie/helpers'], function ($, EventHa
         e = $.Event('someEvent');
         el = $('<div />');
 
-        this.eventhandler.fire(e, el[0], 'testArg');
+        this.eventhandler.fire(el[0], e, 'testArg', 'otherArg');
 
-        expect(this.eventhandler._callbacks.someEvent.fireWith).toHaveBeenCalledWith(el[0], 'testArg');
+        expect(this.eventhandler._callbacks.someEvent.fireWith).toHaveBeenCalledWith(el[0], [e, 'testArg', 'otherArg']);
       });
 
       it('does not call fireWith if the #_callbacks instance for that event type is undefined', function () {
@@ -178,7 +178,7 @@ require(['jquery', 'xooie/event_handler', 'xooie/helpers'], function ($, EventHa
         e = $.Event('someEvent');
         el = $('<div />');
 
-        this.eventhandler.fire(e, el[0], 'testArg');
+        this.eventhandler.fire(el[0], e, 'testArg');
 
         expect(this.eventhandler._callbacks.someEvent.fireWith).not.toHaveBeenCalled();
       });
