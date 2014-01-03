@@ -48,7 +48,7 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function ($, helpers)
 
     if (helpers.isUndefined(this.handlers[formattedType])) {
       this.handlers[formattedType] = function () {
-        [].splice.call(arguments, 1, 0, this);
+        [].splice.call(arguments, 0, 0, this);
         self.fire.apply(self, arguments);
       };
     }
@@ -68,15 +68,17 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function ($, helpers)
     }
   };
 
-  EventHandler.prototype.fire = function (event) {
+  EventHandler.prototype.fire = function (context, event) {
+    var args;
+
     if (event.namespace && event.namespace !== this.namespace) {
       return;
     }
 
-    var args = [].slice.call(arguments, 1);
+    args = [].slice.call(arguments, 1);
 
     if (!helpers.isUndefined(this._callbacks[event.type])) {
-      this._callbacks[event.type].fireWith.apply(this._callbacks[event.type].fireWith, args);
+      this._callbacks[event.type].fireWith(context, args);
     }
   };
 
