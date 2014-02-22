@@ -28,7 +28,7 @@
     "url": "www.andrewlarkin.net"
   },
   "engines": {
-    "node": "0.8.10",
+    "node": "0.10.4",
     "npm": "1.1.x"
   },
   "dependencies": {
@@ -40,12 +40,12 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-contrib-requirejs": "~0.4.1",
-    "grunt-contrib-jasmine": "~0.4.2",
-    "grunt-template-jasmine-requirejs": "~0.1.2",
+    "grunt-contrib-requirejs": ">=0.4.1",
+    "grunt-contrib-jasmine": "0.5.2",
+    "grunt-template-jasmine-requirejs": ">=0.1.9",
     "grunt-jslint": "~1.1.1",
-    "grunt-istanbul": "~0.2.3",
+    "grunt-istanbul": ">=0.2.4",
     "ndoc": "~3.1.0",
-    "grunt-template-jasmine-istanbul": "~0.2.5"
+    "grunt-template-jasmine-istanbul": "0.2.6"
   }
 }
