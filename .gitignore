@@ -20,3 +20,6 @@
 *.gem
 /app
 /vendor
+
+#Ignore local coverage files
+/source/coverage
