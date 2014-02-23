@@ -154,7 +154,7 @@ require(['jquery', 'xooie/event_handler', 'xooie/helpers'], function ($, EventHa
 
         e.namespace = 'other';
 
-        this.eventhandler.fire(e, el[0]);
+        this.eventhandler.fire(el[0], e);
 
         expect(this.eventhandler._callbacks.someEvent.fireWith).not.toHaveBeenCalled();
       });
@@ -165,9 +165,9 @@ require(['jquery', 'xooie/event_handler', 'xooie/helpers'], function ($, EventHa
         e = $.Event('someEvent');
         el = $('<div />');
 
-        this.eventhandler.fire(el[0], e, 'testArg', 'otherArg');
+        this.eventhandler.fire(el[0], e, 'testArg');
 
-        expect(this.eventhandler._callbacks.someEvent.fireWith).toHaveBeenCalledWith(el[0], [e, 'testArg', 'otherArg']);
+        expect(this.eventhandler._callbacks.someEvent.fireWith).toHaveBeenCalledWith(el[0], [e, 'testArg']);
       });
 
       it('does not call fireWith if the #_callbacks instance for that event type is undefined', function () {
