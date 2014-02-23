@@ -46,10 +46,10 @@ module.exports = function(grunt) {
     jasmine: {
       test: {
         //src: "xooie/**/*.js",
-        src: ['xooie/widgets/base.js', 'xooie/widgets/dropdown.js', 'xooie/widgets/carousel.js', 'xooie/addons/base.js', 'xooie/**.js'],
+        src: ['xooie/widgets/base.js', 'xooie/widgets/dropdown.js', 'xooie/widgets/carousel.js', 'xooie/widgets/tab.js', 'xooie/widgets/accordion.js', 'xooie/addons/base.js', 'xooie/**.js'],
         options: {
           //specs: "spec/**/*.spec.js",
-          specs: ['spec/widgets/base.spec.js', 'spec/widgets/dropdown.spec.js', 'spec/widgets/carousel.spec.js', 'spec/addons/base.spec.js', 'spec/**.js'],
+          specs: ['spec/widgets/base.spec.js', 'spec/widgets/dropdown.spec.js', 'spec/widgets/carousel.spec.js', 'spec/widgets/tab.spec.js', 'spec/widgets/accordion.spec.js', 'spec/addons/base.spec.js', 'spec/**.js'],
           template: require('grunt-template-jasmine-istanbul'),
           vendor: ["lib/jquery.js","lib/require.js","lib/micro_tmpl.js","lib/jasmine-jquery.js"],
           helpers: "spec/helpers.js",
@@ -66,7 +66,7 @@ module.exports = function(grunt) {
     },
     jslint: {
       xooie: {
-        src: ['xooie/**/*.js', 'spec/event_handler.spec.js', 'spec/helpers.spec.js', 'spec/shared.spec.js', 'spec/stylesheet.spec.js'],
+        src: ['xooie/**/*.js', 'spec/event_handler.spec.js', 'spec/helpers.spec.js', 'spec/shared.spec.js', 'spec/stylesheet.spec.js', 'spec/widgets/carousel.spec.js'],
         directives: {
           todo: true,
           nomen: true,
@@ -88,7 +88,11 @@ module.exports = function(grunt) {
             'it',
             'expect',
             'beforeEach',
-            'spyOn'
+            'afterEach',
+            'spyOn',
+            'setFixtures',
+            'waitsFor',
+            'runs'
           ]
         }
       }
