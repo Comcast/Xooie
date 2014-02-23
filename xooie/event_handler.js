@@ -43,12 +43,12 @@ define('xooie/event_handler', ['jquery', 'xooie/helpers'], function ($, helpers)
 
       return;
     }
-
+    //TODO: support creating events with no namespace
     formattedType = format(type, this.namespace);
 
     if (helpers.isUndefined(this.handlers[formattedType])) {
       this.handlers[formattedType] = function () {
-        [].splice.call(arguments, 0, 0, this);
+        [].unshift.call(arguments, this);
         self.fire.apply(self, arguments);
       };
     }
