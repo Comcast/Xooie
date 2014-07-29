@@ -27,7 +27,5 @@ Gem::Specification.new do |s|
     'License.txt'
   ]
 
-  s.add_dependency "railties", "~> 3.1"
-
   s.require_paths = ["lib"]
 end
