@@ -1,6 +1,6 @@
 xooie - Modular, Modifiable, Responsive, Accessible
 
-Copyright 2014 (c) Comcast
+Copyright 2015 (c) Comcast
 
 This product includes software developed by
 Comcast (http://www.comcast.com/)
