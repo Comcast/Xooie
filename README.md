@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/Comcast/Xooie.png?branch=master)](http://travis-ci.org/Comcast/Xooie)
 
+### Important note: this project is no longer actively maintained.
+
 Xooie
 ===
 
